@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Store Locator 0.1.1\n"
+"Project-Id-Version: Oli Store Locator 0.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -80,4 +80,58 @@ msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage 
 msgstr ""
 
 msgid "OpenStreetMap"
+msgstr ""
+
+msgid "API"
+msgstr ""
+
+msgid "User Experience"
+msgstr ""
+
+msgid "Markers"
+msgstr ""
+
+msgid "Store Editor"
+msgstr ""
+
+msgid "Local Pages"
+msgstr ""
+
+msgid "Tools"
+msgstr ""
+
+msgid "Design"
+msgstr ""
+
+msgid "Map service"
+msgstr ""
+
+msgid "Search method"
+msgstr ""
+
+msgid "Geocode API (default)"
+msgstr ""
+
+msgid "Name search (post / location name)"
+msgstr ""
+
+msgid "Show first in results?"
+msgstr ""
+
+msgid "Sync history"
+msgstr ""
+
+msgid "A sync is already running. Try again in a few minutes."
+msgstr ""
+
+msgid "Load the map"
+msgstr ""
+
+msgid "Get directions"
+msgstr ""
+
+msgid "No results found"
+msgstr ""
+
+msgid "Please adjust your search"
 msgstr ""

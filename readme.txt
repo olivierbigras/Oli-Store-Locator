@@ -5,7 +5,7 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.1
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Searchable store locator with Google Maps or free Leaflet/OpenStreetMap, design 
 
 == Description ==
 
-Oli Store Locator lets you publish a store finder that is independently written for WordPress (it is not a fork of WP Store Locator). Manage locations as a custom post type, search by address or ZIP, and style the map from the settings screen.
+Oli Store Locator lets you publish a store finder that is independently written for WordPress. Manage locations as a custom post type, search by address or ZIP, and style the map from the settings screen.
 
 = Stores =
 
@@ -107,6 +107,12 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.2.0 =
+* Settings screens match the free wordpress.org locator sections (API, Search, Map, User Experience, Markers, Store Editor, Local Pages, Labels, Tools).
+* Featured stores, category colors, name search, GDPR consent, and more shortcode attributes.
+* Google Sheets sync history with automatic purge and an overlap lock.
+* Configurable map design: tiles, colors, markers, clustering, info window, list template, custom CSS.
+
 = 0.1.1 =
 * Restrict the REST /geocode route to administrators or a valid wp_rest nonce.
 * Cache public geocoding for 30 days and limit external lookups per IP.
@@ -117,6 +123,9 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.0 =
+Settings screens, search options, map design, and Google Sheets history from 0.1.1. Existing option keys are unchanged.
 
 = 0.1.1 =
 Security and rate-limit fixes for geocoding, CSV import, and Google Sheets.

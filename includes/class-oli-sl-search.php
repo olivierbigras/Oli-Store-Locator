@@ -28,6 +28,9 @@ class Oli_SL_Search {
 			'max_results' => oli_sl_get_option( 'max_results', '25' ),
 			'category'    => '',
 			'unit'        => oli_sl_get_option( 'distance_unit', 'km' ),
+			'name'        => '',
+			'country'     => '',
+			'search'      => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -40,7 +43,8 @@ class Oli_SL_Search {
 		$args = apply_filters( 'oli_sl_search_args', $args );
 
 		$cache_key = '';
-		if ( oli_sl_get_option( 'enable_caching', '1' ) ) {
+		$cache_ok  = oli_sl_get_option( 'enable_caching', '1' ) && ! oli_sl_is_enabled( oli_sl_get_option( 'show_hour_status', '1' ) );
+		if ( $cache_ok ) {
 			$cache_key = 'oli_sl_search_' . md5( wp_json_encode( $args ) );
 			$cached    = get_transient( $cache_key );
 			if ( false !== $cached ) {
@@ -66,15 +70,21 @@ class Oli_SL_Search {
 			),
 		);
 
+		if ( ! empty( $args['name'] ) && 'name' === oli_sl_get_option( 'search_method', 'geocode' ) ) {
+			$query_args['s'] = sanitize_text_field( $args['name'] );
+		}
+
 		if ( ! empty( $args['category'] ) ) {
 			$terms = is_array( $args['category'] ) ? array_map( 'absint', $args['category'] ) : array( absint( $args['category'] ) );
 			$terms = array_filter( $terms );
 			if ( ! empty( $terms ) ) {
 				$query_args['tax_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- optional category filter.
 					array(
-						'taxonomy' => 'oli_store_category',
-						'field'    => 'term_id',
-						'terms'    => $terms,
+						'taxonomy'         => 'oli_store_category',
+						'field'            => 'term_id',
+						'terms'            => $terms,
+						'operator'         => oli_sl_is_enabled( oli_sl_get_option( 'all_categories_required', '0' ) ) ? 'AND' : 'IN',
+						'include_children' => true,
 					),
 				);
 			}
@@ -93,10 +103,21 @@ class Oli_SL_Search {
 		$ids    = $query->posts;
 
 		$earth_radius = 'mi' === $args['unit'] ? 3959 : 6371;
+		$nearest      = null;
+		$full_search  = oli_sl_is_enabled( oli_sl_get_option( 'full_search', '0' ) ) && self::looks_like_region( $args['search'] );
+		$enforce      = oli_sl_is_enabled( oli_sl_get_option( 'enforce_borders', '0' ) );
+		$country_hint = isset( $args['country'] ) ? strtolower( trim( (string) $args['country'] ) ) : '';
 
 		foreach ( $ids as $store_id ) {
 			$store_lat = (float) get_post_meta( $store_id, '_oli_sl_latitude', true );
 			$store_lng = (float) get_post_meta( $store_id, '_oli_sl_longitude', true );
+
+			if ( $enforce && '' !== $country_hint ) {
+				$store_country = strtolower( (string) get_post_meta( $store_id, '_oli_sl_country', true ) );
+				if ( '' !== $store_country && false === strpos( $store_country, $country_hint ) && false === strpos( $country_hint, $store_country ) ) {
+					continue;
+				}
+			}
 
 			if ( '' !== $args['lat'] && '' !== $args['lng'] ) {
 				$distance = self::calculate_distance(
@@ -107,26 +128,48 @@ class Oli_SL_Search {
 					$earth_radius
 				);
 
-				if ( $distance > (float) $args['radius'] ) {
+				$candidate = self::format_store_data( $store_id, $distance, $args['unit'] );
+				if ( null === $nearest || $distance < $nearest['distance'] ) {
+					$nearest = $candidate;
+				}
+
+				if ( ! $full_search && $distance > (float) $args['radius'] ) {
 					continue;
 				}
+
+				$stores[] = $candidate;
 			} else {
-				$distance = 0;
+				$stores[] = self::format_store_data( $store_id, 0, $args['unit'] );
 			}
-
-			$stores[] = self::format_store_data( $store_id, $distance, $args['unit'] );
 		}
 
-		if ( '' !== $args['lat'] && '' !== $args['lng'] ) {
-			usort(
-				$stores,
-				function ( $a, $b ) {
-					return $a['distance'] <=> $b['distance'];
+		if ( empty( $stores ) && $nearest && oli_sl_is_enabled( oli_sl_get_option( 'find_nearest', '0' ) ) ) {
+			$stores[] = $nearest;
+		}
+
+		$sort_by    = oli_sl_get_option( 'sort_by', 'distance' );
+		$sort_order = oli_sl_get_option( 'sort_order', 'asc' );
+		usort(
+			$stores,
+			function ( $a, $b ) use ( $sort_by, $sort_order ) {
+				if ( ! empty( $a['featured'] ) && empty( $b['featured'] ) ) {
+					return -1;
 				}
-			);
-		}
+				if ( empty( $a['featured'] ) && ! empty( $b['featured'] ) ) {
+					return 1;
+				}
+				if ( 'title' === $sort_by ) {
+					$cmp = strcasecmp( $a['title'], $b['title'] );
+				} else {
+					$cmp = $a['distance'] <=> $b['distance'];
+				}
+				return 'desc' === $sort_order ? -$cmp : $cmp;
+			}
+		);
 
-		$stores = array_slice( $stores, 0, max( 1, (int) $args['max_results'] ) );
+		if ( ! $full_search ) {
+			$stores = array_slice( $stores, 0, max( 1, (int) $args['max_results'] ) );
+		}
 
 		/**
 		 * Filter store search results.
@@ -136,7 +179,7 @@ class Oli_SL_Search {
 		 */
 		$stores = apply_filters( 'oli_sl_search_results', $stores, $args );
 
-		if ( oli_sl_get_option( 'enable_caching', '1' ) && $cache_key ) {
+		if ( $cache_ok && $cache_key ) {
 			$cache_duration = (int) oli_sl_get_option( 'cache_duration', '3600' );
 			set_transient( $cache_key, $stores, $cache_duration );
 		}
@@ -208,30 +251,43 @@ class Oli_SL_Search {
 		}
 
 		$data = array(
-			'id'           => $store_id,
-			'title'        => get_the_title( $store_id ),
-			'permalink'    => get_permalink( $store_id ),
-			'address'      => oli_sl_get_store_meta( $store_id, 'address' ),
-			'address_2'    => oli_sl_get_store_meta( $store_id, 'address_2' ),
-			'city'         => oli_sl_get_store_meta( $store_id, 'city' ),
-			'state'        => oli_sl_get_store_meta( $store_id, 'state' ),
-			'zip'          => oli_sl_get_store_meta( $store_id, 'zip' ),
-			'country'      => oli_sl_get_store_meta( $store_id, 'country' ),
-			'latitude'     => oli_sl_get_store_meta( $store_id, 'latitude' ),
-			'longitude'    => oli_sl_get_store_meta( $store_id, 'longitude' ),
-			'phone'        => oli_sl_get_store_meta( $store_id, 'phone' ),
-			'fax'          => oli_sl_get_store_meta( $store_id, 'fax' ),
-			'email'        => oli_sl_get_store_meta( $store_id, 'email' ),
-			'url'          => oli_sl_get_store_meta( $store_id, 'url' ),
-			'hours'        => oli_sl_get_store_meta( $store_id, 'hours' ),
-			'description'  => oli_sl_get_store_meta( $store_id, 'description' ),
-			'thumbnail'    => $thumbnail_url,
-			'categories'   => $category_names,
-			'category_ids' => $category_ids,
-			'marker_icon'  => $marker_icon,
-			'distance'     => round( (float) $distance, 2 ),
-			'unit'         => $unit,
+			'id'              => $store_id,
+			'title'           => get_the_title( $store_id ),
+			'permalink'       => get_permalink( $store_id ),
+			'address'         => oli_sl_get_store_meta( $store_id, 'address' ),
+			'address_2'       => oli_sl_get_store_meta( $store_id, 'address_2' ),
+			'city'            => oli_sl_get_store_meta( $store_id, 'city' ),
+			'state'           => oli_sl_get_store_meta( $store_id, 'state' ),
+			'zip'             => oli_sl_get_store_meta( $store_id, 'zip' ),
+			'country'         => oli_sl_get_store_meta( $store_id, 'country' ),
+			'latitude'        => oli_sl_get_store_meta( $store_id, 'latitude' ),
+			'longitude'       => oli_sl_get_store_meta( $store_id, 'longitude' ),
+			'phone'           => oli_sl_get_store_meta( $store_id, 'phone' ),
+			'fax'             => oli_sl_get_store_meta( $store_id, 'fax' ),
+			'email'           => oli_sl_get_store_meta( $store_id, 'email' ),
+			'url'             => oli_sl_get_store_meta( $store_id, 'url' ),
+			'hours'           => oli_sl_get_store_meta( $store_id, 'hours' ),
+			'description'     => oli_sl_get_store_meta( $store_id, 'description' ),
+			'thumbnail'       => $thumbnail_url,
+			'categories'      => $category_names,
+			'category_ids'    => $category_ids,
+			'marker_icon'     => $marker_icon,
+			'distance'        => round( (float) $distance, 2 ),
+			'unit'            => $unit,
+			'featured'        => '1' === (string) oli_sl_get_store_meta( $store_id, 'featured' ),
+			'hours_status'    => Oli_SL_Hours::status( $store_id ),
+			'hours_display'   => Oli_SL_Hours::format_display( $store_id, oli_sl_is_enabled( oli_sl_get_option( 'hide_closed_hours', '0' ) ) ),
+			'category_colors' => array(),
 		);
+
+		if ( ! empty( $categories ) && ! is_wp_error( $categories ) ) {
+			foreach ( $categories as $category ) {
+				$color = get_term_meta( $category->term_id, 'oli_sl_color', true );
+				if ( $color ) {
+					$data['category_colors'][ $category->name ] = $color;
+				}
+			}
+		}
 
 		/**
 		 * Filter a single store payload.
@@ -240,6 +296,51 @@ class Oli_SL_Search {
 		 * @param int   $store_id Store ID.
 		 */
 		return apply_filters( 'oli_sl_store_data', $data, $store_id );
+	}
+
+	/**
+	 * Whether a search string looks like a whole country or state.
+	 *
+	 * @param string $search Search text.
+	 * @return bool
+	 */
+	public static function looks_like_region( $search ) {
+		$search = strtolower( trim( (string) $search ) );
+		if ( '' === $search ) {
+			return false;
+		}
+
+		$regions = array_map( 'strtolower', array_filter( array_keys( oli_sl_country_choices() ) ) );
+		$regions = array_merge(
+			$regions,
+			array(
+				'quebec',
+				'ontario',
+				'alberta',
+				'british columbia',
+				'california',
+				'new york',
+				'texas',
+				'florida',
+			)
+		);
+
+		return in_array( $search, $regions, true );
+	}
+
+	/**
+	 * Clear geocode transients.
+	 */
+	public static function clear_geocode_cache() {
+		global $wpdb;
+
+		$like = $wpdb->esc_like( '_transient_oli_sl_geo_' ) . '%';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bulk transient cleanup.
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $like ) );
+
+		$like_timeout = $wpdb->esc_like( '_transient_timeout_oli_sl_geo_' ) . '%';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- bulk transient cleanup.
+		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s", $like_timeout ) );
 	}
 
 	/**

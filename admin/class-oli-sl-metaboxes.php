@@ -42,6 +42,13 @@ class Oli_SL_Metaboxes {
 			$hours_struct = array();
 		}
 
+		$hide = array(
+			'phone' => oli_sl_is_enabled( oli_sl_get_option( 'editor_hide_phone', '0' ) ),
+			'fax'   => oli_sl_is_enabled( oli_sl_get_option( 'editor_hide_fax', '0' ) ),
+			'email' => oli_sl_is_enabled( oli_sl_get_option( 'editor_hide_email', '0' ) ),
+			'url'   => oli_sl_is_enabled( oli_sl_get_option( 'editor_hide_url', '0' ) ),
+		);
+
 		$fields = array(
 			'address'     => array(
 				'label' => __( 'Address', 'oli-store-locator' ),
@@ -94,8 +101,17 @@ class Oli_SL_Metaboxes {
 		);
 
 		echo '<div class="oli-sl-metabox">';
+		$featured = oli_sl_get_store_meta( $post->ID, 'featured' );
+		echo '<p><label><input type="checkbox" name="oli_sl_featured" value="1" ' . checked( $featured, '1', false ) . ' /> ' . esc_html__( 'Show first in results?', 'oli-store-locator' ) . '</label></p>';
+
 		foreach ( $fields as $key => $field ) {
+			if ( ! empty( $hide[ $key ] ) ) {
+				continue;
+			}
 			$value = oli_sl_get_store_meta( $post->ID, $key );
+			if ( 'country' === $key && '' === $value && 'auto-draft' === $post->post_status ) {
+				$value = oli_sl_get_option( 'editor_default_country', '' );
+			}
 			echo '<p><label for="oli_sl_' . esc_attr( $key ) . '"><strong>' . esc_html( $field['label'] ) . '</strong></label><br />';
 			if ( 'textarea' === $field['type'] ) {
 				echo '<textarea class="widefat" rows="3" id="oli_sl_' . esc_attr( $key ) . '" name="oli_sl_' . esc_attr( $key ) . '">' . esc_textarea( $value ) . '</textarea>';
@@ -106,24 +122,29 @@ class Oli_SL_Metaboxes {
 		}
 
 		$hours = oli_sl_get_store_meta( $post->ID, 'hours' );
-		echo '<p><label for="oli_sl_hours"><strong>' . esc_html__( 'Opening hours', 'oli-store-locator' ) . '</strong></label><br />';
-		if ( 'dropdown' === $hours_format ) {
-			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Day', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Open', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Close', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Closed', 'oli-store-locator' ) . '</th></tr></thead><tbody>';
-			foreach ( oli_sl_weekdays() as $day => $label ) {
-				$open   = isset( $hours_struct[ $day ]['open'] ) ? $hours_struct[ $day ]['open'] : '09:00';
-				$close  = isset( $hours_struct[ $day ]['close'] ) ? $hours_struct[ $day ]['close'] : '17:00';
-				$closed = ! empty( $hours_struct[ $day ]['closed'] );
-				echo '<tr><td>' . esc_html( $label ) . '</td>';
-				echo '<td><input type="time" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][open]" value="' . esc_attr( $open ) . '" /></td>';
-				echo '<td><input type="time" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][close]" value="' . esc_attr( $close ) . '" /></td>';
-				echo '<td><input type="checkbox" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][closed]" value="1" ' . checked( $closed, true, false ) . ' /></td></tr>';
-			}
-			echo '</tbody></table>';
-			echo '<p class="description">' . esc_html__( 'A text version is also stored for templates and CSV export.', 'oli-store-locator' ) . '</p>';
-		} else {
-			echo '<textarea class="widefat" rows="5" id="oli_sl_hours" name="oli_sl_hours">' . esc_textarea( $hours ) . '</textarea>';
+		if ( '' === $hours && 'auto-draft' === $post->post_status ) {
+			$hours = oli_sl_get_option( 'editor_default_hours', '' );
 		}
-		echo '</p>';
+		if ( ! oli_sl_is_enabled( oli_sl_get_option( 'editor_hide_hours', '0' ) ) ) {
+			echo '<p><label for="oli_sl_hours"><strong>' . esc_html__( 'Opening hours', 'oli-store-locator' ) . '</strong></label><br />';
+			if ( 'dropdown' === $hours_format ) {
+				echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Day', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Open', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Close', 'oli-store-locator' ) . '</th><th>' . esc_html__( 'Closed', 'oli-store-locator' ) . '</th></tr></thead><tbody>';
+				foreach ( oli_sl_weekdays() as $day => $label ) {
+					$open   = isset( $hours_struct[ $day ]['open'] ) ? $hours_struct[ $day ]['open'] : '09:00';
+					$close  = isset( $hours_struct[ $day ]['close'] ) ? $hours_struct[ $day ]['close'] : '17:00';
+					$closed = ! empty( $hours_struct[ $day ]['closed'] );
+					echo '<tr><td>' . esc_html( $label ) . '</td>';
+					echo '<td><input type="time" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][open]" value="' . esc_attr( $open ) . '" /></td>';
+					echo '<td><input type="time" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][close]" value="' . esc_attr( $close ) . '" /></td>';
+					echo '<td><input type="checkbox" name="oli_sl_hours_struct[' . esc_attr( $day ) . '][closed]" value="1" ' . checked( $closed, true, false ) . ' /></td></tr>';
+				}
+				echo '</tbody></table>';
+				echo '<p class="description">' . esc_html__( 'A text version is also stored for templates and CSV export.', 'oli-store-locator' ) . '</p>';
+			} else {
+				echo '<textarea class="widefat" rows="5" id="oli_sl_hours" name="oli_sl_hours">' . esc_textarea( $hours ) . '</textarea>';
+			}
+			echo '</p>';
+		}
 
 		$lat    = oli_sl_get_store_meta( $post->ID, 'latitude' );
 		$lng    = oli_sl_get_store_meta( $post->ID, 'longitude' );
@@ -189,6 +210,7 @@ class Oli_SL_Metaboxes {
 
 		$manual = isset( $_POST['oli_sl_manual_coords'] ) ? '1' : '0';
 		update_post_meta( $post_id, '_oli_sl_manual_coords', $manual );
+		update_post_meta( $post_id, '_oli_sl_featured', isset( $_POST['oli_sl_featured'] ) ? '1' : '0' );
 
 		if ( isset( $_POST['oli_sl_hours_struct'] ) && is_array( $_POST['oli_sl_hours_struct'] ) ) {
 			$raw    = wp_unslash( $_POST['oli_sl_hours_struct'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitized below.

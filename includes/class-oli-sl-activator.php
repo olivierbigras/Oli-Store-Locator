@@ -60,5 +60,8 @@ class Oli_SL_Activator {
 		if ( ! wp_next_scheduled( 'oli_sl_sync_google_sheets_daily' ) ) {
 			wp_schedule_event( time(), 'daily', 'oli_sl_sync_google_sheets_daily' );
 		}
+		if ( ! wp_next_scheduled( 'oli_sl_purge_sync_log' ) ) {
+			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'oli_sl_purge_sync_log' );
+		}
 	}
 }

@@ -3,7 +3,7 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Store Locator 0.1.1\n"
+"Project-Id-Version: Oli Store Locator 0.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
 "PO-Revision-Date: 2026-10-20 00:00+0000\n"
@@ -180,3 +180,63 @@ msgstr "Limiter Nominatim à 1 requête par seconde (exigé par la politique d�
 
 msgid "OpenStreetMap"
 msgstr "OpenStreetMap"
+
+msgid "API"
+msgstr "API"
+
+msgid "User Experience"
+msgstr "Expérience utilisateur"
+
+msgid "Markers"
+msgstr "Marqueurs"
+
+msgid "Store Editor"
+msgstr "Éditeur de magasin"
+
+msgid "Local Pages"
+msgstr "Pages locales"
+
+msgid "Tools"
+msgstr "Outils"
+
+msgid "Design"
+msgstr "Apparence"
+
+msgid "Map service"
+msgstr "Service de carte"
+
+msgid "Search method"
+msgstr "Méthode de recherche"
+
+msgid "Show first in results?"
+msgstr "Afficher en premier dans les résultats ?"
+
+msgid "Sync history"
+msgstr "Journal des synchros"
+
+msgid "Load the map"
+msgstr "Charger la carte"
+
+msgid "Get directions"
+msgstr "Obtenir l’itinéraire"
+
+msgid "No results found"
+msgstr "Aucun résultat"
+
+msgid "Please adjust your search"
+msgstr "Veuillez ajuster votre recherche"
+
+msgid "Added"
+msgstr "Ajoutées"
+
+msgid "Modified"
+msgstr "Modifiées"
+
+msgid "Deleted"
+msgstr "Supprimées"
+
+msgid "Errors"
+msgstr "Erreurs"
+
+msgid "Color"
+msgstr "Couleur"

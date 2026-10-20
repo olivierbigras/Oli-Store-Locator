@@ -17,6 +17,7 @@ delete_option( 'oli_sl_sheets_last_checked' );
 delete_option( 'oli_sl_sheets_sync_results' );
 delete_option( 'oli_sl_sheets_sync_errors' );
 delete_option( 'oli_sl_sheets_paused' );
+delete_option( 'oli_sl_sheets_sync_log' );
 
 wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_5min' );
 wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_15min' );

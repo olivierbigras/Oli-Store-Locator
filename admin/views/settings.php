@@ -20,7 +20,7 @@ $base = admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings' );
 		<?php endforeach; ?>
 	</h2>
 
-	<?php if ( in_array( $tab, array( 'import', 'sync' ), true ) ) : ?>
+	<?php if ( in_array( $tab, array( 'import', 'sync', 'tools' ), true ) ) : ?>
 		<?php include OLI_SL_PLUGIN_DIR . 'admin/views/tab-' . $tab . '.php'; ?>
 	<?php else : ?>
 		<form action="options.php" method="post">

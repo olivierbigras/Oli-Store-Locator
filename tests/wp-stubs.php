@@ -286,6 +286,49 @@ if ( ! function_exists( 'wp_check_filetype_and_ext' ) ) {
 	}
 }
 
+if ( ! function_exists( 'get_option' ) ) {
+	/**
+	 * Get a test option.
+	 *
+	 * @param string $key      Key.
+	 * @param mixed  $fallback Fallback.
+	 * @return mixed
+	 */
+	function get_option( $key, $fallback = false ) {
+		$opts = isset( $GLOBALS['oli_sl_test_wp_options'] ) ? $GLOBALS['oli_sl_test_wp_options'] : array();
+		return array_key_exists( $key, $opts ) ? $opts[ $key ] : $fallback;
+	}
+}
+
+if ( ! function_exists( 'update_option' ) ) {
+	/**
+	 * Update a test option.
+	 *
+	 * @param string $key   Key.
+	 * @param mixed  $value Value.
+	 * @param bool   $auto  Autoload.
+	 * @return bool
+	 */
+	function update_option( $key, $value, $auto = true ) {
+		unset( $auto );
+		$GLOBALS['oli_sl_test_wp_options'][ $key ] = $value;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'delete_option' ) ) {
+	/**
+	 * Delete a test option.
+	 *
+	 * @param string $key Key.
+	 * @return bool
+	 */
+	function delete_option( $key ) {
+		unset( $GLOBALS['oli_sl_test_wp_options'][ $key ] );
+		return true;
+	}
+}
+
 if ( ! function_exists( 'oli_sl_get_option' ) ) {
 	/**
 	 * Option reader for tests.
@@ -353,9 +396,11 @@ function oli_sl_test_reset() {
 	$GLOBALS['oli_sl_test_caps']        = array();
 	$GLOBALS['oli_sl_test_nonces']      = array();
 	$GLOBALS['oli_sl_test_options']     = array(
-		'geocoding_provider'   => 'nominatim',
-		'nominatim_rate_limit' => '1',
+		'geocoding_provider'       => 'nominatim',
+		'nominatim_rate_limit'     => '1',
+		'sync_log_retention_days'  => '30',
 	);
+	$GLOBALS['oli_sl_test_wp_options']  = array();
 	$GLOBALS['oli_sl_test_doing_cron']  = false;
 	$GLOBALS['oli_sl_test_is_admin']    = false;
 	$GLOBALS['oli_sl_test_doing_ajax']  = false;

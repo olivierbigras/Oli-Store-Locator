@@ -40,6 +40,9 @@ class Oli_SL_Core {
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-i18n.php';
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-csv-parser.php';
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-sync-diff.php';
+		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-sync-lock.php';
+		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-sync-log.php';
+		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-hours.php';
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-map-styles.php';
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-post-type.php';
 		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-taxonomies.php';
@@ -93,9 +96,12 @@ class Oli_SL_Core {
 		$this->loader->add_action( 'oli_store_category_edit_form_fields', $taxonomies, 'edit_category_marker_field', 10, 2 );
 		$this->loader->add_action( 'created_oli_store_category', $taxonomies, 'save_category_marker_field' );
 		$this->loader->add_action( 'edited_oli_store_category', $taxonomies, 'save_category_marker_field' );
+		$this->loader->add_filter( 'manage_edit-oli_store_category_columns', $taxonomies, 'category_columns' );
+		$this->loader->add_filter( 'manage_oli_store_category_custom_column', $taxonomies, 'category_column_content', 10, 3 );
 		$this->loader->add_action( 'wp_ajax_oli_sl_geocode_address', $admin, 'geocode_address' );
 		$this->loader->add_action( 'wp_ajax_oli_sl_detect_sheet_columns', $admin, 'detect_sheet_columns' );
 		$this->loader->add_action( 'wp_ajax_oli_sl_sync_now', $admin, 'sync_now' );
+		$this->loader->add_action( 'admin_bar_menu', $admin, 'admin_bar_menu', 80 );
 	}
 
 	/**
@@ -125,6 +131,7 @@ class Oli_SL_Core {
 		$this->loader->add_action( 'oli_sl_sync_google_sheets_hourly', $sheets, 'run_scheduled_sync' );
 		$this->loader->add_action( 'oli_sl_sync_google_sheets_daily', $sheets, 'run_scheduled_sync' );
 		$this->loader->add_action( 'oli_sl_sync_google_sheets_batch', $sheets, 'process_batch' );
+		$this->loader->add_action( 'oli_sl_purge_sync_log', 'Oli_SL_Sync_Log', 'purge' );
 		$this->loader->add_action( 'save_post_oli_store', $this, 'clear_search_cache' );
 		$this->loader->add_action( 'deleted_post', $this, 'clear_search_cache' );
 	}

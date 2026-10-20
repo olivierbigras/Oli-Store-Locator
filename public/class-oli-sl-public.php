@@ -118,6 +118,9 @@ class Oli_SL_Public {
 			wp_enqueue_script( 'oli-sl-leaflet' );
 			wp_enqueue_script( 'oli-sl-leaflet-markercluster' );
 		} else {
+			if ( oli_sl_is_enabled( oli_sl_get_option( 'compatibility_mode', '0' ) ) && wp_script_is( 'google-maps', 'registered' ) ) {
+				wp_enqueue_script( 'google-maps' );
+			}
 			$key = oli_sl_get_option( 'google_api_key', '' );
 			$src = add_query_arg(
 				array(
@@ -142,8 +145,9 @@ class Oli_SL_Public {
 	 */
 	public function output_custom_css() {
 		$custom = oli_sl_get_option( 'custom_css', '' );
+		$shadow = oli_sl_is_enabled( oli_sl_get_option( 'infowindow_shadow', '1' ) ) ? '0 4px 16px rgba(0,0,0,.15)' : 'none';
 		$vars   = sprintf(
-			':root{--oli-sl-primary:%1$s;--oli-sl-button:%2$s;--oli-sl-button-text:%3$s;--oli-sl-text:%4$s;--oli-sl-hover:%5$s;--oli-sl-cluster:%6$s;--oli-sl-cluster-text:%7$s;--oli-sl-map-height:%8$spx;}',
+			':root{--oli-sl-primary:%1$s;--oli-sl-button:%2$s;--oli-sl-button-text:%3$s;--oli-sl-text:%4$s;--oli-sl-hover:%5$s;--oli-sl-cluster:%6$s;--oli-sl-cluster-text:%7$s;--oli-sl-map-height:%8$spx;--oli-sl-featured:%9$s;--oli-sl-infowindow-bg:%10$s;--oli-sl-infowindow-text:%11$s;--oli-sl-infowindow-radius:%12$spx;--oli-sl-infowindow-shadow:%13$s;}',
 			sanitize_hex_color( oli_sl_get_option( 'primary_color' ) ),
 			sanitize_hex_color( oli_sl_get_option( 'button_color' ) ),
 			sanitize_hex_color( oli_sl_get_option( 'button_text_color' ) ),
@@ -151,7 +155,12 @@ class Oli_SL_Public {
 			sanitize_hex_color( oli_sl_get_option( 'hover_color' ) ),
 			sanitize_hex_color( oli_sl_get_option( 'cluster_color' ) ),
 			sanitize_hex_color( oli_sl_get_option( 'cluster_text_color' ) ),
-			absint( oli_sl_get_option( 'map_height', '500' ) )
+			absint( oli_sl_get_option( 'map_height', '500' ) ),
+			sanitize_hex_color( oli_sl_get_option( 'featured_color' ) ),
+			sanitize_hex_color( oli_sl_get_option( 'infowindow_bg' ) ),
+			sanitize_hex_color( oli_sl_get_option( 'infowindow_text_color' ) ),
+			absint( oli_sl_get_option( 'infowindow_radius', '8' ) ),
+			$shadow
 		);
 		echo '<style id="oli-sl-theme-vars">' . $vars . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values sanitized above.
 		if ( is_string( $custom ) && '' !== trim( $custom ) ) {

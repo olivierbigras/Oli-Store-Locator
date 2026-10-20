@@ -2,6 +2,20 @@
 
 All notable changes to Oli Store Locator are documented in this file.
 
+## 0.2.0 — 2026-10-20
+
+### Added
+
+- Settings sections aligned with the free wordpress.org store locator: API, Search, Map, User Experience, Markers, Store Editor, Local Pages, Labels, Tools, plus Design, Import / Export, and Google Sheets.
+- Name search, featured stores, category colors, GDPR map consent, hide-map-until-search, hide results list, nearest-location fallback, country filtering, and query-string deep links (`oli_sl_address`, `oli_sl_name`).
+- Opening-hours open/closed status, more shortcode attributes, admin bar shortcut, geocode-missing and settings import/export tools.
+- Google Sheets sync overlap lock, persistent history (date, added, modified, deleted, errors) with automatic purge.
+- Fully configurable map design: tile provider, colors, custom markers, clustering, info-window style, list template, optional custom CSS.
+
+### Security
+
+- Keeps the 0.1.1 `/geocode` capability/nonce gate, 10 lookups per IP per minute, 30-day geocode cache, validated CSV uploads, and Google-only `wp_safe_remote_get`.
+
 ## 0.1.1 — 2026-10-20
 
 ### Security

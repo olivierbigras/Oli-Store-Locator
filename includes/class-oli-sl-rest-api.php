@@ -52,6 +52,10 @@ class Oli_SL_Rest_API {
 						'required'          => false,
 						'sanitize_callback' => array( $this, 'sanitize_category_param' ),
 					),
+					'name'        => array(
+						'required'          => false,
+						'sanitize_callback' => 'sanitize_text_field',
+					),
 				),
 			)
 		);
@@ -139,8 +143,9 @@ class Oli_SL_Rest_API {
 		$lat     = $request->get_param( 'lat' );
 		$lng     = $request->get_param( 'lng' );
 		$address = $request->get_param( 'address' );
+		$name    = $request->get_param( 'name' );
 
-		if ( ! empty( $address ) && ( empty( $lat ) || empty( $lng ) ) ) {
+		if ( 'name' !== oli_sl_get_option( 'search_method', 'geocode' ) && ! empty( $address ) && ( empty( $lat ) || empty( $lng ) ) ) {
 			$geocoded = Oli_SL_Geocoding::geocode(
 				$address,
 				array(
@@ -164,6 +169,8 @@ class Oli_SL_Rest_API {
 				'radius'      => $request->get_param( 'radius' ),
 				'max_results' => $request->get_param( 'max_results' ),
 				'category'    => $request->get_param( 'category' ),
+				'name'        => $name ? $name : $address,
+				'search'      => $address ? $address : $name,
 			)
 		);
 

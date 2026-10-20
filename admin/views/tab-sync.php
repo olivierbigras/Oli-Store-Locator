@@ -123,6 +123,59 @@ $message     = is_array( $results ) && ! empty( $results['message'] ) ? $results
 	<?php endif; ?>
 </div>
 
+<?php
+$history = Oli_SL_Sync_Log::newest_first();
+$days    = (int) oli_sl_get_option( 'sync_log_retention_days', '30' );
+?>
+<div class="oli-sl-sync-log">
+	<h2><?php esc_html_e( 'Sync history', 'oli-store-locator' ); ?></h2>
+	<p class="description">
+		<?php
+		echo esc_html(
+			sprintf(
+				/* translators: %d: retention days */
+				__( 'Each completed run is listed with the date, rows added, modified and deleted, and any errors. Entries older than %d days are purged automatically.', 'oli-store-locator' ),
+				$days
+			)
+		);
+		?>
+	</p>
+	<?php if ( empty( $history ) ) : ?>
+		<p><?php esc_html_e( 'No syncs recorded yet.', 'oli-store-locator' ); ?></p>
+	<?php else : ?>
+		<table class="widefat striped">
+			<thead>
+				<tr>
+					<th><?php esc_html_e( 'Date', 'oli-store-locator' ); ?></th>
+					<th><?php esc_html_e( 'Added', 'oli-store-locator' ); ?></th>
+					<th><?php esc_html_e( 'Modified', 'oli-store-locator' ); ?></th>
+					<th><?php esc_html_e( 'Deleted', 'oli-store-locator' ); ?></th>
+					<th><?php esc_html_e( 'Errors', 'oli-store-locator' ); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach ( $history as $entry ) : ?>
+				<tr>
+					<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $entry['time'] ) ); ?></td>
+					<td><?php echo esc_html( (string) $entry['created'] ); ?></td>
+					<td><?php echo esc_html( (string) $entry['updated'] ); ?></td>
+					<td><?php echo esc_html( (string) $entry['deleted'] ); ?></td>
+					<td>
+						<?php if ( ! empty( $entry['errors'] ) ) : ?>
+							<?php echo esc_html( implode( '; ', $entry['errors'] ) ); ?>
+						<?php elseif ( ! empty( $entry['success'] ) ) : ?>
+							—
+						<?php else : ?>
+							<?php echo esc_html( $entry['message'] ); ?>
+						<?php endif; ?>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+	<?php endif; ?>
+</div>
+
 <form method="post" style="display:inline-block;margin-right:8px;">
 	<?php wp_nonce_field( 'oli_sl_admin_action', 'oli_sl_admin_nonce' ); ?>
 	<input type="hidden" name="oli_sl_admin_action" value="start_sync" />

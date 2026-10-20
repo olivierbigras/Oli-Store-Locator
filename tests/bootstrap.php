@@ -10,12 +10,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'OLI_SL_VERSION' ) ) {
-	define( 'OLI_SL_VERSION', '0.1.1' );
+	define( 'OLI_SL_VERSION', '0.2.0' );
 }
 
 require_once __DIR__ . '/wp-stubs.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-csv-parser.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-sync-diff.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-sl-sync-lock.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-sl-sync-log.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-sl-hours.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-geocoding.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-geocoding-nominatim.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-rest-api.php';

@@ -1,6 +1,6 @@
 <?php
 /**
- * Design settings tab.
+ * Design settings.
  *
  * @package Oli_Store_Locator
  */
@@ -48,16 +48,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<p><label><?php esc_html_e( 'Button text', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[button_text_color]" value="<?php echo esc_attr( oli_sl_get_option( 'button_text_color' ) ); ?>" /></label></p>
 			<p><label><?php esc_html_e( 'Text', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[text_color]" value="<?php echo esc_attr( oli_sl_get_option( 'text_color' ) ); ?>" /></label></p>
 			<p><label><?php esc_html_e( 'List hover', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[hover_color]" value="<?php echo esc_attr( oli_sl_get_option( 'hover_color' ) ); ?>" /></label></p>
-			<p><label><?php esc_html_e( 'Cluster', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[cluster_color]" value="<?php echo esc_attr( oli_sl_get_option( 'cluster_color' ) ); ?>" /></label></p>
-			<p><label><?php esc_html_e( 'Cluster text', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[cluster_text_color]" value="<?php echo esc_attr( oli_sl_get_option( 'cluster_text_color' ) ); ?>" /></label></p>
 			<p class="description"><?php esc_html_e( 'Fonts inherit from the active theme.', 'oli-store-locator' ); ?></p>
 		</td>
 	</tr>
 	<tr>
-		<th scope="row"><?php esc_html_e( 'Default marker icon', 'oli-store-locator' ); ?></th>
+		<th scope="row"><?php esc_html_e( 'Info window style', 'oli-store-locator' ); ?></th>
 		<td>
-			<input type="url" class="regular-text" id="oli_sl_default_marker" name="oli_sl_options[default_marker]" value="<?php echo esc_attr( oli_sl_get_option( 'default_marker' ) ); ?>" />
-			<button type="button" class="button oli-sl-media-upload" data-target="oli_sl_default_marker"><?php esc_html_e( 'Upload', 'oli-store-locator' ); ?></button>
+			<p><label><?php esc_html_e( 'Background', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[infowindow_bg]" value="<?php echo esc_attr( oli_sl_get_option( 'infowindow_bg' ) ); ?>" /></label></p>
+			<p><label><?php esc_html_e( 'Text', 'oli-store-locator' ); ?> <input type="text" class="oli-sl-color" name="oli_sl_options[infowindow_text_color]" value="<?php echo esc_attr( oli_sl_get_option( 'infowindow_text_color' ) ); ?>" /></label></p>
+			<p><label><?php esc_html_e( 'Corner radius (px)', 'oli-store-locator' ); ?> <input type="number" min="0" max="32" name="oli_sl_options[infowindow_radius]" value="<?php echo esc_attr( oli_sl_get_option( 'infowindow_radius' ) ); ?>" /></label></p>
+			<p><?php oli_sl_checkbox_field( 'infowindow_shadow', __( 'Drop shadow', 'oli-store-locator' ) ); ?></p>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row"><label for="oli-sl-results-template"><?php esc_html_e( 'List template', 'oli-store-locator' ); ?></label></th>
+		<td>
+			<textarea class="large-text code" rows="6" id="oli-sl-results-template" name="oli_sl_options[results_template]" placeholder="{{title}} {{address}} {{distance}}"><?php echo esc_textarea( oli_sl_get_option( 'results_template' ) ); ?></textarea>
+			<p class="description"><?php esc_html_e( 'Optional HTML with {{title}}, {{address}}, {{city}}, {{phone}}, {{hours}}, {{distance}}, {{url}}, {{permalink}}, {{status}} placeholders. Leave blank for the default list.', 'oli-store-locator' ); ?></p>
+		</td>
+	</tr>
+	<tr>
+		<th scope="row"><label for="oli-sl-infowindow-template"><?php esc_html_e( 'Info window template', 'oli-store-locator' ); ?></label></th>
+		<td>
+			<textarea class="large-text code" rows="5" id="oli-sl-infowindow-template" name="oli_sl_options[infowindow_template]"><?php echo esc_textarea( oli_sl_get_option( 'infowindow_template' ) ); ?></textarea>
 		</td>
 	</tr>
 	<tr>

@@ -15,6 +15,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Oli_SL_Settings {
 
 	/**
+	 * Settings tabs in the same order as the reference store locator.
+	 *
+	 * @return array
+	 */
+	public static function tabs() {
+		return array(
+			'api'     => __( 'API', 'oli-store-locator' ),
+			'search'  => __( 'Search', 'oli-store-locator' ),
+			'map'     => __( 'Map', 'oli-store-locator' ),
+			'ux'      => __( 'User Experience', 'oli-store-locator' ),
+			'markers' => __( 'Markers', 'oli-store-locator' ),
+			'editor'  => __( 'Store Editor', 'oli-store-locator' ),
+			'local'   => __( 'Local Pages', 'oli-store-locator' ),
+			'labels'  => __( 'Labels', 'oli-store-locator' ),
+			'tools'   => __( 'Tools', 'oli-store-locator' ),
+			'design'  => __( 'Design', 'oli-store-locator' ),
+			'import'  => __( 'Import / Export', 'oli-store-locator' ),
+			'sync'    => __( 'Google Sheets', 'oli-store-locator' ),
+		);
+	}
+
+	/**
 	 * Add admin menu pages.
 	 */
 	public function add_admin_menu() {
@@ -75,6 +97,21 @@ class Oli_SL_Settings {
 			'max_results_options',
 			'radius_options',
 			'leaflet_attribution',
+			'search_method',
+			'input_placeholder',
+			'sort_by',
+			'sort_order',
+			'category_default',
+			'api_language',
+			'region_restriction_type',
+			'bias_country',
+			'restrict_countries',
+			'marker_effect',
+			'cluster_style',
+			'editor_default_country',
+			'editor_map_type',
+			'editor_default_hours',
+			'infowindow_radius',
 		);
 
 		foreach ( $text_keys as $key ) {
@@ -83,24 +120,16 @@ class Oli_SL_Settings {
 			}
 		}
 
-		$textarea_keys = array(
-			'map_style_json',
-			'custom_css',
-			'infowindow_template',
-			'results_template',
-			'marker_template',
-			'label_search',
-			'label_address',
-			'label_radius',
-			'label_results',
-			'label_category',
-			'label_locate',
-			'label_reset',
-			'label_directions',
-			'label_no_results',
-			'label_phone',
-			'label_hours',
-			'label_website',
+		$textarea_keys = array_merge(
+			array(
+				'map_style_json',
+				'custom_css',
+				'infowindow_template',
+				'results_template',
+				'marker_template',
+				'gdpr_text',
+			),
+			array_keys( oli_sl_label_catalog() )
 		);
 
 		foreach ( $textarea_keys as $key ) {
@@ -126,36 +155,30 @@ class Oli_SL_Settings {
 			}
 		}
 
-		if ( isset( $input['start_lat'] ) ) {
-			$out['start_lat'] = sanitize_text_field( $input['start_lat'] );
-		}
-		if ( isset( $input['start_lng'] ) ) {
-			$out['start_lng'] = sanitize_text_field( $input['start_lng'] );
-		}
-		if ( isset( $input['start_zoom'] ) ) {
-			$out['start_zoom'] = (string) absint( $input['start_zoom'] );
-		}
-		if ( isset( $input['max_results'] ) ) {
-			$out['max_results'] = (string) absint( $input['max_results'] );
-		}
-		if ( isset( $input['search_radius'] ) ) {
-			$out['search_radius'] = (string) absint( $input['search_radius'] );
-		}
-		if ( isset( $input['map_height'] ) ) {
-			$out['map_height'] = sanitize_text_field( $input['map_height'] );
-		}
-		if ( isset( $input['map_width'] ) ) {
-			$out['map_width'] = sanitize_text_field( $input['map_width'] );
-		}
-		if ( isset( $input['cache_duration'] ) ) {
-			$out['cache_duration'] = (string) absint( $input['cache_duration'] );
-		}
-		if ( isset( $input['sheets_batch_size'] ) ) {
-			$out['sheets_batch_size'] = (string) absint( $input['sheets_batch_size'] );
+		$int_keys = array(
+			'start_zoom',
+			'max_results',
+			'search_radius',
+			'cache_duration',
+			'sheets_batch_size',
+			'max_auto_zoom',
+			'cluster_max_zoom',
+			'cluster_size',
+			'sync_log_retention_days',
+		);
+		foreach ( $int_keys as $key ) {
+			if ( isset( $input[ $key ] ) ) {
+				$out[ $key ] = (string) absint( $input[ $key ] );
+			}
 		}
 
-		$colors = array( 'primary_color', 'button_color', 'button_text_color', 'text_color', 'hover_color', 'cluster_color', 'cluster_text_color' );
-		foreach ( $colors as $color ) {
+		foreach ( array( 'start_lat', 'start_lng', 'map_height', 'map_width' ) as $key ) {
+			if ( isset( $input[ $key ] ) ) {
+				$out[ $key ] = sanitize_text_field( $input[ $key ] );
+			}
+		}
+
+		foreach ( oli_sl_color_option_keys() as $color ) {
 			if ( ! isset( $input[ $color ] ) ) {
 				continue;
 			}
@@ -163,25 +186,7 @@ class Oli_SL_Settings {
 			$out[ $color ] = $value ? $value : $defaults[ $color ];
 		}
 
-		$checks = array(
-			'scroll_wheel',
-			'map_controls',
-			'street_view',
-			'auto_locate',
-			'enable_autocomplete',
-			'enable_directions',
-			'in_map_directions',
-			'marker_clustering',
-			'fit_bounds',
-			'search_on_load',
-			'draw_radius',
-			'enable_single_pages',
-			'enable_caching',
-			'nominatim_rate_limit',
-			'sheets_sync_enabled',
-		);
-
-		foreach ( $checks as $check ) {
+		foreach ( oli_sl_checkbox_option_keys() as $check ) {
 			if ( isset( $input[ $check ] ) ) {
 				$out[ $check ] = ( '1' === (string) $input[ $check ] ) ? '1' : '0';
 			}
@@ -198,8 +203,8 @@ class Oli_SL_Settings {
 			}
 			$out['sheets_column_map'] = $map;
 		} else {
-			$existing                 = oli_sl_get_option( 'sheets_column_map', array() );
-			$out['sheets_column_map'] = is_array( $existing ) ? $existing : array();
+			$existing_map             = oli_sl_get_option( 'sheets_column_map', array() );
+			$out['sheets_column_map'] = is_array( $existing_map ) ? $existing_map : array();
 		}
 
 		if ( ! empty( $out['map_style_json'] ) ) {
@@ -207,6 +212,11 @@ class Oli_SL_Settings {
 			if ( null === $decoded && JSON_ERROR_NONE !== json_last_error() ) {
 				add_settings_error( 'oli_sl_options', 'invalid_json', __( 'Custom map style JSON is invalid and was kept as entered. Fix it to apply custom styles.', 'oli-store-locator' ) );
 			}
+		}
+
+		$previous_slug = isset( $existing['store_slug'] ) ? $existing['store_slug'] : '';
+		if ( isset( $input['store_slug'] ) && $previous_slug !== $out['store_slug'] ) {
+			set_transient( 'oli_sl_flush_rewrites', '1', MINUTE_IN_SECONDS );
 		}
 
 		Oli_SL_Search::clear_cache();
@@ -222,19 +232,16 @@ class Oli_SL_Settings {
 			return;
 		}
 
-		$tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- tab switch only.
-		$tabs = array(
-			'general' => __( 'General', 'oli-store-locator' ),
-			'map'     => __( 'Map', 'oli-store-locator' ),
-			'search'  => __( 'Search', 'oli-store-locator' ),
-			'design'  => __( 'Design', 'oli-store-locator' ),
-			'labels'  => __( 'Labels', 'oli-store-locator' ),
-			'import'  => __( 'Import / Export', 'oli-store-locator' ),
-			'sync'    => __( 'Google Sheets', 'oli-store-locator' ),
-		);
+		if ( '1' === (string) get_transient( 'oli_sl_flush_rewrites' ) ) {
+			flush_rewrite_rules();
+			delete_transient( 'oli_sl_flush_rewrites' );
+		}
+
+		$tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'api'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- tab switch only.
+		$tabs = self::tabs();
 
 		if ( ! isset( $tabs[ $tab ] ) ) {
-			$tab = 'general';
+			$tab = 'api';
 		}
 
 		include OLI_SL_PLUGIN_DIR . 'admin/views/settings.php';

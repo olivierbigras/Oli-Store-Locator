@@ -130,11 +130,22 @@ class Oli_SL_Shortcodes {
 
 		$atts = shortcode_atts(
 			array(
-				'radius'      => oli_sl_get_option( 'search_radius', '50' ),
-				'max_results' => oli_sl_get_option( 'max_results', '25' ),
-				'category'    => '',
-				'height'      => oli_sl_get_option( 'map_height', '500' ),
-				'width'       => oli_sl_get_option( 'map_width', '100%' ),
+				'radius'       => oli_sl_get_option( 'search_radius', '50' ),
+				'max_results'  => oli_sl_get_option( 'max_results', '25' ),
+				'category'     => '',
+				'height'       => oli_sl_get_option( 'map_height', '500' ),
+				'width'        => oli_sl_get_option( 'map_width', '100%' ),
+				'zoom'         => '',
+				'map_type'     => '',
+				'auto_locate'  => '',
+				'auto_load'    => '',
+				'results_list' => '',
+				'directions'   => '',
+				'start_lat'    => '',
+				'start_lng'    => '',
+				'name'         => '',
+				'id'           => '',
+				'template'     => '',
 			),
 			$atts,
 			'oli_store_locator'

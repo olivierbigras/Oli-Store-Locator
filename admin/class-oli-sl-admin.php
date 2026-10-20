@@ -57,7 +57,7 @@ class Oli_SL_Admin {
 			return;
 		}
 
-		$needed = ( 'oli_store' === $screen->post_type ) || ( 'oli_store_page_oli-sl-settings' === $screen->id );
+		$needed = ( 'oli_store' === $screen->post_type ) || ( 'oli_store_page_oli-sl-settings' === $screen->id ) || ( 'edit-oli_store_category' === $screen->id );
 		if ( ! $needed ) {
 			return;
 		}
@@ -165,6 +165,60 @@ class Oli_SL_Admin {
 			exit;
 		}
 
+		if ( 'clear_search_cache' === $action ) {
+			Oli_SL_Search::clear_cache();
+			add_settings_error( 'oli_sl_options', 'cache_cleared', __( 'Search cache cleared.', 'oli-store-locator' ), 'updated' );
+			return;
+		}
+
+		if ( 'clear_geocode_cache' === $action ) {
+			Oli_SL_Search::clear_geocode_cache();
+			add_settings_error( 'oli_sl_options', 'geo_cache_cleared', __( 'Geocode cache cleared.', 'oli-store-locator' ), 'updated' );
+			return;
+		}
+
+		if ( 'geocode_missing' === $action ) {
+			$count = $this->geocode_missing_stores();
+			add_settings_error(
+				'oli_sl_options',
+				'geocode_missing',
+				sprintf(
+					/* translators: %d: number of stores */
+					__( 'Geocoded %d stores.', 'oli-store-locator' ),
+					$count
+				),
+				'updated'
+			);
+			return;
+		}
+
+		if ( 'export_settings' === $action ) {
+			$options = get_option( 'oli_sl_options', array() );
+			nocache_headers();
+			header( 'Content-Type: application/json; charset=utf-8' );
+			header( 'Content-Disposition: attachment; filename=oli-store-locator-settings.json' );
+			echo wp_json_encode( $options );
+			exit;
+		}
+
+		if ( 'import_settings' === $action ) {
+			$file = isset( $_FILES['oli_sl_settings_file'] ) ? $_FILES['oli_sl_settings_file'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated below.
+			if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+				add_settings_error( 'oli_sl_options', 'settings_import', __( 'Please choose a JSON settings file.', 'oli-store-locator' ), 'error' );
+				return;
+			}
+			$raw  = file_get_contents( $file['tmp_name'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- temporary uploaded file.
+			$data = json_decode( $raw, true );
+			if ( ! is_array( $data ) ) {
+				add_settings_error( 'oli_sl_options', 'settings_import', __( 'The settings file is not valid JSON.', 'oli-store-locator' ), 'error' );
+				return;
+			}
+			$settings = new Oli_SL_Settings();
+			update_option( 'oli_sl_options', $settings->sanitize_options( $data ) );
+			add_settings_error( 'oli_sl_options', 'settings_import', __( 'Settings imported.', 'oli-store-locator' ), 'updated' );
+			return;
+		}
+
 		if ( 'remove_sync' === $action ) {
 			oli_sl_update_option( 'sheets_sync_enabled', '0' );
 			oli_sl_update_option( 'sheets_url', '' );
@@ -189,8 +243,9 @@ class Oli_SL_Admin {
 		foreach ( $columns as $key => $label ) {
 			$new[ $key ] = $label;
 			if ( 'title' === $key ) {
-				$new['oli_sl_address'] = __( 'Address', 'oli-store-locator' );
-				$new['oli_sl_coords']  = __( 'Coordinates', 'oli-store-locator' );
+				$new['oli_sl_address']  = __( 'Address', 'oli-store-locator' );
+				$new['oli_sl_coords']   = __( 'Coordinates', 'oli-store-locator' );
+				$new['oli_sl_featured'] = __( 'Featured', 'oli-store-locator' );
 			}
 		}
 		return $new;
@@ -214,6 +269,9 @@ class Oli_SL_Admin {
 					)
 				)
 			);
+		}
+		if ( 'oli_sl_featured' === $column ) {
+			echo '1' === (string) oli_sl_get_store_meta( $post_id, 'featured' ) ? esc_html__( 'Yes', 'oli-store-locator' ) : '—';
 		}
 		if ( 'oli_sl_coords' === $column ) {
 			$lat = oli_sl_get_store_meta( $post_id, 'latitude' );
@@ -302,6 +360,98 @@ class Oli_SL_Admin {
 		$sync    = new Oli_SL_Google_Sheets_Sync();
 		$results = $sync->sync();
 		wp_send_json_success( $results );
+	}
+
+	/**
+	 * Admin bar shortcut.
+	 *
+	 * @param WP_Admin_Bar $wp_admin_bar Admin bar.
+	 */
+	public function admin_bar_menu( $wp_admin_bar ) {
+		if ( ! oli_sl_is_enabled( oli_sl_get_option( 'admin_bar_menu', '1' ) ) ) {
+			return;
+		}
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
+
+		$wp_admin_bar->add_node(
+			array(
+				'id'    => 'oli-sl-stores',
+				'title' => __( 'Stores', 'oli-store-locator' ),
+				'href'  => admin_url( 'edit.php?post_type=oli_store' ),
+			)
+		);
+		if ( current_user_can( 'manage_options' ) ) {
+			$wp_admin_bar->add_node(
+				array(
+					'parent' => 'oli-sl-stores',
+					'id'     => 'oli-sl-settings',
+					'title'  => __( 'Settings', 'oli-store-locator' ),
+					'href'   => admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings' ),
+				)
+			);
+		}
+	}
+
+	/**
+	 * Geocode published stores that have no coordinates.
+	 *
+	 * @return int
+	 */
+	private function geocode_missing_stores() {
+		$ids = get_posts(
+			array(
+				'post_type'      => 'oli_store',
+				'post_status'    => 'publish',
+				'posts_per_page' => 25,
+				'fields'         => 'ids',
+				'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- admin tool.
+					'relation' => 'OR',
+					array(
+						'key'     => '_oli_sl_latitude',
+						'compare' => 'NOT EXISTS',
+					),
+					array(
+						'key'     => '_oli_sl_latitude',
+						'value'   => '',
+						'compare' => '=',
+					),
+				),
+			)
+		);
+
+		$count = 0;
+		foreach ( $ids as $store_id ) {
+			$address = oli_sl_join_address(
+				array(
+					oli_sl_get_store_meta( $store_id, 'address' ),
+					oli_sl_get_store_meta( $store_id, 'city' ),
+					oli_sl_get_store_meta( $store_id, 'state' ),
+					oli_sl_get_store_meta( $store_id, 'zip' ),
+					oli_sl_get_store_meta( $store_id, 'country' ),
+				)
+			);
+			if ( '' === $address ) {
+				continue;
+			}
+			$result = Oli_SL_Geocoding::geocode(
+				$address,
+				array(
+					'allow_sleep'      => true,
+					'enforce_ip_limit' => false,
+				)
+			);
+			if ( is_wp_error( $result ) ) {
+				continue;
+			}
+			update_post_meta( $store_id, '_oli_sl_latitude', $result['lat'] );
+			update_post_meta( $store_id, '_oli_sl_longitude', $result['lng'] );
+			++$count;
+		}
+
+		Oli_SL_Search::clear_cache();
+		return $count;
 	}
 
 	/**

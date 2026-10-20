@@ -24,6 +24,7 @@ class Oli_SL_Deactivator {
 		wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_hourly' );
 		wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_daily' );
 		wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_batch' );
+		wp_clear_scheduled_hook( 'oli_sl_purge_sync_log' );
 
 		flush_rewrite_rules();
 	}

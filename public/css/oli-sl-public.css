@@ -154,8 +154,67 @@
 	gap: 1.5rem;
 }
 
+.oli-sl-infowindow {
+	background: var(--oli-sl-infowindow-bg, #fff);
+	color: var(--oli-sl-infowindow-text, #333);
+	border-radius: var(--oli-sl-infowindow-radius, 8px);
+	box-shadow: var(--oli-sl-infowindow-shadow, 0 4px 16px rgba(0, 0, 0, 0.15));
+	padding: 0.5rem 0.15rem;
+	max-width: 16rem;
+}
+
 .oli-sl-infowindow h3 {
 	margin: 0 0 0.35rem;
+}
+
+.oli-sl-infowindow img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin-bottom: 0.4rem;
+}
+
+.oli-sl-hide-list .oli-sl-results {
+	display: none;
+}
+
+.oli-sl-hide-map:not(.oli-sl-has-searched) .oli-sl-map {
+	display: none;
+}
+
+.oli-sl-consent {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	padding: 1rem;
+	margin-bottom: 1rem;
+}
+
+.oli-sl-result.is-featured {
+	border-left: 4px solid var(--oli-sl-featured, #c45c26);
+}
+
+.oli-sl-status-open {
+	color: #1a7f37;
+	font-weight: 600;
+}
+
+.oli-sl-status-closed {
+	color: #b32d2e;
+	font-weight: 600;
+}
+
+.oli-sl-cat-dot {
+	display: inline-block;
+	width: 0.65rem;
+	height: 0.65rem;
+	border-radius: 50%;
+	margin-right: 0.25rem;
+	vertical-align: middle;
+}
+
+.oli-sl-count {
+	margin: 0 0 0.5rem;
+	font-size: 0.95em;
 }
 
 @media (max-width: 782px) {

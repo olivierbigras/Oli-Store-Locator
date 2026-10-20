@@ -50,6 +50,21 @@ class Oli_SL_Google_Sheets_Sync {
 	public function sync() {
 		update_option( 'oli_sl_sheets_last_checked', time() );
 
+		if ( ! Oli_SL_Sync_Lock::acquire() ) {
+			$results = array(
+				'success' => false,
+				'message' => __( 'A sync is already running. Try again in a few minutes.', 'oli-store-locator' ),
+				'created' => 0,
+				'updated' => 0,
+				'skipped' => 0,
+				'deleted' => 0,
+				'errors'  => array( __( 'A sync is already running. Try again in a few minutes.', 'oli-store-locator' ) ),
+			);
+			update_option( 'oli_sl_sheets_sync_results', $results );
+			Oli_SL_Sync_Log::record( $results );
+			return $results;
+		}
+
 		$fetched = $this->fetch_sheet();
 		if ( is_wp_error( $fetched ) ) {
 			$this->log_sync_error( $fetched->get_error_message() );
@@ -63,6 +78,8 @@ class Oli_SL_Google_Sheets_Sync {
 				'errors'  => array( $fetched->get_error_message() ),
 			);
 			update_option( 'oli_sl_sheets_sync_results', $results );
+			Oli_SL_Sync_Log::record( $results );
+			Oli_SL_Sync_Lock::release();
 			return $results;
 		}
 
@@ -100,7 +117,9 @@ class Oli_SL_Google_Sheets_Sync {
 			update_option( 'oli_sl_sheets_sync_results', $state );
 			delete_transient( 'oli_sl_sheets_sync_batches' );
 			delete_transient( 'oli_sl_sheets_sync_state' );
+			Oli_SL_Sync_Log::record( $state );
 			Oli_SL_Search::clear_cache();
+			Oli_SL_Sync_Lock::release();
 			return $state;
 		}
 
@@ -113,6 +132,7 @@ class Oli_SL_Google_Sheets_Sync {
 	 * @return array
 	 */
 	public function process_batch() {
+		Oli_SL_Sync_Lock::acquire();
 		$batches = get_transient( 'oli_sl_sheets_sync_batches' );
 		$state   = get_transient( 'oli_sl_sheets_sync_state' );
 
@@ -123,10 +143,12 @@ class Oli_SL_Google_Sheets_Sync {
 					: __( 'Sync completed.', 'oli-store-locator' );
 				update_option( 'oli_sl_sheets_last_sync', time() );
 				update_option( 'oli_sl_sheets_sync_results', $state );
+				Oli_SL_Sync_Log::record( $state );
 			}
 			delete_transient( 'oli_sl_sheets_sync_batches' );
 			delete_transient( 'oli_sl_sheets_sync_state' );
 			Oli_SL_Search::clear_cache();
+			Oli_SL_Sync_Lock::release();
 			return is_array( $state ) ? $state : array( 'success' => true );
 		}
 
@@ -177,7 +199,9 @@ class Oli_SL_Google_Sheets_Sync {
 			update_option( 'oli_sl_sheets_sync_results', $state );
 			delete_transient( 'oli_sl_sheets_sync_batches' );
 			delete_transient( 'oli_sl_sheets_sync_state' );
+			Oli_SL_Sync_Log::record( $state );
 			Oli_SL_Search::clear_cache();
+			Oli_SL_Sync_Lock::release();
 			return $state;
 		}
 

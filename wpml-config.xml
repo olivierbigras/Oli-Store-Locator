@@ -32,6 +32,26 @@
 			<key name="label_phone" />
 			<key name="label_hours" />
 			<key name="label_website" />
+			<key name="label_your_location" />
+			<key name="label_store_name" />
+			<key name="label_category_first" />
+			<key name="label_adjust_search" />
+			<key name="label_preloader" />
+			<key name="label_more_info" />
+			<key name="label_fax" />
+			<key name="label_email" />
+			<key name="label_url" />
+			<key name="label_more_details" />
+			<key name="label_start_location" />
+			<key name="label_get_directions" />
+			<key name="label_street_view" />
+			<key name="label_zoom_here" />
+			<key name="label_number_results" />
+			<key name="label_number_results_one" />
+			<key name="label_open" />
+			<key name="label_closed" />
+			<key name="label_consent" />
+			<key name="gdpr_text" />
 		</key>
 	</admin-texts>
 </wpml-config>

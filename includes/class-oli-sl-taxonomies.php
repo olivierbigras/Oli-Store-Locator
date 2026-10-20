@@ -96,6 +96,11 @@ class Oli_SL_Taxonomies {
 			<input type="url" name="oli_sl_marker_icon" id="oli_sl_marker_icon" value="" />
 			<p class="description"><?php esc_html_e( 'Enter the URL of a custom marker icon for this category.', 'oli-store-locator' ); ?></p>
 		</div>
+		<div class="form-field">
+			<label for="oli_sl_color"><?php esc_html_e( 'Color', 'oli-store-locator' ); ?></label>
+			<input type="text" class="oli-sl-color" name="oli_sl_color" id="oli_sl_color" value="#0073aa" />
+			<p class="description"><?php esc_html_e( 'Shown as a dot in the category filter and in the Color column.', 'oli-store-locator' ); ?></p>
+		</div>
 		<?php
 	}
 
@@ -106,6 +111,7 @@ class Oli_SL_Taxonomies {
 	 */
 	public function edit_category_marker_field( $term ) {
 		$marker_icon = get_term_meta( $term->term_id, 'oli_sl_marker_icon', true );
+		$color       = get_term_meta( $term->term_id, 'oli_sl_color', true );
 		wp_nonce_field( 'oli_sl_save_category_marker', 'oli_sl_category_marker_nonce' );
 		?>
 		<tr class="form-field">
@@ -115,6 +121,15 @@ class Oli_SL_Taxonomies {
 			<td>
 				<input type="url" name="oli_sl_marker_icon" id="oli_sl_marker_icon" value="<?php echo esc_attr( $marker_icon ); ?>" class="regular-text" />
 				<p class="description"><?php esc_html_e( 'Enter the URL of a custom marker icon for this category.', 'oli-store-locator' ); ?></p>
+			</td>
+		</tr>
+		<tr class="form-field">
+			<th scope="row">
+				<label for="oli_sl_color"><?php esc_html_e( 'Color', 'oli-store-locator' ); ?></label>
+			</th>
+			<td>
+				<input type="text" class="oli-sl-color" name="oli_sl_color" id="oli_sl_color" value="<?php echo esc_attr( $color ? $color : '#0073aa' ); ?>" />
+				<p class="description"><?php esc_html_e( 'Shown as a dot in the category filter and in the Color column.', 'oli-store-locator' ); ?></p>
 			</td>
 		</tr>
 		<?php
@@ -142,5 +157,44 @@ class Oli_SL_Taxonomies {
 		if ( isset( $_POST['oli_sl_marker_icon'] ) ) {
 			update_term_meta( $term_id, 'oli_sl_marker_icon', esc_url_raw( wp_unslash( $_POST['oli_sl_marker_icon'] ) ) );
 		}
+
+		if ( isset( $_POST['oli_sl_color'] ) ) {
+			$color = sanitize_hex_color( wp_unslash( $_POST['oli_sl_color'] ) );
+			if ( $color ) {
+				update_term_meta( $term_id, 'oli_sl_color', $color );
+			}
+		}
+	}
+
+	/**
+	 * Category list columns.
+	 *
+	 * @param array $columns Columns.
+	 * @return array
+	 */
+	public function category_columns( $columns ) {
+		$columns['oli_sl_color'] = __( 'Color', 'oli-store-locator' );
+		return $columns;
+	}
+
+	/**
+	 * Category list column content.
+	 *
+	 * @param string $content Content.
+	 * @param string $column  Column.
+	 * @param int    $term_id Term ID.
+	 * @return string
+	 */
+	public function category_column_content( $content, $column, $term_id ) {
+		if ( 'oli_sl_color' !== $column ) {
+			return $content;
+		}
+
+		$color = get_term_meta( $term_id, 'oli_sl_color', true );
+		if ( ! $color ) {
+			return '—';
+		}
+
+		return '<span class="oli-sl-cat-dot" style="display:inline-block;width:12px;height:12px;border-radius:50%;background:' . esc_attr( $color ) . ';"></span> ' . esc_html( $color );
 	}
 }

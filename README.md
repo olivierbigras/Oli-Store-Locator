@@ -7,7 +7,7 @@ WordPress plugin: searchable store locator with Google Maps or free Leaflet/Open
 - **Repository:** https://github.com/olivierbigras/Oli-Store-Locator
 - **License:** GPLv2 or later
 - **Requires:** WordPress 6.5+, PHP 7.4+
-- **Version:** 0.1.1
+- **Version:** 0.2.0
 
 See [`readme.txt`](readme.txt) for the full WordPress.org description, including the **External services** section.
 
@@ -30,9 +30,9 @@ CI runs `php -l`, PHPCS (WordPress standard), and the unit tests on PHP 7.4, 8.1
 
 ## Known gaps
 
-Documented in the pull request versus WP Store Locator and Storepoint.co. Highlights:
+Documented in FEATURE-MAP.md versus the wordpress.org locator (slug `wp-store-locator`). Highlights:
 
-- No paid add-ons, analytics, or Storepoint dashboard UI.
+- No paid add-ons or analytics dashboard.
 - Google in-map directions require the Directions API; Leaflet uses an external directions link only.
 - Nominatim is rate-limited to 1 request/second.
 - Custom fields beyond the mapped store columns are not synced from Sheets.

@@ -23,6 +23,7 @@ class Oli_SL_Ajax {
 		$lat         = isset( $_POST['lat'] ) ? sanitize_text_field( wp_unslash( $_POST['lat'] ) ) : '';
 		$lng         = isset( $_POST['lng'] ) ? sanitize_text_field( wp_unslash( $_POST['lng'] ) ) : '';
 		$address     = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
+		$name        = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
 		$radius      = isset( $_POST['radius'] ) ? absint( $_POST['radius'] ) : (int) oli_sl_get_option( 'search_radius', '50' );
 		$max_results = isset( $_POST['max_results'] ) ? absint( $_POST['max_results'] ) : (int) oli_sl_get_option( 'max_results', '25' );
 
@@ -36,7 +37,18 @@ class Oli_SL_Ajax {
 			}
 		}
 
-		if ( ! empty( $address ) && ( '' === $lat || '' === $lng ) ) {
+		if ( oli_sl_is_enabled( oli_sl_get_option( 'force_postalcode', '0' ) ) && '' !== $address ) {
+			$address = preg_replace( '/[^0-9A-Za-z\s-]/', '', $address );
+		}
+
+		$country = '';
+		if ( 'restrict' === oli_sl_get_option( 'region_restriction_type', 'bias' ) ) {
+			$country = oli_sl_get_option( 'restrict_countries', '' );
+		} elseif ( oli_sl_get_option( 'bias_country' ) ) {
+			$country = oli_sl_get_option( 'bias_country' );
+		}
+
+		if ( 'name' !== oli_sl_get_option( 'search_method', 'geocode' ) && ! empty( $address ) && ( '' === $lat || '' === $lng ) ) {
 			$geocoded = Oli_SL_Geocoding::geocode(
 				$address,
 				array(
@@ -62,6 +74,9 @@ class Oli_SL_Ajax {
 				'radius'      => $radius,
 				'max_results' => $max_results,
 				'category'    => $category,
+				'name'        => $name ? $name : $address,
+				'search'      => $address ? $address : $name,
+				'country'     => $country,
 			)
 		);
 

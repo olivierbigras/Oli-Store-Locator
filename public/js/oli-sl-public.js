@@ -44,25 +44,71 @@
 		return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(lat + ',' + lng);
 	}
 
-	function storeHtml(store, labels) {
+	function linkTarget() {
+		return settings.openLinksNewWindow ? ' target="_blank" rel="noopener noreferrer"' : '';
+	}
+
+	function applyTemplate(tpl, store, labels) {
 		var unit = store.unit === 'mi' ? labels.mi : labels.km;
-		var html = '<article class="oli-sl-result" data-id="' + store.id + '">';
-		html += '<h3>' + escapeHtml(store.title) + '</h3>';
-		if (store.distance) {
+		var status = store.hours_status === 'open' ? labels.open : store.hours_status === 'closed' ? labels.closed : '';
+		var map = {
+			title: store.title || '',
+			address: store.address || '',
+			city: store.city || '',
+			phone: store.phone || '',
+			hours: store.hours_display || store.hours || '',
+			distance: store.distance ? store.distance + ' ' + unit : '',
+			url: store.url || '',
+			permalink: store.permalink || '',
+			status: status
+		};
+		return tpl.replace(/\{\{(\w+)\}\}/g, function (_, key) {
+			return escapeHtml(map[key] || '');
+		});
+	}
+
+	function storeHtml(store, labels) {
+		if (settings.resultsTemplate) {
+			return '<article class="oli-sl-result' + (store.featured ? ' is-featured' : '') + '" data-id="' + store.id + '">' + applyTemplate(settings.resultsTemplate, store, labels) + '</article>';
+		}
+		var unit = store.unit === 'mi' ? labels.mi : labels.km;
+		var parts = [store.address, store.city, store.state, store.zip];
+		if (!settings.hideCountry) {
+			parts.push(store.country);
+		}
+		var html = '<article class="oli-sl-result' + (store.featured ? ' is-featured' : '') + '" data-id="' + store.id + '">';
+		var title = escapeHtml(store.title);
+		if (settings.clickableStoreName && (store.url || (settings.enableSingle && store.permalink))) {
+			title = '<a href="' + escapeHtml(store.url || store.permalink) + '"' + linkTarget() + '>' + title + '</a>';
+		}
+		html += '<h3>' + title + '</h3>';
+		if (store.hours_status && settings.showHourStatus) {
+			html += '<div class="oli-sl-status-' + escapeHtml(store.hours_status) + '">' + escapeHtml(store.hours_status === 'open' ? labels.open : labels.closed) + '</div>';
+		}
+		if (store.distance && !settings.hideDistance) {
 			html += '<div class="oli-sl-result-distance">' + escapeHtml(store.distance) + ' ' + escapeHtml(unit) + '</div>';
 		}
-		html += '<div>' + escapeHtml([store.address, store.city, store.state, store.zip].filter(Boolean).join(', ')) + '</div>';
-		if (store.phone) {
-			html += '<div>' + escapeHtml(labels.phone) + ': ' + escapeHtml(store.phone) + '</div>';
+		html += '<div>' + escapeHtml(parts.filter(Boolean).join(', ')) + '</div>';
+		if (settings.showCategories && store.categories && store.categories.length) {
+			html += '<div>';
+			store.categories.forEach(function (name) {
+				var color = store.category_colors && store.category_colors[name];
+				html += (color ? '<span class="oli-sl-cat-dot" style="background:' + escapeHtml(color) + '"></span>' : '') + escapeHtml(name) + ' ';
+			});
+			html += '</div>';
 		}
-		if (store.hours) {
-			html += '<div>' + escapeHtml(labels.hours) + ': ' + escapeHtml(store.hours) + '</div>';
+		if (store.phone) {
+			var phone = settings.clickablePhone || settings.clickableContact ? '<a href="tel:' + escapeHtml(store.phone) + '">' + escapeHtml(store.phone) + '</a>' : escapeHtml(store.phone);
+			html += '<div>' + escapeHtml(labels.phone) + ': ' + phone + '</div>';
+		}
+		if (store.hours_display || store.hours) {
+			html += '<div>' + escapeHtml(labels.hours) + ': ' + escapeHtml(store.hours_display || store.hours) + '</div>';
 		}
 		if (store.url) {
-			html += '<div><a href="' + escapeHtml(store.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(labels.website) + '</a></div>';
+			html += '<div><a href="' + escapeHtml(store.url) + '"' + linkTarget() + '>' + escapeHtml(labels.website) + '</a></div>';
 		}
 		if (settings.directions) {
-			html += '<div><a class="oli-sl-directions" href="' + directionsUrl(store.latitude, store.longitude) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(labels.directions) + '</a></div>';
+			html += '<div><a class="oli-sl-directions" href="' + directionsUrl(store.latitude, store.longitude) + '"' + linkTarget() + '>' + escapeHtml(labels.directions) + '</a></div>';
 		}
 		if (settings.enableSingle && store.permalink) {
 			html += '<div><a href="' + escapeHtml(store.permalink) + '">' + escapeHtml(labels.moreDetails) + '</a></div>';
@@ -72,18 +118,29 @@
 	}
 
 	function infoHtml(store, labels) {
-		return (
-			'<div class="oli-sl-infowindow"><h3>' +
-			escapeHtml(store.title) +
-			'</h3><p>' +
-			escapeHtml([store.address, store.city, store.state, store.zip].filter(Boolean).join(', ')) +
-			'</p>' +
-			(store.phone ? '<p>' + escapeHtml(store.phone) + '</p>' : '') +
-			(settings.directions
-				? '<p><a href="' + directionsUrl(store.latitude, store.longitude) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(labels.directions) + '</a></p>'
-				: '') +
-			'</div>'
-		);
+		if (settings.infowindowTemplate) {
+			return '<div class="oli-sl-infowindow">' + applyTemplate(settings.infowindowTemplate, store, labels) + '</div>';
+		}
+		var parts = [store.address, store.city, store.state, store.zip];
+		if (!settings.hideCountry) {
+			parts.push(store.country);
+		}
+		var html = '<div class="oli-sl-infowindow">';
+		if (settings.infowindowThumbnail && store.thumbnail) {
+			html += '<img src="' + escapeHtml(store.thumbnail) + '" alt="" />';
+		}
+		html += '<h3>' + escapeHtml(store.title) + '</h3><p>' + escapeHtml(parts.filter(Boolean).join(', ')) + '</p>';
+		if (store.phone) {
+			html += '<p>' + escapeHtml(store.phone) + '</p>';
+		}
+		if (settings.directions) {
+			html += '<p><a href="' + directionsUrl(store.latitude, store.longitude) + '"' + linkTarget() + '>' + escapeHtml(labels.directions) + '</a></p>';
+		}
+		if (settings.showStreetView) {
+			html += '<p><a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + encodeURIComponent(store.latitude + ',' + store.longitude) + '"' + linkTarget() + '>' + escapeHtml(labels.streetView) + '</a></p>';
+		}
+		html += '</div>';
+		return html;
 	}
 
 	function request(action, data) {
@@ -129,12 +186,41 @@
 		this.cluster = null;
 		this.circle = null;
 		this.origin = { lat: settings.startLat, lng: settings.startLng };
-		this.initMap();
-		this.bind();
-		if (settings.searchOnLoad) {
-			this.search({});
+		if (el.getAttribute('data-start-lat')) {
+			this.origin.lat = parseFloat(el.getAttribute('data-start-lat'));
 		}
-		this.initSingleMaps();
+		if (el.getAttribute('data-start-lng')) {
+			this.origin.lng = parseFloat(el.getAttribute('data-start-lng'));
+		}
+		if (el.getAttribute('data-zoom')) {
+			settings.startZoom = parseInt(el.getAttribute('data-zoom'), 10);
+		}
+		if (el.getAttribute('data-directions') === 'false') {
+			settings.directions = false;
+		}
+		this.searchMethod = el.getAttribute('data-search-method') || settings.searchMethod || 'geocode';
+		this.consented = !settings.gdprConsent;
+		if (this.consented) {
+			this.initMap();
+		}
+		this.bind();
+		if (settings.queryAddress && this.addressInput) {
+			this.addressInput.value = settings.queryAddress;
+		}
+		if (settings.queryName && this.addressInput && this.searchMethod === 'name') {
+			this.addressInput.value = settings.queryName;
+		}
+		if (this.consented && settings.searchOnLoad && !settings.hideMapUntilSearch) {
+			this.search({});
+		} else if (this.addressInput && this.addressInput.value) {
+			this.searchFromForm();
+		}
+		if (this.consented) {
+			this.initSingleMaps();
+		}
+		if (settings.mouseFocus && this.addressInput && window.matchMedia && !window.matchMedia('(max-width: 782px)').matches) {
+			this.addressInput.focus();
+		}
 	}
 
 	Locator.prototype.bind = function () {
@@ -166,6 +252,21 @@
 						self.setStatus(settings.labels.geoDenied);
 					}
 				);
+			});
+		}
+		var consentBtn = this.el.querySelector('.oli-sl-consent-btn');
+		if (consentBtn) {
+			consentBtn.addEventListener('click', function () {
+				self.consented = true;
+				var banner = self.el.querySelector('.oli-sl-consent');
+				if (banner) {
+					banner.hidden = true;
+				}
+				self.initMap();
+				self.initSingleMaps();
+				if (settings.searchOnLoad) {
+					self.search({});
+				}
 			});
 		}
 		if (settings.autocomplete && this.addressInput) {
@@ -203,7 +304,10 @@
 				return box.value;
 			});
 		}
-		if (this.origin && !data.address) {
+		if (this.searchMethod === 'name') {
+			data.name = data.address;
+		}
+		if (this.origin && !data.address && this.searchMethod !== 'name') {
 			data.lat = this.origin.lat;
 			data.lng = this.origin.lng;
 		}
@@ -212,10 +316,11 @@
 
 	Locator.prototype.search = function (data) {
 		var self = this;
+		this.el.classList.add('oli-sl-has-searched');
 		this.setStatus(settings.labels.loading);
-		if (!data.lat && !data.lng && !data.address) {
-			data.lat = settings.startLat;
-			data.lng = settings.startLng;
+		if (this.searchMethod !== 'name' && !data.lat && !data.lng && !data.address && !data.name) {
+			data.lat = this.origin.lat || settings.startLat;
+			data.lng = this.origin.lng || settings.startLng;
 		}
 		request('oli_sl_search_stores', data).then(function (json) {
 			if (!json || !json.success) {
@@ -237,9 +342,21 @@
 		var self = this;
 		var labels = settings.labels || {};
 		if (!stores.length) {
-			this.setStatus(labels.noResults);
+			var empty = labels.noResults;
+			if (labels.adjustSearch) {
+				empty += ' ' + labels.adjustSearch;
+			}
+			this.setStatus(empty);
 			this.setMarkers([]);
 			return;
+		}
+		if (settings.showNumberResults) {
+			var countEl = this.el.querySelector('.oli-sl-count');
+			if (countEl) {
+				var tpl = stores.length === 1 ? labels.numberResult : labels.numberResults;
+				countEl.hidden = false;
+				countEl.textContent = (tpl || '{number}').replace('{number}', String(stores.length));
+			}
 		}
 		this.resultsEl.innerHTML = stores.map(function (store) {
 			return storeHtml(store, labels);
@@ -249,6 +366,13 @@
 				self.focusStore(stores[index]);
 			});
 			item.addEventListener('mouseenter', function () {
+				if (settings.markerEffect === 'ignore') {
+					return;
+				}
+				if (settings.markerEffect === 'info_window') {
+					self.focusStore(stores[index]);
+					return;
+				}
 				self.bounce(stores[index]);
 			});
 		});
@@ -277,6 +401,9 @@
 					self.origin = { lat: parseFloat(li.getAttribute('data-lat')), lng: parseFloat(li.getAttribute('data-lng')) };
 				}
 				self.hideAutocomplete();
+				if (settings.autosubmit) {
+					self.searchFromForm();
+				}
 			});
 		});
 	};
@@ -316,6 +443,8 @@
 		window.L.tileLayer(tiles.url, { attribution: tiles.attribution }).addTo(this.map);
 		if (settings.clustering && window.L.markerClusterGroup) {
 			this.cluster = window.L.markerClusterGroup({
+				maxClusterRadius: settings.clusterSize || 80,
+				disableClusteringAtZoom: settings.clusterMaxZoom || 16,
 				iconCreateFunction: function (cluster) {
 					var color = settings.clusterColor || '#0073aa';
 					var text = settings.clusterTextColor || '#fff';
@@ -406,6 +535,17 @@
 	Locator.prototype.setLeafletMarkers = function (stores, radius) {
 		var self = this;
 		var bounds = window.L.latLngBounds([]);
+		if (!settings.hideStartMarker && this.origin) {
+			var start = window.L.marker([this.origin.lat, this.origin.lng], { zIndexOffset: settings.startMarkerOnTop ? 1000 : 0, title: (settings.labels && settings.labels.startLocation) || '' });
+			if (!(settings.clustering && settings.clusterExcludeStart === false)) {
+				start.addTo(this.map);
+			} else if (this.cluster) {
+				this.cluster.addLayer(start);
+			} else {
+				start.addTo(this.map);
+			}
+			this.markers.push(start);
+		}
 		stores.forEach(function (store) {
 			var latlng = [parseFloat(store.latitude), parseFloat(store.longitude)];
 			var opts = {};
