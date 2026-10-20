@@ -45,8 +45,12 @@ jobs:
       - name: Plugin Check
         uses: wordpress/plugin-check-action@v1
         with:
+          slug: oli-store-locator
           exclude-directories: tests,vendor,.github,bin
-          ignore-codes: latest_wordpress_version_tested
+          exclude-files: phpcs.xml.dist,.gitignore,FEATURE-MAP.md,CHANGELOG.md,composer.json,composer.lock
+          ignore-codes: |
+            latest_wordpress_version_tested
+            PluginCheck.CodeAnalysis.Offloading.OffloadedContent
 
   zip:
     name: Plugin ZIP
@@ -58,7 +62,20 @@ jobs:
       - name: Build ZIP and checksum
         run: |
           mkdir -p dist
-          rsync -a --exclude '.git' --exclude '.github' --exclude 'vendor' --exclude 'tests' --exclude 'dist' --exclude '.cursor' ./ dist/oli-store-locator/
+          rsync -a \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude 'vendor' \
+            --exclude 'tests' \
+            --exclude 'bin' \
+            --exclude 'dist' \
+            --exclude '.cursor' \
+            --exclude 'phpcs.xml.dist' \
+            --exclude 'composer.json' \
+            --exclude 'composer.lock' \
+            --exclude 'FEATURE-MAP.md' \
+            --exclude '.gitignore' \
+            ./ dist/oli-store-locator/
           cd dist
           zip -r oli-store-locator.zip oli-store-locator
           md5sum oli-store-locator.zip | tee oli-store-locator.zip.md5
