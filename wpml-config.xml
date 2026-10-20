@@ -1,0 +1,37 @@
+<wpml-config>
+	<custom-types>
+		<custom-type translate="1">oli_store</custom-type>
+	</custom-types>
+	<taxonomies>
+		<taxonomy translate="1">oli_store_category</taxonomy>
+		<taxonomy translate="1">oli_store_tag</taxonomy>
+	</taxonomies>
+	<custom-fields>
+		<custom-field action="translate">_oli_sl_address</custom-field>
+		<custom-field action="translate">_oli_sl_city</custom-field>
+		<custom-field action="translate">_oli_sl_state</custom-field>
+		<custom-field action="translate">_oli_sl_hours</custom-field>
+		<custom-field action="translate">_oli_sl_description</custom-field>
+		<custom-field action="copy">_oli_sl_latitude</custom-field>
+		<custom-field action="copy">_oli_sl_longitude</custom-field>
+		<custom-field action="copy">_oli_sl_phone</custom-field>
+		<custom-field action="copy">_oli_sl_email</custom-field>
+		<custom-field action="copy">_oli_sl_url</custom-field>
+	</custom-fields>
+	<admin-texts>
+		<key name="oli_sl_options">
+			<key name="label_search" />
+			<key name="label_address" />
+			<key name="label_radius" />
+			<key name="label_results" />
+			<key name="label_category" />
+			<key name="label_locate" />
+			<key name="label_reset" />
+			<key name="label_directions" />
+			<key name="label_no_results" />
+			<key name="label_phone" />
+			<key name="label_hours" />
+			<key name="label_website" />
+		</key>
+	</admin-texts>
+</wpml-config>

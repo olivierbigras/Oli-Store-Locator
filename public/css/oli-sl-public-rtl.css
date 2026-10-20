@@ -1,0 +1,21 @@
+.rtl .oli-sl-search-row,
+.rtl .oli-sl-actions {
+	flex-direction: row-reverse;
+}
+
+.rtl .oli-sl-layout-left .oli-sl-body {
+	flex-direction: row;
+}
+
+.rtl .oli-sl-layout-right .oli-sl-body {
+	flex-direction: row-reverse;
+}
+
+.rtl .oli-sl-autocomplete {
+	left: auto;
+	right: 0;
+}
+
+.rtl .oli-sl-result {
+	text-align: right;
+}
