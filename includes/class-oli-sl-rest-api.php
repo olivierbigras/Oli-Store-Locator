@@ -62,7 +62,7 @@ class Oli_SL_Rest_API {
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'geocode_address' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'geocode_permissions' ),
 				'args'                => array(
 					'address' => array(
 						'required'          => true,
@@ -71,6 +71,48 @@ class Oli_SL_Rest_API {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Restrict /geocode to administrators or a valid wp_rest nonce.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return true|WP_Error
+	 */
+	public function geocode_permissions( $request ) {
+		if ( self::can_access_geocode( $request ) ) {
+			return true;
+		}
+
+		$status = function_exists( 'rest_authorization_required_code' ) ? rest_authorization_required_code() : 401;
+
+		return new WP_Error(
+			'rest_forbidden',
+			__( 'Sorry, you are not allowed to geocode addresses.', 'oli-store-locator' ),
+			array( 'status' => $status )
+		);
+	}
+
+	/**
+	 * Whether a REST request may call /geocode.
+	 *
+	 * @param object|null $request Optional request with get_header()/get_param().
+	 * @return bool
+	 */
+	public static function can_access_geocode( $request = null ) {
+		if ( function_exists( 'current_user_can' ) && current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+
+		$nonce = '';
+		if ( is_object( $request ) && method_exists( $request, 'get_header' ) ) {
+			$nonce = (string) $request->get_header( 'X-WP-Nonce' );
+		}
+		if ( '' === $nonce && is_object( $request ) && method_exists( $request, 'get_param' ) ) {
+			$nonce = (string) $request->get_param( '_wpnonce' );
+		}
+
+		return ( '' !== $nonce && function_exists( 'wp_verify_nonce' ) && wp_verify_nonce( $nonce, 'wp_rest' ) );
 	}
 
 	/**
@@ -99,9 +141,17 @@ class Oli_SL_Rest_API {
 		$address = $request->get_param( 'address' );
 
 		if ( ! empty( $address ) && ( empty( $lat ) || empty( $lng ) ) ) {
-			$geocoded = Oli_SL_Geocoding::geocode( $address );
+			$geocoded = Oli_SL_Geocoding::geocode(
+				$address,
+				array(
+					'allow_sleep'      => false,
+					'enforce_ip_limit' => true,
+				)
+			);
 			if ( is_wp_error( $geocoded ) ) {
-				return new WP_Error( 'geocoding_failed', $geocoded->get_error_message(), array( 'status' => 400 ) );
+				$data   = $geocoded->get_error_data();
+				$status = ( is_array( $data ) && isset( $data['status'] ) ) ? (int) $data['status'] : 400;
+				return new WP_Error( $geocoded->get_error_code(), $geocoded->get_error_message(), array( 'status' => $status ) );
 			}
 			$lat = $geocoded['lat'];
 			$lng = $geocoded['lng'];
@@ -135,7 +185,13 @@ class Oli_SL_Rest_API {
 	 */
 	public function geocode_address( $request ) {
 		$address = $request->get_param( 'address' );
-		$result  = Oli_SL_Geocoding::geocode( $address );
+		$result  = Oli_SL_Geocoding::geocode(
+			$address,
+			array(
+				'allow_sleep'      => true,
+				'enforce_ip_limit' => false,
+			)
+		);
 
 		if ( is_wp_error( $result ) ) {
 			return new WP_Error( 'geocoding_failed', $result->get_error_message(), array( 'status' => 400 ) );

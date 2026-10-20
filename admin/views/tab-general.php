@@ -88,7 +88,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<th scope="row"><?php esc_html_e( 'Nominatim rate limit', 'oli-store-locator' ); ?></th>
 		<td>
 			<label><input type="hidden" name="oli_sl_options[nominatim_rate_limit]" value="0" />
-			<input type="checkbox" name="oli_sl_options[nominatim_rate_limit]" value="1" <?php checked( oli_sl_get_option( 'nominatim_rate_limit' ), '1' ); ?> /> <?php esc_html_e( 'Limit Nominatim to 1 request per second (required by OSM usage policy)', 'oli-store-locator' ); ?></label>
+			<input type="checkbox" name="oli_sl_options[nominatim_rate_limit]" value="1" <?php checked( oli_sl_get_option( 'nominatim_rate_limit' ), '1' ); ?> /> <?php esc_html_e( 'Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)', 'oli-store-locator' ); ?></label>
 		</td>
 	</tr>
 </table>

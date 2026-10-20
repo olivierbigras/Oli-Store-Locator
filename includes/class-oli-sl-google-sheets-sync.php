@@ -192,6 +192,31 @@ class Oli_SL_Google_Sheets_Sync {
 	}
 
 	/**
+	 * Whether a URL uses an allowed Google Sheets host.
+	 *
+	 * @param string $url URL.
+	 * @return bool
+	 */
+	public static function is_allowed_host( $url ) {
+		return Oli_SL_CSV_Parser::is_allowed_sheets_host( $url );
+	}
+
+	/**
+	 * GET a Google Sheets URL via wp_safe_remote_get after host checks.
+	 *
+	 * @param string $url  URL.
+	 * @param array  $args Request args.
+	 * @return array|WP_Error
+	 */
+	public static function safe_remote_get( $url, $args = array() ) {
+		if ( ! self::is_allowed_host( $url ) ) {
+			return new WP_Error( 'invalid_host', __( 'The URL is not an allowed Google Sheets host.', 'oli-store-locator' ) );
+		}
+
+		return wp_safe_remote_get( $url, $args );
+	}
+
+	/**
 	 * Fetch CSV rows from the configured Google Sheet.
 	 *
 	 * @return array|WP_Error
@@ -200,6 +225,10 @@ class Oli_SL_Google_Sheets_Sync {
 		$sheet_url = oli_sl_get_option( 'sheets_url', '' );
 		if ( '' === $sheet_url ) {
 			return new WP_Error( 'no_url', __( 'No Google Sheets URL configured.', 'oli-store-locator' ) );
+		}
+
+		if ( ! self::is_allowed_host( $sheet_url ) ) {
+			return new WP_Error( 'invalid_host', __( 'The URL is not an allowed Google Sheets host.', 'oli-store-locator' ) );
 		}
 
 		$api_key = oli_sl_get_option( 'sheets_api_key', '' );
@@ -218,7 +247,7 @@ class Oli_SL_Google_Sheets_Sync {
 				return new WP_Error( 'invalid_url', __( 'Invalid Google Sheets URL.', 'oli-store-locator' ) );
 			}
 
-			$response = wp_remote_get(
+			$response = self::safe_remote_get(
 				$csv_url,
 				array(
 					'timeout' => 30,
@@ -256,6 +285,10 @@ class Oli_SL_Google_Sheets_Sync {
 	 * @return string|WP_Error CSV string or error.
 	 */
 	private function fetch_via_api( $sheet_url, $api_key ) {
+		if ( ! self::is_allowed_host( $sheet_url ) ) {
+			return new WP_Error( 'invalid_host', __( 'The URL is not an allowed Google Sheets host.', 'oli-store-locator' ) );
+		}
+
 		$sheet_id = Oli_SL_CSV_Parser::sheets_id( $sheet_url );
 		if ( ! $sheet_id ) {
 			return new WP_Error( 'invalid_url', __( 'Invalid Google Sheets URL.', 'oli-store-locator' ) );
@@ -270,7 +303,7 @@ class Oli_SL_Google_Sheets_Sync {
 			'https://sheets.googleapis.com/v4/spreadsheets/' . rawurlencode( $sheet_id )
 		);
 
-		$meta = wp_remote_get( $meta_url, array( 'timeout' => 30 ) );
+		$meta = self::safe_remote_get( $meta_url, array( 'timeout' => 30 ) );
 		if ( is_wp_error( $meta ) ) {
 			return $meta;
 		}
@@ -301,7 +334,7 @@ class Oli_SL_Google_Sheets_Sync {
 			)
 		);
 
-		$values = wp_remote_get( $values_url, array( 'timeout' => 30 ) );
+		$values = self::safe_remote_get( $values_url, array( 'timeout' => 30 ) );
 		if ( is_wp_error( $values ) ) {
 			return $values;
 		}

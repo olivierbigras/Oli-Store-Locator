@@ -114,12 +114,14 @@ class Oli_SL_Admin {
 		}
 
 		if ( 'import_csv' === $action ) {
-			if ( empty( $_FILES['oli_sl_csv_file']['tmp_name'] ) ) {
-				add_settings_error( 'oli_sl_options', 'import_missing', __( 'Please choose a CSV file.', 'oli-store-locator' ), 'error' );
+			$file  = isset( $_FILES['oli_sl_csv_file'] ) ? $_FILES['oli_sl_csv_file'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by Oli_SL_CSV_Parser::validate_upload().
+			$valid = Oli_SL_CSV_Parser::validate_upload( $file );
+			if ( is_wp_error( $valid ) ) {
+				add_settings_error( 'oli_sl_options', $valid->get_error_code(), $valid->get_error_message(), 'error' );
 				return;
 			}
 
-			$tmp     = sanitize_text_field( wp_unslash( $_FILES['oli_sl_csv_file']['tmp_name'] ) );
+			$tmp     = $file['tmp_name'];
 			$content = file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- temporary uploaded file.
 			$results = Oli_SL_CSV_Handler::import_stores( $content, true );
 
@@ -239,7 +241,13 @@ class Oli_SL_Admin {
 			wp_send_json_error( array( 'message' => __( 'Address is required.', 'oli-store-locator' ) ) );
 		}
 
-		$result = Oli_SL_Geocoding::geocode( $address );
+		$result = Oli_SL_Geocoding::geocode(
+			$address,
+			array(
+				'allow_sleep'      => true,
+				'enforce_ip_limit' => false,
+			)
+		);
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 		}

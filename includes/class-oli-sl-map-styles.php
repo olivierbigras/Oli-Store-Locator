@@ -111,6 +111,7 @@ class Oli_SL_Map_Styles {
 	 */
 	public static function leaflet_providers() {
 		return array(
+			// Stored option value remains "osm" so existing settings keep working.
 			'osm'         => array(
 				'label'       => __( 'OpenStreetMap', 'oli-store-locator' ),
 				'url'         => 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',

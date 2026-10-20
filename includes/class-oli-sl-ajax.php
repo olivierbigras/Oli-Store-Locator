@@ -37,7 +37,13 @@ class Oli_SL_Ajax {
 		}
 
 		if ( ! empty( $address ) && ( '' === $lat || '' === $lng ) ) {
-			$geocoded = Oli_SL_Geocoding::geocode( $address );
+			$geocoded = Oli_SL_Geocoding::geocode(
+				$address,
+				array(
+					'allow_sleep'      => false,
+					'enforce_ip_limit' => true,
+				)
+			);
 			if ( is_wp_error( $geocoded ) ) {
 				wp_send_json_error(
 					array(

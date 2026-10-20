@@ -5,11 +5,11 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Searchable store locator with Google Maps or free Leaflet/OSM, design controls, CSV import, and Google Sheets sync.
+Searchable store locator with Google Maps or free Leaflet/OpenStreetMap, design controls, CSV import, and Google Sheets sync.
 
 == Description ==
 
@@ -37,11 +37,11 @@ Oli Store Locator lets you publish a store finder that is independently written 
 * Marker clustering, start location / zoom, map type, scroll wheel and controls
 * Theme-overridable templates in `yourtheme/oli-store-locator/`
 * AJAX + REST (`/wp-json/oli-store-locator/v1/search`) with optional result caching
-* Hooks and filters (`oli_sl_*`), RTL styles, FR/EN translations, WPML / TranslatePress friendly
+* Hooks and filters (`oli_sl_*`), RTL styles, EN/fr_FR/fr_CA translations, WPML / TranslatePress friendly
 
 = Design =
 
-* Google style presets or custom JSON; Leaflet tile providers (OSM, Carto, OpenTopo, custom URL)
+* Google style presets or custom JSON; Leaflet tile providers (OpenStreetMap, Carto, OpenTopo, custom URL)
 * Colors for primary, buttons, text, list hover, and clusters
 * Fonts inherit from the theme
 * Marker upload, map height/width, mobile layout, custom CSS
@@ -107,10 +107,19 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.1.1 =
+* Restrict the REST /geocode route to administrators or a valid wp_rest nonce.
+* Cache public geocoding for 30 days and limit external lookups per IP.
+* Validate CSV uploads and only fetch Google Sheets from allowed hosts.
+* Add French (Canada) translations and write OpenStreetMap in full in visible text.
+
 = 0.1.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.1.1 =
+Security and rate-limit fixes for geocoding, CSV import, and Google Sheets.
 
 = 0.1.0 =
 Initial release.

@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Store Locator 0.1.0\n"
+"Project-Id-Version: Oli Store Locator 0.1.1\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
 "MIME-Version: 1.0\n"
@@ -50,4 +50,34 @@ msgid "Remove Sync"
 msgstr ""
 
 msgid "All up to date"
+msgstr ""
+
+msgid "Sorry, you are not allowed to geocode addresses."
+msgstr ""
+
+msgid "Too many geocoding requests. Please try again in a minute."
+msgstr ""
+
+msgid "The geocoding service is busy. Please try again shortly."
+msgstr ""
+
+msgid "The CSV file could not be uploaded."
+msgstr ""
+
+msgid "The uploaded file is not valid."
+msgstr ""
+
+msgid "The CSV file is too large."
+msgstr ""
+
+msgid "Only CSV or TXT files are allowed."
+msgstr ""
+
+msgid "The URL is not an allowed Google Sheets host."
+msgstr ""
+
+msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
+msgstr ""
+
+msgid "OpenStreetMap"
 msgstr ""

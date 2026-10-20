@@ -3,7 +3,7 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Store Locator 0.1.0\n"
+"Project-Id-Version: Oli Store Locator 0.1.1\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
 "PO-Revision-Date: 2026-10-20 00:00+0000\n"
@@ -150,3 +150,33 @@ msgstr "Télécharger le CSV"
 
 msgid "Import CSV"
 msgstr "Importer le CSV"
+
+msgid "Sorry, you are not allowed to geocode addresses."
+msgstr "Désolé, vous n’êtes pas autorisé à géocoder des adresses."
+
+msgid "Too many geocoding requests. Please try again in a minute."
+msgstr "Trop de requêtes de géocodage. Réessayez dans une minute."
+
+msgid "The geocoding service is busy. Please try again shortly."
+msgstr "Le service de géocodage est occupé. Réessayez sous peu."
+
+msgid "The CSV file could not be uploaded."
+msgstr "Le fichier CSV n’a pas pu être téléversé."
+
+msgid "The uploaded file is not valid."
+msgstr "Le fichier téléversé n’est pas valide."
+
+msgid "The CSV file is too large."
+msgstr "Le fichier CSV est trop volumineux."
+
+msgid "Only CSV or TXT files are allowed."
+msgstr "Seuls les fichiers CSV ou TXT sont autorisés."
+
+msgid "The URL is not an allowed Google Sheets host."
+msgstr "L’URL n’appartient pas à un hôte Google Sheets autorisé."
+
+msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
+msgstr "Limiter Nominatim à 1 requête par seconde (exigé par la politique d’utilisation d’OpenStreetMap)"
+
+msgid "OpenStreetMap"
+msgstr "OpenStreetMap"

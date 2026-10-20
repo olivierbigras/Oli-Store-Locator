@@ -111,7 +111,7 @@
 
 	function getTileLayer() {
 		var providers = settings.tileProviders || {};
-		var key = settings.leafletTiles || 'osm';
+		var key = settings.leafletTiles || 'osm'; // stored OpenStreetMap tile key
 		if (key === 'custom' && settings.leafletCustomUrl) {
 			return { url: settings.leafletCustomUrl, attribution: '' };
 		}

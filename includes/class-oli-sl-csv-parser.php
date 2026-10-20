@@ -200,6 +200,110 @@ class Oli_SL_CSV_Parser {
 	}
 
 	/**
+	 * Whether a URL host is an allowed Google Sheets host.
+	 *
+	 * Accepts docs.google.com, sheets.googleapis.com, and *.googleusercontent.com.
+	 *
+	 * @param string $url URL.
+	 * @return bool
+	 */
+	public static function is_allowed_sheets_host( $url ) {
+		$url = trim( (string) $url );
+		if ( '' === $url ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $url );
+		if ( ! is_array( $parts ) ) {
+			return false;
+		}
+
+		$scheme = isset( $parts['scheme'] ) ? strtolower( (string) $parts['scheme'] ) : '';
+		$host   = isset( $parts['host'] ) ? strtolower( (string) $parts['host'] ) : '';
+
+		if ( 'https' !== $scheme || '' === $host ) {
+			return false;
+		}
+
+		if ( in_array( $host, array( 'docs.google.com', 'sheets.googleapis.com' ), true ) ) {
+			return true;
+		}
+
+		$suffix = '.googleusercontent.com';
+		if ( 'googleusercontent.com' === $host || substr( $host, -strlen( $suffix ) ) === $suffix ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Validate an uploaded CSV/TXT file (error, size, type, is_uploaded_file).
+	 *
+	 * @param array $file Uploaded file array from $_FILES.
+	 * @param array $args {
+	 *     Optional arguments.
+	 *
+	 *     @type int  $max_bytes        Maximum size in bytes. Default 2 MB.
+	 *     @type bool $require_uploaded Require is_uploaded_file(). Default true.
+	 * }
+	 * @return true|WP_Error
+	 */
+	public static function validate_upload( $file, $args = array() ) {
+		$defaults = array(
+			'max_bytes'        => 2 * 1024 * 1024,
+			'require_uploaded' => true,
+		);
+		$args     = array_merge( $defaults, is_array( $args ) ? $args : array() );
+
+		if ( function_exists( 'apply_filters' ) ) {
+			$args['max_bytes'] = (int) apply_filters( 'oli_sl_csv_max_bytes', $args['max_bytes'] );
+		}
+
+		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) ) {
+			return new WP_Error( 'import_missing', __( 'Please choose a CSV file.', 'oli-store-locator' ) );
+		}
+
+		if ( isset( $file['error'] ) && UPLOAD_ERR_OK !== (int) $file['error'] ) {
+			return new WP_Error( 'import_error', __( 'The CSV file could not be uploaded.', 'oli-store-locator' ) );
+		}
+
+		$tmp = $file['tmp_name'];
+		if ( ! is_string( $tmp ) || '' === $tmp ) {
+			return new WP_Error( 'import_invalid', __( 'The uploaded file is not valid.', 'oli-store-locator' ) );
+		}
+
+		if ( $args['require_uploaded'] && ! is_uploaded_file( $tmp ) ) {
+			return new WP_Error( 'import_invalid', __( 'The uploaded file is not valid.', 'oli-store-locator' ) );
+		}
+
+		$size = isset( $file['size'] ) ? (int) $file['size'] : 0;
+		if ( $size <= 0 && is_readable( $tmp ) ) {
+			$size = (int) filesize( $tmp );
+		}
+		if ( $size > (int) $args['max_bytes'] ) {
+			return new WP_Error( 'import_too_large', __( 'The CSV file is too large.', 'oli-store-locator' ) );
+		}
+
+		$filename = isset( $file['name'] ) ? (string) $file['name'] : '';
+		$checked  = array(
+			'ext'  => strtolower( (string) pathinfo( $filename, PATHINFO_EXTENSION ) ),
+			'type' => isset( $file['type'] ) ? (string) $file['type'] : '',
+		);
+
+		if ( function_exists( 'wp_check_filetype_and_ext' ) ) {
+			$checked = wp_check_filetype_and_ext( $tmp, $filename );
+		}
+
+		$ext = isset( $checked['ext'] ) ? strtolower( (string) $checked['ext'] ) : '';
+		if ( ! in_array( $ext, array( 'csv', 'txt' ), true ) ) {
+			return new WP_Error( 'import_type', __( 'Only CSV or TXT files are allowed.', 'oli-store-locator' ) );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Convert a Google Sheets share/edit URL to the public CSV export URL.
 	 *
 	 * @param string $url Sheets URL.
@@ -207,6 +311,10 @@ class Oli_SL_CSV_Parser {
 	 */
 	public static function sheets_export_url( $url ) {
 		$url = trim( (string) $url );
+
+		if ( ! self::is_allowed_sheets_host( $url ) ) {
+			return false;
+		}
 
 		if ( ! preg_match( '#/spreadsheets/d/([a-zA-Z0-9-_]+)#', $url, $matches ) ) {
 			return false;

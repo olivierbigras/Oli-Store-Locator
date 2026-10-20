@@ -116,6 +116,10 @@ class Oli_SL_Settings {
 			}
 		}
 
+		if ( isset( $out['sheets_url'] ) && '' !== $out['sheets_url'] && ! Oli_SL_CSV_Parser::is_allowed_sheets_host( $out['sheets_url'] ) ) {
+			$out['sheets_url'] = '';
+		}
+
 		foreach ( array( 'google_api_key', 'google_server_key', 'sheets_api_key' ) as $key ) {
 			if ( isset( $input[ $key ] ) ) {
 				$out[ $key ] = sanitize_text_field( $input[ $key ] );

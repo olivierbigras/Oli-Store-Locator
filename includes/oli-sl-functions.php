@@ -47,7 +47,7 @@ function oli_sl_default_options() {
 		'map_width'             => '100%',
 		'map_style_preset'      => 'default',
 		'map_style_json'        => '',
-		'leaflet_tiles'         => 'osm',
+		'leaflet_tiles'         => 'osm', // Stored OpenStreetMap tile key; do not rename.
 		'leaflet_custom_url'    => '',
 		'leaflet_attribution'   => '',
 		'primary_color'         => '#0073aa',

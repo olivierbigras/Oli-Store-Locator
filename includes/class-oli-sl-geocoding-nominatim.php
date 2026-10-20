@@ -24,11 +24,15 @@ class Oli_SL_Geocoding_Nominatim {
 	/**
 	 * Geocode an address using Nominatim.
 	 *
-	 * @param string $address The address to geocode.
+	 * @param string $address     The address to geocode.
+	 * @param bool   $allow_sleep Whether a public worker may be paused. Never true for public requests.
 	 * @return array|WP_Error Array with 'lat' and 'lng' keys or WP_Error on failure.
 	 */
-	public function geocode( $address ) {
-		$this->rate_limit();
+	public function geocode( $address, $allow_sleep = false ) {
+		$limited = $this->rate_limit( $allow_sleep );
+		if ( is_wp_error( $limited ) ) {
+			return $limited;
+		}
 
 		$url = add_query_arg(
 			array(
@@ -67,12 +71,16 @@ class Oli_SL_Geocoding_Nominatim {
 	/**
 	 * Reverse geocode coordinates using Nominatim.
 	 *
-	 * @param float $lat Latitude.
-	 * @param float $lng Longitude.
+	 * @param float $lat         Latitude.
+	 * @param float $lng         Longitude.
+	 * @param bool  $allow_sleep Whether a public worker may be paused.
 	 * @return string|WP_Error Address or WP_Error on failure.
 	 */
-	public function reverse_geocode( $lat, $lng ) {
-		$this->rate_limit();
+	public function reverse_geocode( $lat, $lng, $allow_sleep = false ) {
+		$limited = $this->rate_limit( $allow_sleep );
+		if ( is_wp_error( $limited ) ) {
+			return $limited;
+		}
 
 		$url = add_query_arg(
 			array(
@@ -108,11 +116,15 @@ class Oli_SL_Geocoding_Nominatim {
 	/**
 	 * Address autocomplete via Nominatim search.
 	 *
-	 * @param string $query Query.
+	 * @param string $query       Query.
+	 * @param bool   $allow_sleep Whether a public worker may be paused.
 	 * @return array|WP_Error
 	 */
-	public function autocomplete( $query ) {
-		$this->rate_limit();
+	public function autocomplete( $query, $allow_sleep = false ) {
+		$limited = $this->rate_limit( $allow_sleep );
+		if ( is_wp_error( $limited ) ) {
+			return $limited;
+		}
 
 		$url = add_query_arg(
 			array(
@@ -158,16 +170,29 @@ class Oli_SL_Geocoding_Nominatim {
 
 	/**
 	 * Rate limiting for Nominatim API (max 1 request per second).
+	 *
+	 * Public requests never sleep: they receive an error so PHP workers stay free.
+	 * Cached results are returned earlier by Oli_SL_Geocoding::geocode().
+	 *
+	 * @param bool $allow_sleep Allow usleep() (admin/cron only).
+	 * @return true|WP_Error
 	 */
-	private function rate_limit() {
+	public function rate_limit( $allow_sleep = false ) {
 		if ( ! oli_sl_get_option( 'nominatim_rate_limit', '1' ) ) {
-			return;
+			return true;
 		}
 
 		$last_request = get_transient( 'oli_sl_nominatim_last_request' );
 		if ( $last_request ) {
 			$elapsed = microtime( true ) - (float) $last_request;
 			if ( $elapsed < 1 ) {
+				if ( ! $allow_sleep ) {
+					return new WP_Error(
+						'nominatim_rate_limited',
+						__( 'The geocoding service is busy. Please try again shortly.', 'oli-store-locator' ),
+						array( 'status' => 429 )
+					);
+				}
 				$wait = (int) ( ( 1 - $elapsed ) * 1000000 );
 				if ( $wait > 0 ) {
 					usleep( $wait );
@@ -175,5 +200,6 @@ class Oli_SL_Geocoding_Nominatim {
 			}
 		}
 		set_transient( 'oli_sl_nominatim_last_request', microtime( true ), 10 );
+		return true;
 	}
 }
