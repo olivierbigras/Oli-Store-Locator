@@ -251,8 +251,8 @@ class Oli_SL_Google_Sheets_Sync {
 			return new WP_Error( 'no_url', __( 'No Google Sheets URL configured.', 'oli-store-locator' ) );
 		}
 
-		if ( ! self::is_allowed_host( $sheet_url ) ) {
-			return new WP_Error( 'invalid_host', __( 'The URL is not an allowed Google Sheets host.', 'oli-store-locator' ) );
+		if ( ! Oli_SL_CSV_Parser::is_valid_sheets_url( $sheet_url ) ) {
+			return new WP_Error( 'invalid_url', __( 'The Google Sheet URL was not saved. Use a https://docs.google.com/spreadsheets/d/… link or a published CSV export URL.', 'oli-store-locator' ) );
 		}
 
 		$api_key = oli_sl_get_option( 'sheets_api_key', '' );

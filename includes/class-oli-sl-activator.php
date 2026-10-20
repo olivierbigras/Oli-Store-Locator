@@ -32,6 +32,9 @@ class Oli_SL_Activator {
 
 		self::set_default_options();
 		self::schedule_sync_cron();
+
+		require_once OLI_SL_PLUGIN_DIR . 'includes/class-oli-sl-rest-api.php';
+		Oli_SL_Rest_API::grant_geocode_capability();
 	}
 
 	/**

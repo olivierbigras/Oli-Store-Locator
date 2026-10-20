@@ -69,6 +69,7 @@ class Oli_SL_Core {
 	private function set_locale() {
 		$plugin_i18n = new Oli_SL_I18n();
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$this->loader->add_action( 'admin_init', 'Oli_SL_Rest_API', 'grant_geocode_capability' );
 	}
 
 	/**

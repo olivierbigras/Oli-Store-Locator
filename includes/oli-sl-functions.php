@@ -383,6 +383,8 @@ function oli_sl_frontend_config() {
 		'clustering'          => (bool) oli_sl_get_option( 'marker_clustering', '1' ),
 		'fitBounds'           => (bool) oli_sl_get_option( 'fit_bounds', '1' ),
 		'searchOnLoad'        => (bool) oli_sl_get_option( 'search_on_load', '1' ),
+		'searchRadius'        => (int) oli_sl_get_option( 'search_radius', '50' ),
+		'maxResults'          => (int) oli_sl_get_option( 'max_results', '25' ),
 		'drawRadius'          => (bool) oli_sl_get_option( 'draw_radius', '1' ),
 		'mapStylePreset'      => oli_sl_get_option( 'map_style_preset', 'default' ),
 		'mapStyleJson'        => oli_sl_get_option( 'map_style_json', '' ),

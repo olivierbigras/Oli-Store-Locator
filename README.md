@@ -24,7 +24,10 @@ See [`readme.txt`](readme.txt) for the full WordPress.org description, including
 php tests/run-tests.php
 composer install
 vendor/bin/phpcs
+php bin/make-php.php fr_CA
 ```
+
+See [`tests/README.md`](tests/README.md) for the QA Google Sheet sample URL.
 
 CI runs `php -l`, PHPCS (WordPress standard), and the unit tests on PHP 7.4, 8.1, and 8.3.
 

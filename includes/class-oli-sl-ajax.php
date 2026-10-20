@@ -57,11 +57,7 @@ class Oli_SL_Ajax {
 				)
 			);
 			if ( is_wp_error( $geocoded ) ) {
-				wp_send_json_error(
-					array(
-						'message' => $geocoded->get_error_message(),
-					)
-				);
+				self::send_geocode_error( $geocoded );
 			}
 			$lat = $geocoded['lat'];
 			$lng = $geocoded['lng'];
@@ -101,11 +97,34 @@ class Oli_SL_Ajax {
 			wp_send_json_success( array() );
 		}
 
-		$result = Oli_SL_Geocoding::autocomplete( $query );
+		$result = Oli_SL_Geocoding::autocomplete(
+			$query,
+			array(
+				'allow_sleep'      => false,
+				'enforce_ip_limit' => true,
+			)
+		);
 		if ( is_wp_error( $result ) ) {
-			wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+			self::send_geocode_error( $result );
 		}
 
 		wp_send_json_success( $result );
+	}
+
+	/**
+	 * Return a geocoding WP_Error, preserving 429 when the IP limit is hit.
+	 *
+	 * @param WP_Error $error Error.
+	 */
+	private static function send_geocode_error( $error ) {
+		$data   = $error->get_error_data();
+		$status = ( is_array( $data ) && isset( $data['status'] ) ) ? (int) $data['status'] : 400;
+		wp_send_json_error(
+			array(
+				'message' => $error->get_error_message(),
+				'code'    => $error->get_error_code(),
+			),
+			$status
+		);
 	}
 }

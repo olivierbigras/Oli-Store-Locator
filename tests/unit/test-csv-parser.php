@@ -21,6 +21,10 @@ class Oli_SL_Test_CSV_Parser {
 		$results[] = self::test_detect_does_not_confuse_lat_lng();
 		$results[] = self::test_map_rows();
 		$results[] = self::test_sheets_export_url();
+		$results[] = self::test_formula_injection_export();
+		$results[] = self::test_formula_injection_import();
+		$results[] = self::test_import_status_whitelist();
+		$results[] = self::test_sheets_url_validated_before_save();
 		return $results;
 	}
 
@@ -141,5 +145,82 @@ class Oli_SL_Test_CSV_Parser {
 		$ok  = 'https://docs.google.com/spreadsheets/d/abc-123_ID/export?format=csv&gid=42' === $out;
 		$bad = false === Oli_SL_CSV_Parser::sheets_export_url( 'https://example.com/not-a-sheet' );
 		return self::assert_true( $ok && $bad, 'Google Sheets share URL converts to public CSV export URL' );
+	}
+
+	/**
+	 * Export prefixes formula-like cells.
+	 *
+	 * @return array
+	 */
+	private static function test_formula_injection_export() {
+		$csv = Oli_SL_CSV_Parser::array_to_csv(
+			array(
+				array( 'Name', 'Hours', 'Notes' ),
+				array( '=HYPERLINK("http://evil")', '+cmd', '-1+1' ),
+				array( '@SUM(A1)', "\tCMD", "\rCMD" ),
+			)
+		);
+		$ok  = false !== strpos( $csv, "'=HYPERLINK" )
+			&& false !== strpos( $csv, "'+cmd" )
+			&& false !== strpos( $csv, "'-1+1" )
+			&& false !== strpos( $csv, "'@SUM" )
+			&& false !== strpos( $csv, "'\tCMD" )
+			&& false !== strpos( $csv, "'\rCMD" );
+		return self::assert_true( $ok, 'CSV export prefixes =, +, -, @, tab and CR cells with an apostrophe' );
+	}
+
+	/**
+	 * Import also neutralizes @ and other formula prefixes.
+	 *
+	 * @return array
+	 */
+	private static function test_formula_injection_import() {
+		$headers = array( 'Name', 'Address' );
+		$rows    = array(
+			array( '=cmd|A1', 'Normal' ),
+			array( '@IMPORT', '+1' ),
+		);
+		$mapped  = Oli_SL_CSV_Parser::map_rows( $rows, $headers );
+		$ok      = isset( $mapped[0]['Name'], $mapped[1]['Name'] )
+			&& "'=cmd|A1" === $mapped[0]['Name']
+			&& "'@IMPORT" === $mapped[1]['Name']
+			&& "'+1" === $mapped[1]['Address'];
+		return self::assert_true( $ok, 'CSV import neutralizes =, + and @ cells' );
+	}
+
+	/**
+	 * Status accepts only publish, draft, pending, private.
+	 *
+	 * @return array
+	 */
+	private static function test_import_status_whitelist() {
+		$ok = true;
+		foreach ( array( 'publish', 'draft', 'pending', 'private' ) as $status ) {
+			$out = Oli_SL_CSV_Handler::sanitize_import_status( $status );
+			$ok  = $ok && $status === $out['status'] && '' === $out['warning'];
+		}
+		$trash = Oli_SL_CSV_Handler::sanitize_import_status( 'trash' );
+		$hack  = Oli_SL_CSV_Handler::sanitize_import_status( 'publish"><script>' );
+		$empty = Oli_SL_CSV_Handler::sanitize_import_status( '' );
+		$ok    = $ok
+			&& 'draft' === $trash['status'] && '' !== $trash['warning']
+			&& 'draft' === $hack['status'] && '' !== $hack['warning']
+			&& 'publish' === $empty['status'];
+		return self::assert_true( $ok, 'CSV Status accepts only publish, draft, pending, private' );
+	}
+
+	/**
+	 * Sheet URLs must be /spreadsheets/d/… or a published CSV export before save.
+	 *
+	 * @return array
+	 */
+	private static function test_sheets_url_validated_before_save() {
+		$ok = Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://docs.google.com/spreadsheets/d/abc-123_ID/edit?usp=sharing' )
+			&& Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://docs.google.com/spreadsheets/d/abc-123_ID/export?format=csv&gid=0' )
+			&& Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://docs.google.com/spreadsheets/d/e/2PACX-abc/pub?output=csv' )
+			&& ! Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://docs.google.com/document/d/abc/edit' )
+			&& ! Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://evil.example/spreadsheets/d/abc/edit' )
+			&& ! Oli_SL_CSV_Parser::is_valid_sheets_url( 'https://docs.google.com/' );
+		return self::assert_true( $ok, 'Google Sheet URL is validated before it is saved' );
 	}
 }

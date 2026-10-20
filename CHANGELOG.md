@@ -14,7 +14,16 @@ All notable changes to Oli Store Locator are documented in this file.
 
 ### Security
 
-- Keeps the 0.1.1 `/geocode` capability/nonce gate, 10 lookups per IP per minute, 30-day geocode cache, validated CSV uploads, and Google-only `wp_safe_remote_get`.
+- `/geocode` requires `manage_options` or the dedicated `oli_sl_geocode` capability (granted to administrators). A REST nonce alone is no longer enough.
+- The 10-per-minute per-IP geocode budget (429, `REMOTE_ADDR` only, never `X-Forwarded-For`) applies to every public geocode path, including autocomplete.
+- CSV export prefixes formula-like cells (`=`, `+`, `-`, `@`, tab, CR) with an apostrophe; import does the same, including `@`.
+- CSV Status accepts only `publish`, `draft`, `pending`, and `private`; anything else becomes draft with a warning.
+- Google Sheet URLs are validated (`/spreadsheets/d/…` or a published CSV export) before they are saved.
+
+### Fixed
+
+- “Use my location” now sends the selected radius and draws the radius circle when that option is on.
+- `fr_CA` `.l10n.php` is generated from the `.po` and covers the Settings screens plus “All categories”.
 
 ## 0.1.1 — 2026-10-20
 

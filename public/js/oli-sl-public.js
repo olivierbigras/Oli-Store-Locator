@@ -246,7 +246,12 @@
 						if (self.addressInput) {
 							self.addressInput.value = '';
 						}
-						self.search({ lat: self.origin.lat, lng: self.origin.lng });
+						var data = self.formSearchData();
+						data.lat = self.origin.lat;
+						data.lng = self.origin.lng;
+						data.address = '';
+						delete data.name;
+						self.search(data);
 					},
 					function () {
 						self.setStatus(settings.labels.geoDenied);
@@ -289,11 +294,13 @@
 		}
 	};
 
-	Locator.prototype.searchFromForm = function () {
+	Locator.prototype.formSearchData = function () {
+		var radiusEl = this.el.querySelector('.oli-sl-radius');
+		var maxEl = this.el.querySelector('.oli-sl-max-results');
 		var data = {
 			address: this.addressInput ? this.addressInput.value : '',
-			radius: this.el.querySelector('.oli-sl-radius') ? this.el.querySelector('.oli-sl-radius').value : '',
-			max_results: this.el.querySelector('.oli-sl-max-results') ? this.el.querySelector('.oli-sl-max-results').value : ''
+			radius: radiusEl && radiusEl.value ? radiusEl.value : String(settings.searchRadius || ''),
+			max_results: maxEl && maxEl.value ? maxEl.value : String(settings.maxResults || '')
 		};
 		var catSelect = this.el.querySelector('.oli-sl-category');
 		var catBoxes = this.el.querySelectorAll('input[name="oli_sl_category[]"]:checked');
@@ -307,6 +314,11 @@
 		if (this.searchMethod === 'name') {
 			data.name = data.address;
 		}
+		return data;
+	};
+
+	Locator.prototype.searchFromForm = function () {
+		var data = this.formSearchData();
 		if (this.origin && !data.address && this.searchMethod !== 'name') {
 			data.lat = this.origin.lat;
 			data.lng = this.origin.lng;
@@ -318,6 +330,10 @@
 		var self = this;
 		this.el.classList.add('oli-sl-has-searched');
 		this.setStatus(settings.labels.loading);
+		if (!data.radius) {
+			var radiusEl = this.el.querySelector('.oli-sl-radius');
+			data.radius = radiusEl && radiusEl.value ? radiusEl.value : String(settings.searchRadius || '');
+		}
 		if (this.searchMethod !== 'name' && !data.lat && !data.lng && !data.address && !data.name) {
 			data.lat = this.origin.lat || settings.startLat;
 			data.lng = this.origin.lng || settings.startLng;

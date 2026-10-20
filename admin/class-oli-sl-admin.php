@@ -325,6 +325,13 @@ class Oli_SL_Admin {
 
 		$url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
 		if ( $url ) {
+			if ( ! Oli_SL_CSV_Parser::is_valid_sheets_url( $url ) ) {
+				wp_send_json_error(
+					array(
+						'message' => __( 'The Google Sheet URL was not saved. Use a https://docs.google.com/spreadsheets/d/… link or a published CSV export URL.', 'oli-store-locator' ),
+					)
+				);
+			}
 			oli_sl_update_option( 'sheets_url', $url );
 		}
 

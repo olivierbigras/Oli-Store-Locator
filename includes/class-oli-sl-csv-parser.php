@@ -119,6 +119,100 @@ class Oli_SL_CSV_Parser {
 	}
 
 	/**
+	 * Characters that start a CSV formula injection.
+	 *
+	 * @return array
+	 */
+	public static function formula_prefixes() {
+		return array( '=', '+', '-', '@', "\t", "\r" );
+	}
+
+	/**
+	 * Prefix a cell that would be interpreted as a spreadsheet formula.
+	 *
+	 * @param mixed $value Cell value.
+	 * @return mixed
+	 */
+	public static function neutralize_formula( $value ) {
+		if ( ! is_string( $value ) && ! is_numeric( $value ) ) {
+			return $value;
+		}
+
+		$value = (string) $value;
+		if ( '' === $value ) {
+			return $value;
+		}
+
+		$first = substr( $value, 0, 1 );
+		if ( in_array( $first, self::formula_prefixes(), true ) ) {
+			return "'" . $value;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Strip a leading apostrophe added by neutralize_formula().
+	 *
+	 * @param mixed $value Cell value.
+	 * @return mixed
+	 */
+	public static function strip_formula_prefix( $value ) {
+		if ( ! is_string( $value ) ) {
+			return $value;
+		}
+
+		if ( isset( $value[0], $value[1] ) && "'" === $value[0] && in_array( $value[1], self::formula_prefixes(), true ) ) {
+			return substr( $value, 1 );
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Neutralize every cell in a CSV row.
+	 *
+	 * @param array $row Row.
+	 * @return array
+	 */
+	public static function neutralize_csv_row( $row ) {
+		$out = array();
+		foreach ( (array) $row as $key => $value ) {
+			$out[ $key ] = self::neutralize_formula( $value );
+		}
+		return $out;
+	}
+
+	/**
+	 * Whether a URL is a Google Sheet (/spreadsheets/d/…) or a published CSV export.
+	 *
+	 * Must be called before the URL is stored.
+	 *
+	 * @param string $url URL.
+	 * @return bool
+	 */
+	public static function is_valid_sheets_url( $url ) {
+		$url = trim( (string) $url );
+		if ( '' === $url || ! self::is_allowed_sheets_host( $url ) ) {
+			return false;
+		}
+
+		$parts = wp_parse_url( $url );
+		$path  = isset( $parts['path'] ) ? (string) $parts['path'] : '';
+		$query = isset( $parts['query'] ) ? (string) $parts['query'] : '';
+
+		if ( preg_match( '#/spreadsheets/d/(?:e/)?[a-zA-Z0-9-_]+#', $path ) ) {
+			return true;
+		}
+
+		if ( preg_match( '/(?:^|&)(?:format|output)=csv(?:&|$)/i', $query ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Convert an array of rows to CSV.
 	 *
 	 * @param array $data Rows (first row may be headers).
@@ -132,7 +226,7 @@ class Oli_SL_CSV_Parser {
 		}
 
 		foreach ( (array) $data as $row ) {
-			fputcsv( $output, (array) $row, ',', '"', '\\' );
+			fputcsv( $output, self::neutralize_csv_row( (array) $row ), ',', '"', '\\' );
 		}
 
 		rewind( $output );
@@ -188,7 +282,11 @@ class Oli_SL_CSV_Parser {
 			$item = array();
 			foreach ( $column_map as $field => $index ) {
 				if ( isset( $row[ $index ] ) ) {
-					$item[ $field ] = is_string( $row[ $index ] ) ? trim( $row[ $index ] ) : $row[ $index ];
+					$value = is_string( $row[ $index ] ) ? trim( $row[ $index ] ) : $row[ $index ];
+					if ( is_string( $value ) ) {
+						$value = self::neutralize_formula( $value );
+					}
+					$item[ $field ] = $value;
 				}
 			}
 			if ( ! empty( $item ) ) {
@@ -312,8 +410,17 @@ class Oli_SL_CSV_Parser {
 	public static function sheets_export_url( $url ) {
 		$url = trim( (string) $url );
 
-		if ( ! self::is_allowed_sheets_host( $url ) ) {
+		if ( ! self::is_valid_sheets_url( $url ) ) {
 			return false;
+		}
+
+		if ( preg_match( '/(?:^|[?&#])(?:format|output)=csv(?:&|$)/i', $url ) ) {
+			return $url;
+		}
+
+		if ( preg_match( '#/spreadsheets/d/e/[a-zA-Z0-9-_]+#', $url ) ) {
+			$separator = false === strpos( $url, '?' ) ? '?' : '&';
+			return $url . $separator . 'output=csv';
 		}
 
 		if ( ! preg_match( '#/spreadsheets/d/([a-zA-Z0-9-_]+)#', $url, $matches ) ) {

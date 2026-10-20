@@ -88,6 +88,9 @@ class Oli_SL_Geocoding {
 	/**
 	 * Client IP used for geocode rate limiting.
 	 *
+	 * Uses REMOTE_ADDR only. X-Forwarded-For and similar headers are ignored
+	 * so clients cannot reset the per-IP budget by spoofing a proxy header.
+	 *
 	 * @return string
 	 */
 	public static function client_ip() {
@@ -98,6 +101,9 @@ class Oli_SL_Geocoding {
 
 		/**
 		 * Filter the IP used for public geocode rate limiting.
+		 *
+		 * Do not read X-Forwarded-For here unless the site sits behind a
+		 * trusted proxy that overwrites REMOTE_ADDR.
 		 *
 		 * @param string $ip Detected IP.
 		 */
@@ -113,7 +119,7 @@ class Oli_SL_Geocoding {
 	/**
 	 * Whether the current request is a public (front-end / anonymous) context.
 	 *
-	 * Admin screens, cron, WP-CLI, and users who can manage options are not public.
+	 * Admin screens, cron, WP-CLI, and users who can geocode in admin are not public.
 	 *
 	 * @return bool
 	 */
@@ -126,7 +132,7 @@ class Oli_SL_Geocoding {
 			return false;
 		}
 
-		if ( function_exists( 'current_user_can' ) && ( current_user_can( 'manage_options' ) || current_user_can( 'edit_posts' ) ) ) {
+		if ( function_exists( 'current_user_can' ) && ( current_user_can( 'manage_options' ) || current_user_can( 'oli_sl_geocode' ) ) ) {
 			return false;
 		}
 
@@ -300,16 +306,44 @@ class Oli_SL_Geocoding {
 	/**
 	 * Autocomplete suggestions.
 	 *
+	 * Public requests share the same per-IP geocode budget as address search.
+	 *
 	 * @param string $query Search query.
+	 * @param array  $args  Same keys as geocode(): allow_sleep, enforce_ip_limit, use_cache.
 	 * @return array|WP_Error
 	 */
-	public static function autocomplete( $query ) {
+	public static function autocomplete( $query, $args = array() ) {
+		$args  = self::parse_args( $args );
+		$query = trim( (string) $query );
+		if ( strlen( $query ) < 3 ) {
+			return array();
+		}
+
+		if ( $args['enforce_ip_limit'] ) {
+			$slot = self::consume_ip_slot();
+			if ( is_wp_error( $slot ) ) {
+				return $slot;
+			}
+		}
+
+		/**
+		 * Short-circuit autocomplete (tests, custom providers).
+		 *
+		 * @param array|WP_Error|null $pre   Precomputed suggestions.
+		 * @param string              $query Query.
+		 * @param array               $args  Args.
+		 */
+		$pre = apply_filters( 'oli_sl_pre_autocomplete', null, $query, $args );
+		if ( null !== $pre ) {
+			return $pre;
+		}
+
 		$provider = self::get_provider();
 		if ( ! method_exists( $provider, 'autocomplete' ) ) {
 			return array();
 		}
 		if ( $provider instanceof Oli_SL_Geocoding_Nominatim ) {
-			return $provider->autocomplete( $query, ! self::is_public_context() );
+			return $provider->autocomplete( $query, $args['allow_sleep'] );
 		}
 		return $provider->autocomplete( $query );
 	}

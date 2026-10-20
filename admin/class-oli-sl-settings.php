@@ -138,15 +138,24 @@ class Oli_SL_Settings {
 			}
 		}
 
-		$url_keys = array( 'sheets_url', 'leaflet_custom_url', 'default_marker' );
+		$url_keys = array( 'leaflet_custom_url', 'default_marker' );
 		foreach ( $url_keys as $key ) {
 			if ( isset( $input[ $key ] ) ) {
 				$out[ $key ] = esc_url_raw( $input[ $key ] );
 			}
 		}
 
-		if ( isset( $out['sheets_url'] ) && '' !== $out['sheets_url'] && ! Oli_SL_CSV_Parser::is_allowed_sheets_host( $out['sheets_url'] ) ) {
-			$out['sheets_url'] = '';
+		if ( isset( $input['sheets_url'] ) ) {
+			$sheets_url = esc_url_raw( $input['sheets_url'] );
+			if ( '' !== $sheets_url && ! Oli_SL_CSV_Parser::is_valid_sheets_url( $sheets_url ) ) {
+				add_settings_error(
+					'oli_sl_options',
+					'invalid_sheets_url',
+					__( 'The Google Sheet URL was not saved. Use a https://docs.google.com/spreadsheets/d/… link or a published CSV export URL.', 'oli-store-locator' )
+				);
+				$sheets_url = isset( $existing['sheets_url'] ) ? $existing['sheets_url'] : '';
+			}
+			$out['sheets_url'] = $sheets_url;
 		}
 
 		foreach ( array( 'google_api_key', 'google_server_key', 'sheets_api_key' ) as $key ) {

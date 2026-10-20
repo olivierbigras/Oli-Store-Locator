@@ -23,3 +23,4 @@ require_once dirname( __DIR__ ) . '/includes/class-oli-sl-geocoding.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-geocoding-nominatim.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-rest-api.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-google-sheets-sync.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-sl-csv-handler.php';

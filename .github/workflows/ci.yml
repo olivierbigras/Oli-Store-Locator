@@ -45,7 +45,7 @@ jobs:
       - name: Plugin Check
         uses: wordpress/plugin-check-action@v1
         with:
-          exclude-directories: tests,vendor,.github
+          exclude-directories: tests,vendor,.github,bin
           ignore-codes: latest_wordpress_version_tested
 
   zip:

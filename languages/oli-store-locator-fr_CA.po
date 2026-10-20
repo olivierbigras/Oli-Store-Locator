@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Oli Store Locator 0.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
-"PO-Revision-Date: 2026-10-20 00:00+0000\n"
+"PO-Revision-Date: 2026-10-20 19:00+0000\n"
 "Last-Translator: Olivier Bigras\n"
 "Language-Team: French (Canada)\n"
 "Language: fr_CA\n"
@@ -16,248 +16,1220 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Domain: oli-store-locator\n"
 
-msgid "Stores"
-msgstr "Magasins"
+msgid "%1$d published stores, %2$d without coordinates."
+msgstr "%1$d magasins publiés, %2$d sans coordonnées."
 
-msgid "Store"
-msgstr "Magasin"
+msgid "%1$s: %2$s – %3$s"
+msgstr "%1$s : %2$s – %3$s"
 
-msgid "Add New Store"
-msgstr "Ajouter un magasin"
+msgid "%s: Closed"
+msgstr "%s : Fermé"
 
-msgid "All Stores"
-msgstr "Tous les magasins"
+msgid "A HTTPS connection is required before the Geolocation API can access the user’s location. This option is ignored for a store locator that sets its own start point in the shortcode or block."
+msgstr "Une connexion HTTPS est requise pour que l’API de géolocalisation accède à la position de l’utilisateur. Cette option est ignorée si le localisateur définit son propre point de départ dans le shortcode ou le bloc."
 
-msgid "Search Stores"
-msgstr "Rechercher des magasins"
+msgid "A browser key allows you to monitor the usage of the Google Maps JavaScript API. Required for Google Maps."
+msgstr "Une clé navigateur permet de surveiller l’usage de l’API JavaScript Google Maps. Obligatoire pour Google Maps."
 
-msgid "Store Categories"
-msgstr "Catégories de magasin"
+msgid "A request to the selected geocoding service is made when a new location is created and no coordinates are provided."
+msgstr "Une requête au service de géocodage choisi est envoyée lorsqu’un nouveau magasin est créé sans coordonnées."
 
-msgid "Store Tags"
-msgstr "Étiquettes de magasin"
-
-msgid "Search"
-msgstr "Rechercher"
-
-msgid "Address or ZIP"
-msgstr "Adresse ou code postal"
-
-msgid "Radius"
-msgstr "Rayon"
-
-msgid "Results"
-msgstr "Résultats"
-
-msgid "Category"
-msgstr "Catégorie"
-
-msgid "Use my location"
-msgstr "Utiliser ma position"
-
-msgid "Reset"
-msgstr "Réinitialiser"
-
-msgid "Directions"
-msgstr "Itinéraire"
-
-msgid "No stores found."
-msgstr "Aucun magasin trouvé."
-
-msgid "Phone"
-msgstr "Téléphone"
-
-msgid "Hours"
-msgstr "Heures d’ouverture"
-
-msgid "Website"
-msgstr "Site web"
-
-msgid "More details"
-msgstr "Plus de détails"
-
-msgid "Looking up coordinates…"
-msgstr "Recherche des coordonnées…"
-
-msgid "Store Locator Settings"
-msgstr "Réglages du localisateur"
-
-msgid "Settings"
-msgstr "Réglages"
-
-msgid "Map provider"
-msgstr "Fournisseur de carte"
-
-msgid "OpenStreetMap / Leaflet (free)"
-msgstr "OpenStreetMap / Leaflet (gratuit)"
-
-msgid "Google Maps"
-msgstr "Google Maps"
-
-msgid "Geocoding provider"
-msgstr "Fournisseur de géocodage"
-
-msgid "Kilometers"
-msgstr "Kilomètres"
-
-msgid "Miles"
-msgstr "Milles"
-
-msgid "Google Sheets link"
-msgstr "Lien Google Sheets"
-
-msgid "Sync Now"
-msgstr "Synchroniser maintenant"
-
-msgid "Save & Start Sync"
-msgstr "Enregistrer et lancer la synchro"
-
-msgid "Remove Sync"
-msgstr "Supprimer la synchro"
-
-msgid "Active"
-msgstr "Actif"
-
-msgid "Paused"
-msgstr "En pause"
-
-msgid "Inactive"
-msgstr "Inactif"
-
-msgid "All up to date"
-msgstr "Tout est à jour"
-
-msgid "Every 5 minutes"
-msgstr "Toutes les 5 minutes"
-
-msgid "Every 15 minutes"
-msgstr "Toutes les 15 minutes"
-
-msgid "Hourly"
-msgstr "Toutes les heures"
-
-msgid "Daily"
-msgstr "Quotidien"
-
-msgid "Export stores"
-msgstr "Exporter les magasins"
-
-msgid "Import stores"
-msgstr "Importer des magasins"
-
-msgid "Download CSV"
-msgstr "Télécharger le CSV"
-
-msgid "Import CSV"
-msgstr "Importer le CSV"
-
-msgid "Sorry, you are not allowed to geocode addresses."
-msgstr "Désolé, vous n’êtes pas autorisé à géocoder des adresses."
-
-msgid "Too many geocoding requests. Please try again in a minute."
-msgstr "Trop de requêtes de géocodage. Réessayez dans une minute."
-
-msgid "The geocoding service is busy. Please try again shortly."
-msgstr "Le service de géocodage est occupé. Réessayez sous peu."
-
-msgid "The CSV file could not be uploaded."
-msgstr "Le fichier CSV n’a pas pu être téléversé."
-
-msgid "The uploaded file is not valid."
-msgstr "Le fichier téléversé n’est pas valide."
-
-msgid "The CSV file is too large."
-msgstr "Le fichier CSV est trop volumineux."
-
-msgid "Only CSV or TXT files are allowed."
-msgstr "Seuls les fichiers CSV ou TXT sont autorisés."
-
-msgid "The URL is not an allowed Google Sheets host."
-msgstr "L’URL n’appartient pas à un hôte Google Sheets autorisé."
-
-msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
-msgstr "Limiter Nominatim à 1 requête par seconde (exigé par la politique d’utilisation d’OpenStreetMap)"
-
-msgid "OpenStreetMap"
-msgstr "OpenStreetMap"
-
-msgid "API"
-msgstr "API"
-
-msgid "User Experience"
-msgstr "Expérience utilisateur"
-
-msgid "Markers"
-msgstr "Marqueurs"
-
-msgid "Store Editor"
-msgstr "Éditeur de magasin"
-
-msgid "Local Pages"
-msgstr "Pages locales"
-
-msgid "Tools"
-msgstr "Outils"
-
-msgid "Design"
-msgstr "Apparence"
-
-msgid "Map service"
-msgstr "Service de carte"
-
-msgid "Search method"
-msgstr "Méthode de recherche"
-
-msgid "Geocode API (default)"
-msgstr "API de géocodage (par défaut)"
-
-msgid "Name search (post / location name)"
-msgstr "Recherche par nom (titre du magasin)"
-
-msgid "Show first in results?"
-msgstr "Afficher en premier dans les résultats?"
-
-msgid "Sync history"
-msgstr "Journal des synchros"
+msgid "A server key allows you to monitor the usage of the Google Maps Geocoding API. Required for Google Maps geocoding. Falls back to the browser key if empty."
+msgstr "Une clé serveur permet de surveiller l’usage de l’API de géocodage Google Maps. Obligatoire pour le géocodage Google. La clé navigateur est utilisée si ce champ est vide."
 
 msgid "A sync is already running. Try again in a few minutes."
 msgstr "Une synchro est déjà en cours. Réessayez dans quelques minutes."
 
-msgid "Load the map"
-msgstr "Charger la carte"
+msgid "A text version is also stored for templates and CSV export."
+msgstr "Une version texte est aussi enregistrée pour les gabarits et l’export CSV."
 
-msgid "Get directions"
-msgstr "Obtenir l’itinéraire"
+msgid "API"
+msgstr "API"
 
-msgid "No results found"
-msgstr "Aucun résultat"
+msgid "API response language"
+msgstr "Langue des réponses API"
 
-msgid "Please adjust your search"
-msgstr "Veuillez ajuster votre recherche"
+msgid "Active"
+msgstr "Actif"
+
+msgid "Add New Store"
+msgstr "Ajouter un magasin"
 
 msgid "Added"
 msgstr "Ajoutées"
 
-msgid "Modified"
-msgstr "Modifiées"
+msgid "Address"
+msgstr "Adresse"
 
-msgid "Deleted"
-msgstr "Supprimées"
+msgid "Address / ZIP autocomplete"
+msgstr "Autocomplétion adresse / code postal"
 
-msgid "Errors"
-msgstr "Erreurs"
+msgid "Address field"
+msgstr "Champ adresse"
+
+msgid "Address is required."
+msgstr "L’adresse est obligatoire."
+
+msgid "Address line 2"
+msgstr "Adresse (ligne 2)"
+
+msgid "Address or ZIP"
+msgstr "Adresse ou code postal"
+
+msgid "Admin bar menu"
+msgstr "Menu de la barre d’admin"
+
+msgid "All Stores"
+msgstr "Tous les magasins"
+
+msgid "All categories"
+msgstr "Toutes les catégories"
+
+msgid "All up to date"
+msgstr "Tout est à jour"
+
+msgid "Another store"
+msgstr "Autre magasin"
+
+msgid "Ascending"
+msgstr "Croissant"
+
+msgid "Ask for map consent (GDPR)"
+msgstr "Demander le consentement pour la carte (RGPD)"
+
+msgid "Ask visitors for consent before the map loads"
+msgstr "Demander le consentement des visiteurs avant de charger la carte"
+
+msgid "Attempt to auto-locate the user"
+msgstr "Tenter de localiser automatiquement l’utilisateur"
+
+msgid "Aubergine"
+msgstr "Aubergine"
+
+msgid "Australia"
+msgstr "Australie"
+
+msgid "Automatically start a search when an autocomplete value is selected?"
+msgstr "Lancer automatiquement une recherche lorsqu’une suggestion d’autocomplétion est choisie?"
+
+msgid "Avoid loading a second Google Maps script when another plugin already enqueued one."
+msgstr "Éviter de charger un second script Google Maps si un autre plugin l’a déjà mis en file."
+
+msgid "Background"
+msgstr "Arrière-plan"
+
+msgid "Batch size"
+msgstr "Taille des lots"
+
+msgid "Belgium"
+msgstr "Belgique"
+
+msgid "Below map"
+msgstr "Sous la carte"
+
+msgid "Beside map (list left)"
+msgstr "À côté de la carte (liste à gauche)"
+
+msgid "Beside map (list right)"
+msgstr "À côté de la carte (liste à droite)"
+
+msgid "Bias (soft) favors a single country but still returns matches everywhere. Restrict (hard) limits the results to the selected countries."
+msgstr "Le biais (souple) favorise un pays sans exclure les autres. La restriction (stricte) limite les résultats aux pays choisis."
+
+msgid "Bias country"
+msgstr "Pays favorisé"
+
+msgid "Bias results (soft)"
+msgstr "Biaiser les résultats (souple)"
+
+msgid "Bounces up and down"
+msgstr "Rebondit"
+
+msgid "Browser key"
+msgstr "Clé navigateur"
+
+msgid "Button text"
+msgstr "Texte des boutons"
+
+msgid "Buttons"
+msgstr "Boutons"
+
+msgid "By default the API will attempt to load the most appropriate language based on the users location or browser settings."
+msgstr "Par défaut, l’API tente de charger la langue la plus appropriée selon la position ou le navigateur de l’utilisateur."
+
+msgid "Cache search results"
+msgstr "Mettre en cache les résultats de recherche"
+
+msgid "Caches"
+msgstr "Caches"
+
+msgid "Canada"
+msgstr "Canada"
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Category filter"
+msgstr "Filtre de catégorie"
+
+msgid "Category first item"
+msgstr "Premier item de catégorie"
+
+msgid "Category in permalinks"
+msgstr "Catégorie dans les permaliens"
+
+msgid "Checkboxes"
+msgstr "Cases à cocher"
+
+msgid "City"
+msgstr "Ville"
+
+msgid "Clear geocode cache"
+msgstr "Vider le cache de géocodage"
+
+msgid "Clear search cache"
+msgstr "Vider le cache de recherche"
+
+msgid "Clicking on the address details opens the info window on the map?"
+msgstr "Un clic sur l’adresse ouvre l’infobulle sur la carte?"
+
+msgid "Close"
+msgstr "Fermeture"
+
+msgid "Closed"
+msgstr "Fermé"
+
+msgid "Cluster colors"
+msgstr "Couleurs des regroupements"
+
+msgid "Cluster size"
+msgstr "Taille des regroupements"
 
 msgid "Color"
 msgstr "Couleur"
 
-msgid "Your location"
-msgstr "Votre position"
+msgid "Colors"
+msgstr "Couleurs"
 
-msgid "Store name"
-msgstr "Nom du magasin"
+msgid "Column mapping"
+msgstr "Correspondance des colonnes"
+
+msgid "Columns are auto-detected (Name, Address, City, Province/State, Postal code, Country, Phone, Email, Website, Hours, Category, Lat, Lng, Description, Image, ID). Existing stores are matched by ID when present."
+msgstr "Les colonnes sont détectées automatiquement (nom, adresse, ville, province/État, code postal, pays, téléphone, courriel, site, heures, catégorie, lat, lng, description, image, ID). Les magasins existants sont appariés par ID s’il est présent."
+
+msgid "Comma-separated country names used when country filtering is set to restrict."
+msgstr "Noms de pays séparés par des virgules, utilisés lorsque le filtrage est en mode restriction."
+
+msgid "Controls"
+msgstr "Contrôles"
+
+msgid "Coordinates"
+msgstr "Coordonnées"
+
+msgid "Corner radius (px)"
+msgstr "Rayon des coins (px)"
+
+msgid "Country"
+msgstr "Pays"
+
+msgid "Country filtering"
+msgstr "Filtrage par pays"
+
+msgid "Create landing pages?"
+msgstr "Créer des pages d’atterrissage?"
+
+msgid "Created:"
+msgstr "Créés :"
+
+msgid "Custom CSS"
+msgstr "CSS personnalisé"
+
+msgid "Custom JSON"
+msgstr "JSON personnalisé"
+
+msgid "Custom URL template"
+msgstr "Gabarit d’URL personnalisé"
+
+msgid "Custom map style JSON is invalid and was kept as entered. Fix it to apply custom styles."
+msgstr "Le JSON de style de carte est invalide et a été conservé tel quel. Corrigez-le pour appliquer les styles."
+
+msgid "Daily"
+msgstr "Quotidien"
+
+msgid "Dark"
+msgstr "Sombre"
+
+msgid "Date"
+msgstr "Date"
+
+msgid "Day"
+msgstr "Jour"
+
+msgid "Default"
+msgstr "Par défaut"
+
+msgid "Default country"
+msgstr "Pays par défaut"
+
+msgid "Default marker icon"
+msgstr "Icône de marqueur par défaut"
+
+msgid "Deleted"
+msgstr "Supprimées"
+
+msgid "Deleted:"
+msgstr "Supprimés :"
+
+msgid "Descending"
+msgstr "Décroissant"
+
+msgid "Design"
+msgstr "Apparence"
+
+msgid "Detect columns"
+msgstr "Détecter les colonnes"
+
+msgid "Detecting columns…"
+msgstr "Détection des colonnes…"
+
+msgid "Directions"
+msgstr "Itinéraire"
+
+msgid "Distance"
+msgstr "Distance"
+
+msgid "Distance unit"
+msgstr "Unité de distance"
+
+msgid "Does not respond"
+msgstr "Ne réagit pas"
+
+msgid "Download CSV"
+msgstr "Télécharger le CSV"
+
+msgid "Draw search radius circle"
+msgstr "Dessiner le cercle du rayon de recherche"
+
+msgid "Draw the route on the embedded map (Google Maps only)"
+msgstr "Dessiner l’itinéraire sur la carte intégrée (Google Maps seulement)"
+
+msgid "Drop shadow"
+msgstr "Ombre portée"
+
+msgid "Dropdown"
+msgstr "Liste déroulante"
+
+msgid "Dropdowns (recommended)"
+msgstr "Listes déroulantes (recommandé)"
+
+msgid "Duration (seconds)"
+msgstr "Durée (secondes)"
+
+msgid "E.g. a search for a Canadian border town returns only Canadian locations, not ones a few km across the US border."
+msgstr "Ex. : une recherche pour une ville frontalière canadienne ne renvoie que des magasins canadiens, pas ceux à quelques km aux États-Unis."
+
+msgid "Each completed run is listed with the date, rows added, modified and deleted, and any errors. Entries older than %d days are purged automatically."
+msgstr "Chaque synchro terminée est listée avec la date, les lignes ajoutées, modifiées et supprimées, et les erreurs. Les entrées de plus de %d jours sont purgées automatiquement."
+
+msgid "Email"
+msgstr "Courriel"
+
+msgid "Enable autocomplete?"
+msgstr "Activer l’autocomplétion?"
+
+msgid "Enable category filter?"
+msgstr "Activer le filtre de catégorie?"
+
+msgid "Enable compatibility mode?"
+msgstr "Activer le mode compatibilité?"
+
+msgid "Enable marker clusters?"
+msgstr "Activer le regroupement des marqueurs?"
+
+msgid "Enable public single store pages"
+msgstr "Activer les pages publiques de magasin"
+
+msgid "Enable store locator debug?"
+msgstr "Activer le débogage du localisateur?"
+
+msgid "Enabling this option will create single pages for all store locations. Copy templates/single-store.php to yourtheme/oli-store-locator/ to customize the landing page."
+msgstr "Cette option crée une page pour chaque magasin. Copiez templates/single-store.php vers yourtheme/oli-store-locator/ pour personnaliser la page."
+
+msgid "Enabling “only show the category filter” will automatically hide the location input field and the max results and radius filters."
+msgstr "Si seul le filtre de catégorie est affiché, le champ d’adresse et les filtres de rayon et de résultats sont masqués."
+
+msgid "Error log"
+msgstr "Journal des erreurs"
+
+msgid "Errors"
+msgstr "Erreurs"
+
+msgid "Every 15 Minutes"
+msgstr "Toutes les 15 minutes"
+
+msgid "Every 15 minutes"
+msgstr "Toutes les 15 minutes"
+
+msgid "Every 5 Minutes"
+msgstr "Toutes les 5 minutes"
+
+msgid "Every 5 minutes"
+msgstr "Toutes les 5 minutes"
+
+msgid "Exclude locations from nearby countries?"
+msgstr "Exclure les magasins des pays voisins?"
+
+msgid "Exclude the start marker from the marker cluster?"
+msgstr "Exclure le marqueur de départ du regroupement?"
+
+msgid "Export settings"
+msgstr "Exporter les réglages"
+
+msgid "Export stores"
+msgstr "Exporter les magasins"
+
+msgid "Fax"
+msgstr "Télécopieur"
+
+msgid "Featured"
+msgstr "En vedette"
+
+msgid "Featured store color"
+msgstr "Couleur des magasins en vedette"
+
+msgid "Filter type"
+msgstr "Type de filtre"
+
+msgid "Fit map to results"
+msgstr "Ajuster la carte aux résultats"
+
+msgid "Fonts inherit from the active theme."
+msgstr "Les polices sont héritées du thème actif."
+
+msgid "Force zip code only search"
+msgstr "Forcer la recherche par code postal seulement"
+
+msgid "France"
+msgstr "France"
+
+msgid "Frequency"
+msgstr "Fréquence"
+
+msgid "Friday"
+msgstr "Vendredi"
+
+msgid "Geocode API (default)"
+msgstr "API de géocodage (par défaut)"
+
+msgid "Geocode cache cleared."
+msgstr "Cache de géocodage vidé."
+
+msgid "Geocode missing coordinates"
+msgstr "Géocoder les coordonnées manquantes"
+
+msgid "Geocode stores without coordinates"
+msgstr "Géocoder les magasins sans coordonnées"
+
+msgid "Geocoded %d stores."
+msgstr "%d magasins géocodés."
+
+msgid "Geocoding provider"
+msgstr "Fournisseur de géocodage"
+
+msgid "Germany"
+msgstr "Allemagne"
+
+msgid "Get directions"
+msgstr "Obtenir l’itinéraire"
+
+msgid "Google Geocoding API"
+msgstr "API de géocodage Google"
+
+msgid "Google Maps"
+msgstr "Google Maps"
+
+msgid "Google Sheets"
+msgstr "Google Sheets"
+
+msgid "Google Sheets link"
+msgstr "Lien Google Sheets"
+
+msgid "Google map style"
+msgstr "Style de carte Google"
+
+msgid "Height (px)"
+msgstr "Hauteur (px)"
+
+msgid "Hidden editor fields"
+msgstr "Champs masqués dans l’éditeur"
+
+msgid "Hide days marked as closed in the opening hours?"
+msgstr "Masquer les jours fermés dans les heures d’ouverture?"
+
+msgid "Hide the country in the results?"
+msgstr "Masquer le pays dans les résultats?"
+
+msgid "Hide the distance in the results?"
+msgstr "Masquer la distance dans les résultats?"
+
+msgid "Hide the email field"
+msgstr "Masquer le champ courriel"
+
+msgid "Hide the fax field"
+msgstr "Masquer le champ télécopieur"
+
+msgid "Hide the map until the first search is made?"
+msgstr "Masquer la carte jusqu’à la première recherche?"
+
+msgid "Hide the opening hours?"
+msgstr "Masquer les heures d’ouverture?"
+
+msgid "Hide the phone field"
+msgstr "Masquer le champ téléphone"
+
+msgid "Hide the search results list?"
+msgstr "Masquer la liste des résultats?"
+
+msgid "Hide the start marker?"
+msgstr "Masquer le marqueur de départ?"
+
+msgid "Hide the website field"
+msgstr "Masquer le champ site web"
+
+msgid "Hourly"
+msgstr "Toutes les heures"
+
+msgid "Hours"
+msgstr "Heures d’ouverture"
+
+msgid "If a front base is set (for example /blog/), enabling this option will remove it from the store locator permalinks."
+msgstr "Si une base d’articles est définie (par ex. /blog/), cette option la retire des permaliens du localisateur."
+
+msgid "If a search returns no locations within the chosen radius, the single closest location is shown instead."
+msgstr "Si aucune adresse n’est trouvée dans le rayon, le magasin le plus proche est affiché."
+
+msgid "If no results are found, then show the nearest location ignoring the search radius?"
+msgstr "Si aucun résultat, afficher le magasin le plus proche en ignorant le rayon?"
+
+msgid "If this zoom level is reached or exceeded, all markers are moved out of the marker cluster and shown as individual markers."
+msgstr "Lorsque ce niveau de zoom est atteint, les marqueurs quittent le regroupement et s’affichent individuellement."
+
+msgid "Ignore the max results and search radius limits for country or state searches."
+msgstr "Ignorer les limites de résultats et de rayon pour les recherches de pays ou de province."
+
+msgid "Image URL"
+msgstr "URL de l’image"
+
+msgid "Import / Export"
+msgstr "Import / Export"
+
+msgid "Import CSV"
+msgstr "Importer le CSV"
+
+msgid "Import finished. Created: %1$d, updated: %2$d, skipped: %3$d."
+msgstr "Import terminé. Créés : %1$d, mis à jour : %2$d, ignorés : %3$d."
+
+msgid "Import settings"
+msgstr "Importer les réglages"
+
+msgid "Import stores"
+msgstr "Importer des magasins"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "Include the store category in the permalink when possible."
+msgstr "Inclure la catégorie du magasin dans le permalien lorsque c’est possible."
+
+msgid "Info window style"
+msgstr "Style de l’infobulle"
+
+msgid "Info window template"
+msgstr "Gabarit de l’infobulle"
+
+msgid "Initial zoom level"
+msgstr "Niveau de zoom initial"
+
+msgid "Invalid status “%s” was reset to draft."
+msgstr "Le statut « %s » est invalide et a été remis en brouillon."
+
+msgid "Italy"
+msgstr "Italie"
+
+msgid "Kilometers"
+msgstr "Kilomètres"
+
+msgid "Label color"
+msgstr "Couleur de l’étiquette"
+
+msgid "Labels"
+msgstr "Libellés"
+
+msgid "Last checked:"
+msgstr "Dernière vérification :"
+
+msgid "Last sync:"
+msgstr "Dernière synchro :"
+
+msgid "Latitude"
+msgstr "Latitude"
+
+msgid "Leaflet tiles"
+msgstr "Tuiles Leaflet"
+
+msgid "Leave them"
+msgstr "Les laisser"
+
+msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
+msgstr "Limiter Nominatim à 1 requête par seconde (exigé par la politique d’utilisation d’OpenStreetMap)"
+
+msgid "List hover"
+msgstr "Survol de la liste"
+
+msgid "List layout"
+msgstr "Disposition de la liste"
+
+msgid "List template"
+msgstr "Gabarit de liste"
+
+msgid "List the categories of a store below its address in the search results."
+msgstr "Lister les catégories d’un magasin sous son adresse dans les résultats."
+
+msgid "List then map"
+msgstr "Liste puis carte"
+
+msgid "Live preview"
+msgstr "Aperçu en direct"
+
+msgid "Load locations on page load"
+msgstr "Charger les magasins au chargement de la page"
+
+msgid "Load the map"
+msgstr "Charger la carte"
+
+msgid "Local Pages"
+msgstr "Pages locales"
+
+msgid "Location permission was denied."
+msgstr "La permission de localisation a été refusée."
+
+msgid "Longitude"
+msgstr "Longitude"
+
+msgid "Looking up coordinates…"
+msgstr "Recherche des coordonnées…"
+
+msgid "Lookup coordinates from address"
+msgstr "Trouver les coordonnées à partir de l’adresse"
+
+msgid "Low density color"
+msgstr "Couleur de faible densité"
+
+msgid "Make the contact details always clickable?"
+msgstr "Rendre les coordonnées toujours cliquables?"
+
+msgid "Make the current opening status expandable in the search results?"
+msgstr "Rendre le statut ouvert/fermé dépliable dans les résultats?"
+
+msgid "Make the phone number clickable on mobile devices?"
+msgstr "Rendre le numéro de téléphone cliquable sur mobile?"
+
+msgid "Make the store name clickable if a store URL exists?"
+msgstr "Rendre le nom du magasin cliquable s’il a une URL?"
+
+msgid "Manual lat/lng override (do not auto-geocode this store)"
+msgstr "Saisie manuelle lat/lng (ne pas géocoder automatiquement ce magasin)"
+
+msgid "Map"
+msgstr "Carte"
+
+msgid "Map controls (zoom, pan)"
+msgstr "Contrôles de la carte (zoom, déplacement)"
+
+msgid "Map preview"
+msgstr "Aperçu de la carte"
+
+msgid "Map provider"
+msgstr "Fournisseur de carte"
+
+msgid "Map service"
+msgstr "Service de carte"
+
+msgid "Map size"
+msgstr "Taille de la carte"
+
+msgid "Map then list"
+msgstr "Carte puis liste"
+
+msgid "Map type"
+msgstr "Type de carte"
+
+msgid "Map type for the location preview"
+msgstr "Type de carte pour l’aperçu du magasin"
+
+msgid "Markers"
+msgstr "Marqueurs"
+
+msgid "Max auto zoom level"
+msgstr "Niveau de zoom auto maximal"
+
+msgid "Max results dropdown options (comma separated)"
+msgstr "Options du menu de résultats max (séparées par des virgules)"
+
+msgid "Max search results"
+msgstr "Résultats de recherche max"
+
+msgid "Max zoom level"
+msgstr "Niveau de zoom maximal"
+
+msgid "Mexico"
+msgstr "Mexique"
+
+msgid "Miles"
+msgstr "Milles"
+
+msgid "Mobile layout"
+msgstr "Disposition mobile"
+
+msgid "Modified"
+msgstr "Modifiées"
+
+msgid "Monday"
+msgstr "Lundi"
+
+msgid "More details"
+msgstr "Plus de détails"
+
+msgid "More info"
+msgstr "Plus d’infos"
+
+msgid "Move to trash"
+msgstr "Mettre à la corbeille"
+
+msgid "Name search (post / location name)"
+msgstr "Recherche par nom (titre du magasin)"
+
+msgid "Never"
+msgstr "Jamais"
+
+msgid "Next sync:"
+msgstr "Prochaine synchro :"
+
+msgid "Night"
+msgstr "Nuit"
+
+msgid "No default"
+msgstr "Aucun défaut"
+
+msgid "No results found"
+msgstr "Aucun résultat"
+
+msgid "No stores found."
+msgstr "Aucun magasin trouvé."
+
+msgid "No syncs recorded yet."
+msgstr "Aucune synchro enregistrée pour le moment."
+
+msgid "Nominatim (OpenStreetMap, rate limited)"
+msgstr "Nominatim (OpenStreetMap, débit limité)"
+
+msgid "Nominatim rate limit"
+msgstr "Limite de débit Nominatim"
+
+msgid "Not geocoded"
+msgstr "Non géocodé"
+
+msgid "Number of results"
+msgstr "Nombre de résultats"
+
+msgid "Number of results (single)"
+msgstr "Nombre de résultats (singulier)"
+
+msgid "Offer “Use my location” (HTML5 geolocation)"
+msgstr "Proposer « Utiliser ma position » (géolocalisation HTML5)"
+
+msgid "On page load move the mouse cursor to the search field?"
+msgstr "Placer le curseur dans le champ de recherche au chargement?"
+
+msgid "Only CSV or TXT files are allowed."
+msgstr "Seuls les fichiers CSV ou TXT sont autorisés."
+
+msgid "Only show locations that are in all the selected categories?"
+msgstr "N’afficher que les magasins présents dans toutes les catégories choisies?"
+
+msgid "Only show the category filter?"
+msgstr "N’afficher que le filtre de catégorie?"
+
+msgid "Only the search bar and the map are shown. The “No results found” message is shown in an overlay on the map."
+msgstr "Seuls la barre de recherche et la carte sont affichés. Le message « Aucun résultat » apparaît en surimpression sur la carte."
+
+msgid "Open"
+msgstr "Ouvert"
+
+msgid "Open links in a new window?"
+msgstr "Ouvrir les liens dans une nouvelle fenêtre?"
+
+msgid "OpenStreetMap"
+msgstr "OpenStreetMap"
+
+msgid "OpenStreetMap (free, no API key)"
+msgstr "OpenStreetMap (gratuit, sans clé API)"
+
+msgid "OpenStreetMap / Leaflet (free)"
+msgstr "OpenStreetMap / Leaflet (gratuit)"
+
+msgid "OpenStreetMap uses Leaflet tiles. Google Maps needs a browser key for the JavaScript API."
+msgstr "OpenStreetMap utilise des tuiles Leaflet. Google Maps exige une clé navigateur pour l’API JavaScript."
+
+msgid "Opening hours"
+msgstr "Heures d’ouverture"
+
+msgid "Opening hours input type"
+msgstr "Type de saisie des heures d’ouverture"
+
+msgid "Optional HTML with {{title}}, {{address}}, {{city}}, {{phone}}, {{hours}}, {{distance}}, {{url}}, {{permalink}}, {{status}} placeholders. Leave blank for the default list."
+msgstr "HTML facultatif avec les espaces {{title}}, {{address}}, {{city}}, {{phone}}, {{hours}}, {{distance}}, {{url}}, {{permalink}}, {{status}}. Laissez vide pour la liste par défaut."
+
+msgid "Optional Sheets API key"
+msgstr "Clé API Sheets facultative"
+
+msgid "Optional. Used for Google Sheets API v4 when the public CSV export is blocked. The sheet still needs to be accessible to the key."
+msgstr "Facultatif. Sert à l’API Google Sheets v4 si l’export CSV public est bloqué. La feuille doit rester accessible à la clé."
+
+msgid "Override frontend strings. Leave blank to use the translated defaults. If WPML, or a plugin using the WPML API is active, the labels below are the source text."
+msgstr "Remplacer les textes du front. Laissez vide pour les traductions par défaut. Si WPML (ou un plugin compatible) est actif, les libellés ci-dessous sont le texte source."
+
+msgid "Paste a sheet URL and click Detect columns. Headers like name, address, city, province/state, postal code, country, phone, email, website, hours, category, lat, lng, description, and image are auto-detected."
+msgstr "Collez l’URL d’une feuille et cliquez sur Détecter les colonnes. Les en-têtes comme nom, adresse, ville, province/État, code postal, pays, téléphone, courriel, site, heures, catégorie, lat, lng, description et image sont détectés automatiquement."
+
+msgid "Pause"
+msgstr "Pause"
+
+msgid "Paused"
+msgstr "En pause"
+
+msgid "Permission denied."
+msgstr "Permission refusée."
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Pick a default marker, or upload your own image. Category markers override the default when a store belongs to that category."
+msgstr "Choisissez un marqueur par défaut ou téléversez une image. Les icônes de catégorie remplacent le défaut."
+
+msgid "Placeholder for the search field"
+msgstr "Texte indicatif du champ de recherche"
+
+msgid "Please adjust your search"
+msgstr "Veuillez ajuster votre recherche"
+
+msgid "Please choose a JSON settings file."
+msgstr "Veuillez choisir un fichier JSON de réglages."
+
+msgid "Please make sure to disable “Search around start location on page load” (Map) and “Attempt to auto-locate the user”, otherwise the map will still show on page load."
+msgstr "Désactivez « Rechercher autour du point de départ au chargement » (Carte) et « Tenter de localiser automatiquement l’utilisateur », sinon la carte s’affichera quand même."
+
+msgid "Postal / ZIP code"
+msgstr "Code postal"
+
+msgid "Prefers results from the selected country when a search is ambiguous, but never excludes results elsewhere."
+msgstr "Favorise les résultats du pays choisi en cas d’ambiguïté, sans exclure les autres."
+
+msgid "Primary"
+msgstr "Principale"
+
+msgid "Province / State"
+msgstr "Province / État"
+
+msgid "Radius"
+msgstr "Rayon"
+
+msgid "Radius dropdown options (comma separated)"
+msgstr "Options du menu de rayon (séparées par des virgules)"
+
+msgid "Recommended for maps with a large amount of markers."
+msgstr "Recommandé pour les cartes avec beaucoup de marqueurs."
+
+msgid "Remove Sync"
+msgstr "Supprimer la synchro"
+
+msgid "Remove the front base from the permalink structure?"
+msgstr "Retirer la base d’articles de la structure de permalien?"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Restrict countries"
+msgstr "Restreindre les pays"
+
+msgid "Restrict results (hard)"
+msgstr "Restreindre les résultats (strict)"
+
+msgid "Results"
+msgstr "Résultats"
+
+msgid "Resume"
+msgstr "Reprendre"
+
+msgid "Retro"
+msgstr "Rétro"
+
+msgid "Return all locations when someone searches for a whole country or state?"
+msgstr "Retourner tous les magasins lors d’une recherche de pays ou de province?"
+
+msgid "Returns only locations in the same country as the search."
+msgstr "Ne renvoie que les magasins du même pays que la recherche."
+
+msgid "Row %1$d: %2$s"
+msgstr "Ligne %1$d : %2$s"
+
+msgid "Sample store result"
+msgstr "Exemple de résultat"
+
+msgid "Saturday"
+msgstr "Samedi"
+
+msgid "Save & Start Sync"
+msgstr "Enregistrer et lancer la synchro"
+
+msgid "Save mapping & settings"
+msgstr "Enregistrer le mapping et les réglages"
+
+msgid "Scroll wheel zoom"
+msgstr "Zoom à la molette"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search Stores"
+msgstr "Rechercher des magasins"
+
+msgid "Search around start location on page load"
+msgstr "Rechercher autour du point de départ au chargement"
+
+msgid "Search button"
+msgstr "Bouton Rechercher"
+
+msgid "Search cache"
+msgstr "Cache de recherche"
+
+msgid "Search cache cleared."
+msgstr "Cache de recherche vidé."
+
+msgid "Search method"
+msgstr "Méthode de recherche"
 
 msgid "Search radius"
 msgstr "Rayon de recherche"
 
-msgid "Category filter"
-msgstr "Filtre de catégorie"
+msgid "Search radius options"
+msgstr "Options de rayon de recherche"
+
+msgid "Searching (preloader text)"
+msgstr "Recherche (texte de préchargement)"
+
+msgid "Searching…"
+msgstr "Recherche…"
+
+msgid "Server geocoder"
+msgstr "Géocodeur serveur"
+
+msgid "Server key"
+msgstr "Clé serveur"
+
+msgid "Set to draft"
+msgstr "Mettre en brouillon"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Settings imported."
+msgstr "Réglages importés."
+
+msgid "Settings transfer"
+msgstr "Transfert des réglages"
+
+msgid "Share the sheet with “Anyone with the link can view”. The plugin reads https://docs.google.com/spreadsheets/d/{ID}/export?format=csv&gid={GID}. No Google login is required."
+msgstr "Partagez la feuille avec « Toute personne disposant du lien ». Le plugin lit https://docs.google.com/spreadsheets/d/{ID}/export?format=csv&gid={GID}. Aucune connexion Google n’est requise."
+
+msgid "Sheet column index"
+msgstr "Index de colonne de la feuille"
+
+msgid "Short description"
+msgstr "Courte description"
+
+msgid "Show a Stores shortcut in the admin bar"
+msgstr "Afficher un raccourci Magasins dans la barre d’admin"
+
+msgid "Show a directions link"
+msgstr "Afficher un lien d’itinéraire"
+
+msgid "Show a reset map button?"
+msgstr "Afficher un bouton de réinitialisation?"
+
+msgid "Show a “Street view” link in the info window when available for the location?"
+msgstr "Afficher un lien « Street View » dans l’infobulle lorsqu’il est disponible?"
+
+msgid "Show a “Zoom here” link in the info window?"
+msgstr "Afficher un lien « Zoomer ici » dans l’infobulle?"
+
+msgid "Show categories?"
+msgstr "Afficher les catégories?"
+
+msgid "Show first in results?"
+msgstr "Afficher en premier dans les résultats?"
+
+msgid "Show max results dropdown?"
+msgstr "Afficher le menu de résultats max?"
+
+msgid "Show search radius dropdown?"
+msgstr "Afficher le menu de rayon?"
+
+msgid "Show start marker on top of store markers?"
+msgstr "Afficher le marqueur de départ au-dessus des magasins?"
+
+msgid "Show the current open / closed status?"
+msgstr "Afficher le statut ouvert / fermé?"
+
+msgid "Show the number of returned results?"
+msgstr "Afficher le nombre de résultats?"
+
+msgid "Show the route on an external website?"
+msgstr "Afficher l’itinéraire sur un site externe?"
+
+msgid "Show the store thumbnail in the info window?"
+msgstr "Afficher la miniature du magasin dans l’infobulle?"
+
+msgid "Silver"
+msgstr "Argent"
+
+msgid "Skipped:"
+msgstr "Ignorés :"
+
+msgid "Sorry, you are not allowed to geocode addresses."
+msgstr "Désolé, vous n’êtes pas autorisé à géocoder des adresses."
+
+msgid "Sort by"
+msgstr "Trier par"
+
+msgid "Sort order"
+msgstr "Ordre de tri"
+
+msgid "Spain"
+msgstr "Espagne"
+
+msgid "Start location"
+msgstr "Point de départ"
+
+msgid "Status"
+msgstr "Statut"
+
+msgid "Store"
+msgstr "Magasin"
+
+msgid "Store Categories"
+msgstr "Catégories de magasin"
+
+msgid "Store Details"
+msgstr "Détails du magasin"
+
+msgid "Store Editor"
+msgstr "Éditeur de magasin"
+
+msgid "Store Locator Settings"
+msgstr "Réglages du localisateur"
+
+msgid "Store Tags"
+msgstr "Étiquettes de magasin"
+
+msgid "Store field"
+msgstr "Champ magasin"
+
+msgid "Store name"
+msgstr "Nom du magasin"
+
+msgid "Store slug"
+msgstr "Identifiant d’URL du magasin"
+
+msgid "Stores"
+msgstr "Magasins"
+
+msgid "Stores removed from the sheet"
+msgstr "Magasins retirés de la feuille"
+
+msgid "Street View control (Google)"
+msgstr "Contrôle Street View (Google)"
+
+msgid "Street view"
+msgstr "Street View"
+
+msgid "Sunday"
+msgstr "Dimanche"
+
+msgid "Switzerland"
+msgstr "Suisse"
+
+msgid "Sync Now"
+msgstr "Synchroniser maintenant"
+
+msgid "Sync failed."
+msgstr "La synchro a échoué."
+
+msgid "Sync finished. Created: %1$d, updated: %2$d, deleted: %3$d, skipped: %4$d."
+msgstr "Synchro terminée. Créés : %1$d, mis à jour : %2$d, supprimés : %3$d, ignorés : %4$d."
+
+msgid "Sync history"
+msgstr "Journal des synchros"
+
+msgid "Syncing…"
+msgstr "Synchronisation…"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Textarea"
+msgstr "Zone de texte"
+
+msgid "The CSV file could not be uploaded."
+msgstr "Le fichier CSV n’a pas pu être téléversé."
+
+msgid "The CSV file is too large."
+msgstr "Le fichier CSV est trop volumineux."
+
+msgid "The Google Sheet URL was not saved. Use a https://docs.google.com/spreadsheets/d/… link or a published CSV export URL."
+msgstr "L’URL Google Sheets n’a pas été enregistrée. Utilisez un lien https://docs.google.com/spreadsheets/d/… ou une URL d’export CSV publié."
+
+msgid "The URL is not an allowed Google Sheets host."
+msgstr "L’URL n’appartient pas à un hôte Google Sheets autorisé."
+
+msgid "The default country and opening hours are only used when a new store is created. So changing the default values will have no effect on existing store locations."
+msgstr "Le pays et les heures par défaut ne s’appliquent qu’à un nouveau magasin. Les modifier n’affecte pas les magasins existants."
+
+msgid "The default opening hours"
+msgstr "Heures d’ouverture par défaut"
+
+msgid "The default value is set as the selected max search results number."
+msgstr "La valeur par défaut est le nombre de résultats max sélectionné."
+
+msgid "The default value is set as the selected search radius number."
+msgstr "La valeur par défaut est le rayon de recherche sélectionné."
+
+msgid "The geocoding service is busy. Please try again shortly."
+msgstr "Le service de géocodage est occupé. Réessayez sous peu."
+
+msgid "The settings file is not valid JSON."
+msgstr "Le fichier de réglages n’est pas un JSON valide."
+
+msgid "The stored tile key for OpenStreetMap remains “osm”."
+msgstr "La clé de tuile enregistrée pour OpenStreetMap reste « osm »."
+
+msgid "The thumbnail is the featured image of the store, and only shows for stores that have one."
+msgstr "La miniature est l’image mise en avant du magasin et n’apparaît que s’il en a une."
+
+msgid "The uploaded file is not valid."
+msgstr "Le fichier téléversé n’est pas valide."
+
+msgid "This map loads tiles from an external map service. Accept to display the map."
+msgstr "Cette carte charge des tuiles d’un service externe. Acceptez pour l’afficher."
+
+msgid "This option is disabled on mobile devices."
+msgstr "Cette option est désactivée sur les appareils mobiles."
+
+msgid "This option works best when the API results are restricted to one or more regions."
+msgstr "Cette option fonctionne mieux lorsque les résultats API sont restreints à une ou plusieurs régions."
+
+msgid "This pixel value determines how close markers need to be to each other to be grouped into a cluster. A larger number will result in a lower amount of clusters."
+msgstr "Cette valeur en pixels détermine la proximité requise pour regrouper les marqueurs. Un nombre plus élevé produit moins de groupes."
+
+msgid "Thursday"
+msgstr "Jeudi"
+
+msgid "Too many geocoding requests. Please try again in a minute."
+msgstr "Trop de requêtes de géocodage. Réessayez dans une minute."
+
+msgid "Tools"
+msgstr "Outils"
+
+msgid "Treat the search field as a postal / ZIP code"
+msgstr "Traiter le champ de recherche comme un code postal"
+
+msgid "Tuesday"
+msgstr "Mardi"
+
+msgid "URL"
+msgstr "URL"
+
+msgid "United Kingdom"
+msgstr "Royaume-Uni"
+
+msgid "United States"
+msgstr "États-Unis"
+
+msgid "Updated:"
+msgstr "Mis à jour :"
+
+msgid "Upload"
+msgstr "Téléverser"
+
+msgid "Use my location"
+msgstr "Utiliser ma position"
+
+msgid "Used for stores marked “Show first in results?” in the store editor."
+msgstr "Utilisé pour les magasins marqués « Afficher en premier dans les résultats? » dans l’éditeur."
+
+msgid "User Experience"
+msgstr "Expérience utilisateur"
+
+msgid "Uses WP-Cron custom schedules. If you set DISABLE_WP_CRON, trigger wp-cron.php from server cron (e.g. every 5 minutes) so these intervals can fire."
+msgstr "Utilise des horaires WP-Cron personnalisés. Si DISABLE_WP_CRON est défini, appelez wp-cron.php depuis le cron serveur (p. ex. toutes les 5 minutes)."
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "Website URL"
+msgstr "URL du site"
+
+msgid "Wednesday"
+msgstr "Mercredi"
+
+msgid "When enabled, clicking the directions link opens the route on an external website in a new window."
+msgstr "Si activé, le lien d’itinéraire ouvre le trajet sur un site externe dans une nouvelle fenêtre."
+
+msgid "When enabled, the start marker will always appear above store markers on the map, even when they overlap."
+msgstr "Si activé, le marqueur de départ reste au-dessus des magasins, même en cas de chevauchement."
+
+msgid "When hovering over a search result, the matching marker"
+msgstr "Au survol d’un résultat, le marqueur correspondant"
+
+msgid "When this option is enabled, the results that are loaded automatically on page load are no longer cached."
+msgstr "Si cette option est activée, les résultats chargés automatiquement ne sont plus mis en cache."
+
+msgid "Where the map opens before a search. Featured stores still appear above other results."
+msgstr "Où s’ouvre la carte avant une recherche. Les magasins en vedette restent en tête des résultats."
+
+msgid "Width"
+msgstr "Largeur"
+
+msgid "Will open the info window"
+msgstr "Ouvre l’infobulle"
+
+msgid "Yes"
+msgstr "Oui"
+
+msgid "Your location"
+msgstr "Votre position"
+
+msgid "Zoom here"
+msgstr "Zoomer ici"
+
+msgid "km"
+msgstr "km"
+
+msgid "mi"
+msgstr "mi"
+
+msgid "{number} result"
+msgstr "{number} résultat"
+
+msgid "{number} results"
+msgstr "{number} résultats"

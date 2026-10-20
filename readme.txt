@@ -112,6 +112,7 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Featured stores, category colors, name search, GDPR consent, and more shortcode attributes.
 * Google Sheets sync history with automatic purge and an overlap lock.
 * Configurable map design: tiles, colors, markers, clustering, info window, list template, custom CSS.
+* /geocode requires a capability (not a nonce alone). Public geocode and autocomplete share a per-IP limit. CSV formula cells and Status values are sanitized. Sheet URLs are validated before save.
 
 = 0.1.1 =
 * Restrict the REST /geocode route to administrators or a valid wp_rest nonce.

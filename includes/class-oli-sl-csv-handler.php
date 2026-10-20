@@ -102,11 +102,12 @@ class Oli_SL_CSV_Handler {
 		$rows = Oli_SL_CSV_Parser::map_rows( $parsed['rows'], $parsed['headers'], $map );
 
 		$results = array(
-			'created' => 0,
-			'updated' => 0,
-			'skipped' => 0,
-			'errors'  => array(),
-			'success' => true,
+			'created'  => 0,
+			'updated'  => 0,
+			'skipped'  => 0,
+			'errors'   => array(),
+			'warnings' => array(),
+			'success'  => true,
 		);
 
 		foreach ( $rows as $index => $data ) {
@@ -116,7 +117,21 @@ class Oli_SL_CSV_Handler {
 				/* translators: 1: row number, 2: error message */
 				$results['errors'][] = sprintf( __( 'Row %1$d: %2$s', 'oli-store-locator' ), $index + 2, $result->get_error_message() );
 				++$results['skipped'];
-			} elseif ( 'created' === $result ) {
+				continue;
+			}
+
+			$warning = '';
+			if ( is_array( $result ) ) {
+				$warning = isset( $result['warning'] ) ? $result['warning'] : '';
+				$result  = isset( $result['action'] ) ? $result['action'] : 'skipped';
+			}
+
+			if ( '' !== $warning ) {
+				/* translators: 1: row number, 2: warning */
+				$results['warnings'][] = sprintf( __( 'Row %1$d: %2$s', 'oli-store-locator' ), $index + 2, $warning );
+			}
+
+			if ( 'created' === $result ) {
 				++$results['created'];
 			} elseif ( 'updated' === $result ) {
 				++$results['updated'];
@@ -151,10 +166,12 @@ class Oli_SL_CSV_Handler {
 			}
 		}
 
+		$status = self::sanitize_import_status( isset( $data['Status'] ) ? $data['Status'] : '' );
+
 		$post_data = array(
 			'post_type'    => 'oli_store',
 			'post_title'   => sanitize_text_field( $data['Name'] ),
-			'post_status'  => ! empty( $data['Status'] ) ? sanitize_key( $data['Status'] ) : 'publish',
+			'post_status'  => $status['status'],
 			'post_content' => ! empty( $data['Description'] ) ? wp_kses_post( $data['Description'] ) : '',
 		);
 
@@ -174,7 +191,55 @@ class Oli_SL_CSV_Handler {
 		$store_id = $result;
 		self::save_row_meta( $store_id, $data, true );
 
+		if ( '' !== $status['warning'] ) {
+			return array(
+				'action'  => $action,
+				'warning' => $status['warning'],
+			);
+		}
+
 		return $action;
+	}
+
+	/**
+	 * Allowed CSV Status values.
+	 *
+	 * @return array
+	 */
+	public static function allowed_statuses() {
+		return array( 'publish', 'draft', 'pending', 'private' );
+	}
+
+	/**
+	 * Accept only publish, draft, pending, or private. Other values become draft.
+	 *
+	 * @param mixed $status Raw status.
+	 * @return array{status: string, warning: string}
+	 */
+	public static function sanitize_import_status( $status ) {
+		$status = sanitize_key( (string) Oli_SL_CSV_Parser::strip_formula_prefix( $status ) );
+		if ( '' === $status ) {
+			return array(
+				'status'  => 'publish',
+				'warning' => '',
+			);
+		}
+
+		if ( in_array( $status, self::allowed_statuses(), true ) ) {
+			return array(
+				'status'  => $status,
+				'warning' => '',
+			);
+		}
+
+		return array(
+			'status'  => 'draft',
+			'warning' => sprintf(
+				/* translators: %s: rejected status value */
+				__( 'Invalid status “%s” was reset to draft.', 'oli-store-locator' ),
+				$status
+			),
+		);
 	}
 
 	/**
@@ -214,8 +279,8 @@ class Oli_SL_CSV_Handler {
 		}
 
 		if ( ! empty( $data['Latitude'] ) && ! empty( $data['Longitude'] ) ) {
-			update_post_meta( $store_id, '_oli_sl_latitude', sanitize_text_field( $data['Latitude'] ) );
-			update_post_meta( $store_id, '_oli_sl_longitude', sanitize_text_field( $data['Longitude'] ) );
+			update_post_meta( $store_id, '_oli_sl_latitude', sanitize_text_field( Oli_SL_CSV_Parser::strip_formula_prefix( $data['Latitude'] ) ) );
+			update_post_meta( $store_id, '_oli_sl_longitude', sanitize_text_field( Oli_SL_CSV_Parser::strip_formula_prefix( $data['Longitude'] ) ) );
 		} elseif ( $geocode ) {
 			$address = oli_sl_join_address(
 				array(

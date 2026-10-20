@@ -25,6 +25,11 @@ wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_hourly' );
 wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_daily' );
 wp_clear_scheduled_hook( 'oli_sl_sync_google_sheets_batch' );
 
+$admin_role = function_exists( 'get_role' ) ? get_role( 'administrator' ) : null;
+if ( $admin_role && $admin_role->has_cap( 'oli_sl_geocode' ) ) {
+	$admin_role->remove_cap( 'oli_sl_geocode' );
+}
+
 global $wpdb;
 $like = $wpdb->esc_like( '_transient_oli_sl_' ) . '%';
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching

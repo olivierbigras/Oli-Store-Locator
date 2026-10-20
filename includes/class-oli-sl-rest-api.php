@@ -78,13 +78,16 @@ class Oli_SL_Rest_API {
 	}
 
 	/**
-	 * Restrict /geocode to administrators or a valid wp_rest nonce.
+	 * Restrict /geocode to users who can manage options or the dedicated geocode cap.
+	 *
+	 * A REST nonce alone is not enough. Visitors geocode through public search.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return true|WP_Error
 	 */
 	public function geocode_permissions( $request ) {
-		if ( self::can_access_geocode( $request ) ) {
+		unset( $request );
+		if ( self::can_access_geocode() ) {
 			return true;
 		}
 
@@ -98,25 +101,41 @@ class Oli_SL_Rest_API {
 	}
 
 	/**
-	 * Whether a REST request may call /geocode.
+	 * Dedicated capability granted to administrators by default.
 	 *
-	 * @param object|null $request Optional request with get_header()/get_param().
+	 * @return string
+	 */
+	public static function geocode_capability() {
+		return 'oli_sl_geocode';
+	}
+
+	/**
+	 * Whether the current user may call /geocode.
+	 *
+	 * @param object|null $request Unused. Kept so existing callers stay valid.
 	 * @return bool
 	 */
 	public static function can_access_geocode( $request = null ) {
-		if ( function_exists( 'current_user_can' ) && current_user_can( 'manage_options' ) ) {
-			return true;
+		unset( $request );
+		if ( ! function_exists( 'current_user_can' ) ) {
+			return false;
 		}
 
-		$nonce = '';
-		if ( is_object( $request ) && method_exists( $request, 'get_header' ) ) {
-			$nonce = (string) $request->get_header( 'X-WP-Nonce' );
-		}
-		if ( '' === $nonce && is_object( $request ) && method_exists( $request, 'get_param' ) ) {
-			$nonce = (string) $request->get_param( '_wpnonce' );
+		return current_user_can( 'manage_options' ) || current_user_can( self::geocode_capability() );
+	}
+
+	/**
+	 * Grant the dedicated geocode capability to administrators.
+	 */
+	public static function grant_geocode_capability() {
+		if ( ! function_exists( 'get_role' ) ) {
+			return;
 		}
 
-		return ( '' !== $nonce && function_exists( 'wp_verify_nonce' ) && wp_verify_nonce( $nonce, 'wp_rest' ) );
+		$role = get_role( 'administrator' );
+		if ( $role && ! $role->has_cap( self::geocode_capability() ) ) {
+			$role->add_cap( self::geocode_capability() );
+		}
 	}
 
 	/**
