@@ -181,10 +181,13 @@ class Oli_SL_Settings {
 			}
 		}
 
-		foreach ( array( 'start_lat', 'start_lng' ) as $key ) {
-			if ( isset( $input[ $key ] ) ) {
-				$out[ $key ] = oli_sl_sanitize_coordinate( $input[ $key ] );
-			}
+		if ( isset( $input['start_lat'] ) ) {
+			$start_lat        = oli_sl_sanitize_latitude( $input['start_lat'] );
+			$out['start_lat'] = '' !== $start_lat ? $start_lat : $defaults['start_lat'];
+		}
+		if ( isset( $input['start_lng'] ) ) {
+			$start_lng        = oli_sl_sanitize_longitude( $input['start_lng'] );
+			$out['start_lng'] = '' !== $start_lng ? $start_lng : $defaults['start_lng'];
 		}
 
 		if ( isset( $input['map_height'] ) ) {

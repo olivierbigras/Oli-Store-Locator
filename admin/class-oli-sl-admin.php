@@ -133,6 +133,11 @@ class Oli_SL_Admin {
 				(int) $results['skipped']
 			);
 			add_settings_error( 'oli_sl_options', 'import_done', $message, 'updated' );
+			if ( ! empty( $results['warnings'] ) && is_array( $results['warnings'] ) ) {
+				foreach ( $results['warnings'] as $warning ) {
+					add_settings_error( 'oli_sl_options', 'import_warning', $warning, 'warning' );
+				}
+			}
 		}
 
 		if ( 'start_sync' === $action ) {
@@ -141,6 +146,7 @@ class Oli_SL_Admin {
 			$sync    = new Oli_SL_Google_Sheets_Sync();
 			$results = $sync->sync();
 			$this->add_sync_notice( $results );
+			$this->persist_settings_errors();
 			wp_safe_redirect( admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings&tab=sync&oli_sl_notice=started' ) );
 			exit;
 		}
@@ -149,18 +155,23 @@ class Oli_SL_Admin {
 			$sync    = new Oli_SL_Google_Sheets_Sync();
 			$results = $sync->sync();
 			$this->add_sync_notice( $results );
+			$this->persist_settings_errors();
 			wp_safe_redirect( admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings&tab=sync&oli_sl_notice=synced' ) );
 			exit;
 		}
 
 		if ( 'pause_sync' === $action ) {
 			update_option( 'oli_sl_sheets_paused', '1' );
+			add_settings_error( 'oli_sl_options', 'sync_paused', __( 'Google Sheets sync paused.', 'oli-store-locator' ), 'updated' );
+			$this->persist_settings_errors();
 			wp_safe_redirect( admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings&tab=sync&oli_sl_notice=paused' ) );
 			exit;
 		}
 
 		if ( 'resume_sync' === $action ) {
 			update_option( 'oli_sl_sheets_paused', '0' );
+			add_settings_error( 'oli_sl_options', 'sync_resumed', __( 'Google Sheets sync resumed.', 'oli-store-locator' ), 'updated' );
+			$this->persist_settings_errors();
 			wp_safe_redirect( admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings&tab=sync&oli_sl_notice=resumed' ) );
 			exit;
 		}
@@ -203,7 +214,7 @@ class Oli_SL_Admin {
 
 		if ( 'import_settings' === $action ) {
 			$file = isset( $_FILES['oli_sl_settings_file'] ) ? oli_sl_sanitize_uploaded_file( $_FILES['oli_sl_settings_file'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- oli_sl_sanitize_uploaded_file().
-			$ext = strtolower( (string) pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+			$ext  = strtolower( (string) pathinfo( $file['name'], PATHINFO_EXTENSION ) );
 			if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) || 'json' !== $ext ) {
 				add_settings_error( 'oli_sl_options', 'settings_import', __( 'Please choose a JSON settings file.', 'oli-store-locator' ), 'error' );
 				return;
@@ -228,9 +239,110 @@ class Oli_SL_Admin {
 			delete_option( 'oli_sl_sheets_sync_results' );
 			delete_option( 'oli_sl_sheets_sync_errors' );
 			delete_transient( 'oli_sl_sheets_sync_batches' );
+			add_settings_error( 'oli_sl_options', 'sync_removed', __( 'Google Sheets sync removed.', 'oli-store-locator' ), 'updated' );
+			$this->persist_settings_errors();
 			wp_safe_redirect( admin_url( 'edit.php?post_type=oli_store&page=oli-sl-settings&tab=sync&oli_sl_notice=removed' ) );
 			exit;
 		}
+	}
+
+	/**
+	 * Keep settings errors across a redirect (Sync Now, pause, etc.).
+	 */
+	private function persist_settings_errors() {
+		global $wp_settings_errors;
+		if ( empty( $wp_settings_errors ) || ! function_exists( 'get_current_user_id' ) ) {
+			return;
+		}
+		set_transient( 'oli_sl_settings_errors_' . get_current_user_id(), $wp_settings_errors, MINUTE_IN_SECONDS );
+	}
+
+	/**
+	 * Replay settings errors stored before a redirect, plus Sync Now query notices.
+	 */
+	public function restore_settings_errors() {
+		if ( ! is_admin() || ! function_exists( 'get_current_user_id' ) ) {
+			return;
+		}
+
+		$key    = 'oli_sl_settings_errors_' . get_current_user_id();
+		$stored = get_transient( $key );
+		if ( is_array( $stored ) ) {
+			foreach ( $stored as $error ) {
+				if ( ! is_array( $error ) || empty( $error['code'] ) ) {
+					continue;
+				}
+				add_settings_error(
+					isset( $error['setting'] ) ? $error['setting'] : 'oli_sl_options',
+					$error['code'],
+					isset( $error['message'] ) ? $error['message'] : '',
+					isset( $error['type'] ) ? $error['type'] : 'updated'
+				);
+			}
+			delete_transient( $key );
+		}
+
+		if ( empty( $_GET['oli_sl_notice'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- admin flash only.
+			return;
+		}
+
+		$notice = sanitize_key( wp_unslash( $_GET['oli_sl_notice'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- admin flash only.
+		if ( 'synced' === $notice && ! $this->has_settings_error( 'sync_ok' ) && ! $this->has_settings_error( 'sync_error' ) ) {
+			add_settings_error( 'oli_sl_options', 'sync_ok', __( 'Sync Now finished.', 'oli-store-locator' ), 'updated' );
+		}
+	}
+
+	/**
+	 * Whether a settings error code is already queued.
+	 *
+	 * @param string $code Code.
+	 * @return bool
+	 */
+	private function has_settings_error( $code ) {
+		$errors = get_settings_errors( 'oli_sl_options' );
+		foreach ( $errors as $error ) {
+			if ( isset( $error['code'] ) && $code === $error['code'] ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Admin notice when Google Maps is selected without an API key.
+	 */
+	public function missing_google_key_notice() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		if ( 'google' !== oli_sl_get_option( 'map_provider', 'leaflet' ) ) {
+			return;
+		}
+		if ( '' !== trim( (string) oli_sl_get_option( 'google_api_key', '' ) ) ) {
+			return;
+		}
+
+		echo '<div class="notice notice-warning"><p>';
+		echo esc_html__( 'Oli Store Locator: Google Maps is selected but no API key is set. The public map uses Leaflet until you add a key under Stores → Settings → API.', 'oli-store-locator' );
+		echo '</p></div>';
+	}
+
+	/**
+	 * Show a store-editor warning when invalid coordinates were cleared.
+	 */
+	public function metabox_coordinate_notice() {
+		if ( ! function_exists( 'get_current_user_id' ) ) {
+			return;
+		}
+
+		$key     = 'oli_sl_metabox_notice_' . get_current_user_id();
+		$message = get_transient( $key );
+		if ( ! is_string( $message ) || '' === $message ) {
+			return;
+		}
+
+		delete_transient( $key );
+		echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 	}
 
 	/**
@@ -453,8 +565,13 @@ class Oli_SL_Admin {
 			if ( is_wp_error( $result ) ) {
 				continue;
 			}
-			update_post_meta( $store_id, '_oli_sl_latitude', $result['lat'] );
-			update_post_meta( $store_id, '_oli_sl_longitude', $result['lng'] );
+			$geo_lat = oli_sl_sanitize_latitude( $result['lat'] );
+			$geo_lng = oli_sl_sanitize_longitude( $result['lng'] );
+			if ( '' === $geo_lat || '' === $geo_lng ) {
+				continue;
+			}
+			update_post_meta( $store_id, '_oli_sl_latitude', $geo_lat );
+			update_post_meta( $store_id, '_oli_sl_longitude', $geo_lng );
 			++$count;
 		}
 
@@ -482,5 +599,11 @@ class Oli_SL_Admin {
 			isset( $results['skipped'] ) ? (int) $results['skipped'] : 0
 		);
 		add_settings_error( 'oli_sl_options', 'sync_ok', $message, 'updated' );
+
+		if ( ! empty( $results['warnings'] ) && is_array( $results['warnings'] ) ) {
+			foreach ( $results['warnings'] as $warning ) {
+				add_settings_error( 'oli_sl_options', 'sync_warning', $warning, 'warning' );
+			}
+		}
 	}
 }

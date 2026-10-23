@@ -6,6 +6,16 @@
 	var TextControl = components.TextControl;
 	var ServerSideRender = serverSideRender;
 
+	function definedAttrs(attrs) {
+		var out = {};
+		Object.keys(attrs || {}).forEach(function (key) {
+			if (attrs[key] !== '' && attrs[key] != null) {
+				out[key] = attrs[key];
+			}
+		});
+		return out;
+	}
+
 	function editWithAttrs(label, attrs) {
 		return function (props) {
 			var controls = attrs.map(function (attr) {
@@ -15,7 +25,7 @@
 					value: props.attributes[attr.key] || '',
 					onChange: function (value) {
 						var next = {};
-						next[attr.key] = value;
+						next[attr.key] = value === '' || value == null ? undefined : value;
 						props.setAttributes(next);
 					}
 				});
@@ -24,7 +34,7 @@
 				element.Fragment,
 				{},
 				el(InspectorControls, {}, el(PanelBody, { title: label }, controls)),
-				el(ServerSideRender, { block: props.name, attributes: props.attributes })
+				el(ServerSideRender, { block: props.name, attributes: definedAttrs(props.attributes) })
 			);
 		};
 	}
@@ -35,10 +45,10 @@
 		icon: 'location-alt',
 		category: 'widgets',
 		attributes: {
-			radius: { type: 'string', default: '' },
-			max_results: { type: 'string', default: '' },
-			category: { type: 'string', default: '' },
-			height: { type: 'string', default: '' }
+			radius: { type: 'string' },
+			max_results: { type: 'string' },
+			category: { type: 'string' },
+			height: { type: 'string' }
 		},
 		edit: editWithAttrs(__('Locator settings', 'oli-store-locator'), [
 			{ key: 'radius', label: __('Radius', 'oli-store-locator') },
@@ -56,7 +66,7 @@
 		title: __('Store Address', 'oli-store-locator'),
 		icon: 'building',
 		category: 'widgets',
-		attributes: { id: { type: 'string', default: '' } },
+		attributes: { id: { type: 'string' } },
 		edit: editWithAttrs(__('Store address', 'oli-store-locator'), [{ key: 'id', label: __('Store ID', 'oli-store-locator') }]),
 		save: function () {
 			return null;
@@ -68,7 +78,7 @@
 		title: __('Store Hours', 'oli-store-locator'),
 		icon: 'clock',
 		category: 'widgets',
-		attributes: { id: { type: 'string', default: '' } },
+		attributes: { id: { type: 'string' } },
 		edit: editWithAttrs(__('Store hours', 'oli-store-locator'), [{ key: 'id', label: __('Store ID', 'oli-store-locator') }]),
 		save: function () {
 			return null;
@@ -81,8 +91,8 @@
 		icon: 'location',
 		category: 'widgets',
 		attributes: {
-			id: { type: 'string', default: '' },
-			height: { type: 'string', default: '400px' }
+			id: { type: 'string' },
+			height: { type: 'string' }
 		},
 		edit: editWithAttrs(__('Store map', 'oli-store-locator'), [
 			{ key: 'id', label: __('Store ID', 'oli-store-locator') },

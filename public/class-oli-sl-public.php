@@ -104,7 +104,7 @@ class Oli_SL_Public {
 	 * Enqueue locator assets.
 	 */
 	public static function enqueue_locator_assets() {
-		$provider = oli_sl_get_option( 'map_provider', 'leaflet' );
+		$provider = oli_sl_effective_map_provider();
 
 		wp_enqueue_style( 'oli-sl-public' );
 		if ( is_rtl() ) {

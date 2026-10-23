@@ -92,13 +92,14 @@ class Oli_SL_Google_Sheets_Sync {
 		$batches    = Oli_SL_Sync_Diff::batch( $diff, $batch_size );
 
 		$state = array(
-			'success' => true,
-			'created' => 0,
-			'updated' => 0,
-			'skipped' => count( $diff['skip'] ),
-			'deleted' => 0,
-			'errors'  => array(),
-			'message' => '',
+			'success'  => true,
+			'created'  => 0,
+			'updated'  => 0,
+			'skipped'  => count( $diff['skip'] ),
+			'deleted'  => 0,
+			'errors'   => array(),
+			'warnings' => array(),
+			'message'  => '',
 		);
 
 		foreach ( $diff['skip'] as $skip ) {
@@ -154,14 +155,19 @@ class Oli_SL_Google_Sheets_Sync {
 
 		if ( ! is_array( $state ) ) {
 			$state = array(
-				'success' => true,
-				'created' => 0,
-				'updated' => 0,
-				'skipped' => 0,
-				'deleted' => 0,
-				'errors'  => array(),
-				'message' => '',
+				'success'  => true,
+				'created'  => 0,
+				'updated'  => 0,
+				'skipped'  => 0,
+				'deleted'  => 0,
+				'errors'   => array(),
+				'warnings' => array(),
+				'message'  => '',
 			);
+		}
+
+		if ( ! isset( $state['warnings'] ) || ! is_array( $state['warnings'] ) ) {
+			$state['warnings'] = array();
 		}
 
 		$batch = array_shift( $batches );
@@ -176,6 +182,7 @@ class Oli_SL_Google_Sheets_Sync {
 					++$state['skipped'];
 				} else {
 					++$state['created'];
+					$this->collect_row_warnings( $state, $item['row'] );
 				}
 			} elseif ( 'update' === $op ) {
 				$result = $this->update_store( $item['id'], $item['row'], $item['key'], ! empty( $item['geocode'] ) );
@@ -184,6 +191,7 @@ class Oli_SL_Google_Sheets_Sync {
 					++$state['skipped'];
 				} else {
 					++$state['updated'];
+					$this->collect_row_warnings( $state, $item['row'] );
 				}
 			} elseif ( 'remove' === $op ) {
 				$this->remove_store( $item['id'], $item['action'] );
@@ -237,6 +245,10 @@ class Oli_SL_Google_Sheets_Sync {
 			return new WP_Error( 'invalid_host', __( 'The URL is not an allowed Google Sheets host.', 'oli-store-locator' ) );
 		}
 
+		if ( empty( $args['user-agent'] ) ) {
+			$args['user-agent'] = oli_sl_http_user_agent();
+		}
+
 		return wp_safe_remote_get( $url, $args );
 	}
 
@@ -275,9 +287,6 @@ class Oli_SL_Google_Sheets_Sync {
 				$csv_url,
 				array(
 					'timeout' => 30,
-					'headers' => array(
-						'user-agent' => 'Oli Store Locator/' . OLI_SL_VERSION,
-					),
 				)
 			);
 
@@ -285,11 +294,16 @@ class Oli_SL_Google_Sheets_Sync {
 				return $response;
 			}
 
-			$code = wp_remote_retrieve_response_code( $response );
-			$csv  = wp_remote_retrieve_body( $response );
+			$code         = wp_remote_retrieve_response_code( $response );
+			$csv          = wp_remote_retrieve_body( $response );
+			$content_type = wp_remote_retrieve_header( $response, 'content-type' );
 
 			if ( $code >= 400 || '' === $csv ) {
 				return new WP_Error( 'empty_sheet', __( 'Empty response from Google Sheets. Make sure the sheet is shared with “anyone with the link can view”.', 'oli-store-locator' ) );
+			}
+
+			if ( Oli_SL_CSV_Parser::looks_like_html( $csv, is_string( $content_type ) ? $content_type : '' ) ) {
+				return new WP_Error( 'sheets_html', __( 'Google Sheets returned a sign-in page instead of CSV. Share the sheet with “anyone with the link can view”.', 'oli-store-locator' ) );
 			}
 		}
 
@@ -332,7 +346,13 @@ class Oli_SL_Google_Sheets_Sync {
 			return $meta;
 		}
 
-		$body  = json_decode( wp_remote_retrieve_body( $meta ), true );
+		$meta_body = wp_remote_retrieve_body( $meta );
+		$meta_type = wp_remote_retrieve_header( $meta, 'content-type' );
+		if ( Oli_SL_CSV_Parser::looks_like_html( $meta_body, is_string( $meta_type ) ? $meta_type : '' ) ) {
+			return new WP_Error( 'sheets_html', __( 'Google Sheets returned a sign-in page instead of CSV. Share the sheet with “anyone with the link can view”.', 'oli-store-locator' ) );
+		}
+
+		$body  = json_decode( $meta_body, true );
 		$title = 'Sheet1';
 
 		if ( ! empty( $body['sheets'] ) && is_array( $body['sheets'] ) ) {
@@ -363,7 +383,13 @@ class Oli_SL_Google_Sheets_Sync {
 			return $values;
 		}
 
-		$data = json_decode( wp_remote_retrieve_body( $values ), true );
+		$values_body = wp_remote_retrieve_body( $values );
+		$values_type = wp_remote_retrieve_header( $values, 'content-type' );
+		if ( Oli_SL_CSV_Parser::looks_like_html( $values_body, is_string( $values_type ) ? $values_type : '' ) ) {
+			return new WP_Error( 'sheets_html', __( 'Google Sheets returned a sign-in page instead of CSV. Share the sheet with “anyone with the link can view”.', 'oli-store-locator' ) );
+		}
+
+		$data = json_decode( $values_body, true );
 		if ( empty( $data['values'] ) || ! is_array( $data['values'] ) ) {
 			return new WP_Error( 'empty_sheet', __( 'No data found in Google Sheets.', 'oli-store-locator' ) );
 		}
@@ -424,11 +450,13 @@ class Oli_SL_Google_Sheets_Sync {
 	 * @return int|WP_Error
 	 */
 	private function create_store( $row, $key, $geocode ) {
+		$status = Oli_SL_CSV_Handler::sanitize_import_status( isset( $row['Status'] ) ? $row['Status'] : '' );
+
 		$post_id = wp_insert_post(
 			array(
 				'post_type'    => 'oli_store',
 				'post_title'   => sanitize_text_field( $row['Name'] ),
-				'post_status'  => 'publish',
+				'post_status'  => $status['status'],
 				'post_content' => ! empty( $row['Description'] ) ? wp_kses_post( $row['Description'] ) : '',
 			),
 			true
@@ -454,12 +482,14 @@ class Oli_SL_Google_Sheets_Sync {
 	 * @return int|WP_Error
 	 */
 	private function update_store( $store_id, $row, $key, $geocode ) {
+		$status = Oli_SL_CSV_Handler::sanitize_import_status( isset( $row['Status'] ) ? $row['Status'] : '' );
+
 		$result = wp_update_post(
 			array(
 				'ID'           => $store_id,
 				'post_title'   => sanitize_text_field( $row['Name'] ),
 				'post_content' => ! empty( $row['Description'] ) ? wp_kses_post( $row['Description'] ) : get_post_field( 'post_content', $store_id ),
-				'post_status'  => 'publish',
+				'post_status'  => $status['status'],
 			),
 			true
 		);
@@ -510,6 +540,26 @@ class Oli_SL_Google_Sheets_Sync {
 		$hook      = isset( $map[ $frequency ] ) ? $map[ $frequency ] : 'oli_sl_sync_google_sheets_hourly';
 		$next      = wp_next_scheduled( $hook );
 		return $next ? (int) $next : 0;
+	}
+
+	/**
+	 * Append status / coordinate warnings from the last saved row.
+	 *
+	 * @param array $state Sync state (by reference).
+	 * @param array $row   Mapped row.
+	 */
+	private function collect_row_warnings( &$state, $row ) {
+		$status   = Oli_SL_CSV_Handler::sanitize_import_status( isset( $row['Status'] ) ? $row['Status'] : '' );
+		$warnings = array_filter(
+			array(
+				$status['warning'],
+				Oli_SL_CSV_Handler::last_meta_warning(),
+			)
+		);
+		if ( empty( $warnings ) ) {
+			return;
+		}
+		$state['warnings'][] = implode( ' ', $warnings );
 	}
 
 	/**

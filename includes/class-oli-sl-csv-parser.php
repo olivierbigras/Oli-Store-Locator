@@ -298,9 +298,30 @@ class Oli_SL_CSV_Parser {
 	}
 
 	/**
+	 * Whether a remote body is an HTML page (Google sign-in) rather than CSV.
+	 *
+	 * @param string $body         Response body.
+	 * @param string $content_type Optional Content-Type header.
+	 * @return bool
+	 */
+	public static function looks_like_html( $body, $content_type = '' ) {
+		if ( is_string( $content_type ) && false !== stripos( $content_type, 'text/html' ) ) {
+			return true;
+		}
+
+		$trim = ltrim( (string) $body );
+		if ( '' === $trim ) {
+			return false;
+		}
+
+		return ( 0 === stripos( $trim, '<!DOCTYPE' ) || 0 === stripos( $trim, '<html' ) );
+	}
+
+	/**
 	 * Whether a URL host is an allowed Google Sheets host.
 	 *
-	 * Accepts docs.google.com, sheets.googleapis.com, and *.googleusercontent.com.
+	 * Accepts docs.google.com and sheets.googleapis.com.
+	 * wp_safe_remote_get follows the published-CSV redirect to Google’s download host.
 	 *
 	 * @param string $url URL.
 	 * @return bool
@@ -323,18 +344,7 @@ class Oli_SL_CSV_Parser {
 			return false;
 		}
 
-		if ( in_array( $host, array( 'docs.google.com', 'sheets.googleapis.com' ), true ) ) {
-			return true;
-		}
-
-		// Sheets CSV downloads may redirect here. Fetched with wp_safe_remote_get, never enqueued.
-		// Host assembled at runtime so Plugin Check does not treat the allow-list as a CDN URL.
-		$user_content_host = implode( '.', array( 'googleusercontent', 'com' ) );
-		if ( $host === $user_content_host || substr( $host, -( strlen( $user_content_host ) + 1 ) ) === '.' . $user_content_host ) {
-			return true;
-		}
-
-		return false;
+		return in_array( $host, array( 'docs.google.com', 'sheets.googleapis.com' ), true );
 	}
 
 	/**

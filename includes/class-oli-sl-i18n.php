@@ -1,6 +1,9 @@
 <?php
 /**
- * Define internationalization functionality.
+ * Internationalization placeholder.
+ *
+ * WordPress 4.6+ (this plugin requires 6.5+) loads translations from
+ * wp-content/languages/plugins/ using the plugin text domain automatically.
  *
  * @package Oli_Store_Locator
  */
@@ -10,18 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Define internationalization functionality.
+ * Kept so older customizations that instantiate this class still load.
  */
-class Oli_SL_I18n {
-
-	/**
-	 * Load the plugin text domain for translation.
-	 */
-	public function load_plugin_textdomain() {
-		load_plugin_textdomain(
-			'oli-store-locator',
-			false,
-			dirname( OLI_SL_PLUGIN_BASENAME ) . '/languages/'
-		);
-	}
-}
+class Oli_SL_I18n {}

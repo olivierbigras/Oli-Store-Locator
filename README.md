@@ -7,9 +7,9 @@ WordPress plugin: searchable store locator with Google Maps or free Leaflet/Open
 - **Repository:** https://github.com/olivierbigras/Oli-Store-Locator
 - **License:** GPLv2 or later
 - **Requires:** WordPress 6.5+, PHP 7.4+
-- **Version:** 0.2.1
+- **Version:** 0.2.2
 
-See [`readme.txt`](readme.txt) for the full WordPress.org description, including the **External services** section.
+See [`readme.txt`](readme.txt) for the full WordPress.org description, including the **External services** section. Bundled MarkerClustererPlus (`assets/vendor/markerclusterer/index.min.js`) is from [googlemaps/js-markerclustererplus](https://github.com/googlemaps/js-markerclustererplus).
 
 ## Quick start
 

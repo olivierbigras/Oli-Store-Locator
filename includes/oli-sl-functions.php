@@ -177,46 +177,50 @@ function oli_sl_default_options() {
 	);
 }
 
-/**
- * Get a plugin option from the combined settings array.
- *
- * @param string $key     Option key without the oli_sl_ prefix.
- * @param mixed  $fallback Default value.
- * @return mixed
- */
-function oli_sl_get_option( $key, $fallback = null ) {
-	$defaults = oli_sl_default_options();
+if ( ! function_exists( 'oli_sl_get_option' ) ) {
+	/**
+	 * Get a plugin option from the combined settings array.
+	 *
+	 * @param string $key     Option key without the oli_sl_ prefix.
+	 * @param mixed  $fallback Default value.
+	 * @return mixed
+	 */
+	function oli_sl_get_option( $key, $fallback = null ) {
+		$defaults = oli_sl_default_options();
 
-	if ( null === $fallback && array_key_exists( $key, $defaults ) ) {
-		$fallback = $defaults[ $key ];
+		if ( null === $fallback && array_key_exists( $key, $defaults ) ) {
+			$fallback = $defaults[ $key ];
+		}
+
+		$options = get_option( 'oli_sl_options', array() );
+
+		if ( is_array( $options ) && array_key_exists( $key, $options ) ) {
+			return $options[ $key ];
+		}
+
+		$legacy = get_option( 'oli_sl_' . $key, null );
+		if ( null !== $legacy && false !== $legacy ) {
+			return $legacy;
+		}
+
+		return $fallback;
 	}
-
-	$options = get_option( 'oli_sl_options', array() );
-
-	if ( is_array( $options ) && array_key_exists( $key, $options ) ) {
-		return $options[ $key ];
-	}
-
-	$legacy = get_option( 'oli_sl_' . $key, null );
-	if ( null !== $legacy && false !== $legacy ) {
-		return $legacy;
-	}
-
-	return $fallback;
 }
 
-/**
- * Update a single key inside oli_sl_options.
- *
- * @param string $key   Option key.
- * @param mixed  $value Value.
- * @return bool
- */
-function oli_sl_update_option( $key, $value ) {
-	$options         = get_option( 'oli_sl_options', array() );
-	$options         = is_array( $options ) ? $options : array();
-	$options[ $key ] = $value;
-	return update_option( 'oli_sl_options', $options );
+if ( ! function_exists( 'oli_sl_update_option' ) ) {
+	/**
+	 * Update a single key inside oli_sl_options.
+	 *
+	 * @param string $key   Option key.
+	 * @param mixed  $value Value.
+	 * @return bool
+	 */
+	function oli_sl_update_option( $key, $value ) {
+		$options         = get_option( 'oli_sl_options', array() );
+		$options         = is_array( $options ) ? $options : array();
+		$options[ $key ] = $value;
+		return update_option( 'oli_sl_options', $options );
+	}
 }
 
 /**
@@ -361,16 +365,25 @@ function oli_sl_cron_schedules( $schedules ) {
  * @return array
  */
 function oli_sl_frontend_config() {
+	$start_lat = oli_sl_sanitize_latitude( oli_sl_get_option( 'start_lat', '45.5017' ) );
+	$start_lng = oli_sl_sanitize_longitude( oli_sl_get_option( 'start_lng', '-73.5673' ) );
+	if ( '' === $start_lat ) {
+		$start_lat = '45.5017';
+	}
+	if ( '' === $start_lng ) {
+		$start_lng = '-73.5673';
+	}
+
 	$config = array(
 		'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
 		'restUrl'             => esc_url_raw( rest_url( 'oli-store-locator/v1/' ) ),
 		'nonce'               => wp_create_nonce( 'oli_sl_nonce' ),
-		'provider'            => oli_sl_get_option( 'map_provider', 'leaflet' ),
+		'provider'            => oli_sl_effective_map_provider(),
 		'geocodingProvider'   => oli_sl_get_option( 'geocoding_provider', 'nominatim' ),
 		'googleKey'           => oli_sl_get_option( 'google_api_key', '' ),
 		'unit'                => oli_sl_get_option( 'distance_unit', 'km' ),
-		'startLat'            => (float) oli_sl_get_option( 'start_lat', '45.5017' ),
-		'startLng'            => (float) oli_sl_get_option( 'start_lng', '-73.5673' ),
+		'startLat'            => (float) $start_lat,
+		'startLng'            => (float) $start_lng,
 		'startZoom'           => (int) oli_sl_get_option( 'start_zoom', '10' ),
 		'mapType'             => oli_sl_get_option( 'map_type', 'roadmap' ),
 		'scrollWheel'         => (bool) oli_sl_get_option( 'scroll_wheel', '1' ),
@@ -667,16 +680,103 @@ function oli_sl_checkbox_field( $key, $label ) {
 /**
  * Sanitize a latitude or longitude string.
  *
- * @param mixed $value Raw value.
- * @return string Empty string or a numeric coordinate.
+ * Rejects non-numeric values, NaN, INF, and out-of-range numbers.
+ *
+ * @param mixed  $value Raw value.
+ * @param string $axis  'lat' or 'lng'.
+ * @return string Empty string or a finite coordinate.
  */
-function oli_sl_sanitize_coordinate( $value ) {
+function oli_sl_sanitize_coordinate( $value, $axis = 'lat' ) {
 	$value = sanitize_text_field( (string) $value );
+	$value = trim( $value );
+
+	if ( class_exists( 'Oli_SL_CSV_Parser' ) ) {
+		$value = Oli_SL_CSV_Parser::strip_formula_prefix( $value );
+	}
+
 	if ( '' === $value || ! is_numeric( $value ) ) {
 		return '';
 	}
 
-	return (string) (float) $value;
+	$number = (float) $value;
+	if ( is_nan( $number ) || is_infinite( $number ) ) {
+		return '';
+	}
+
+	if ( 'lng' === $axis ) {
+		if ( $number < -180 || $number > 180 ) {
+			return '';
+		}
+	} elseif ( $number < -90 || $number > 90 ) {
+		return '';
+	}
+
+	return (string) $number;
+}
+
+/**
+ * Sanitize a latitude (REST / forms).
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function oli_sl_sanitize_latitude( $value ) {
+	return oli_sl_sanitize_coordinate( $value, 'lat' );
+}
+
+/**
+ * Sanitize a longitude (REST / forms).
+ *
+ * @param mixed $value Raw value.
+ * @return string
+ */
+function oli_sl_sanitize_longitude( $value ) {
+	return oli_sl_sanitize_coordinate( $value, 'lng' );
+}
+
+/**
+ * Map provider actually used on the public site.
+ *
+ * Google without an API key falls back to Leaflet.
+ *
+ * @return string
+ */
+function oli_sl_effective_map_provider() {
+	$provider = oli_sl_get_option( 'map_provider', 'leaflet' );
+	if ( 'google' === $provider && '' === trim( (string) oli_sl_get_option( 'google_api_key', '' ) ) ) {
+		return 'leaflet';
+	}
+	return $provider;
+}
+
+/**
+ * HTTP User-Agent for outbound plugin requests.
+ *
+ * @return string
+ */
+function oli_sl_http_user_agent() {
+	$home = function_exists( 'home_url' ) ? home_url( '/' ) : '';
+	return 'Oli-Store-Locator/' . OLI_SL_VERSION . '; ' . $home;
+}
+
+/**
+ * Drop empty or null shortcode/block attributes so defaults apply.
+ *
+ * @param mixed $atts Attributes.
+ * @return array
+ */
+function oli_sl_drop_empty_atts( $atts ) {
+	if ( ! is_array( $atts ) ) {
+		return array();
+	}
+
+	foreach ( $atts as $key => $value ) {
+		if ( null === $value || '' === $value ) {
+			unset( $atts[ $key ] );
+		}
+	}
+
+	return $atts;
 }
 
 /**

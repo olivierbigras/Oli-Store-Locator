@@ -170,10 +170,10 @@ class Oli_SL_Test_Upload_And_Sheets {
 	private static function test_sheets_allowed_hosts() {
 		$ok = Oli_SL_CSV_Parser::is_allowed_sheets_host( 'https://docs.google.com/spreadsheets/d/abc/edit' )
 			&& Oli_SL_CSV_Parser::is_allowed_sheets_host( 'https://sheets.googleapis.com/v4/spreadsheets/abc' )
-			&& Oli_SL_CSV_Parser::is_allowed_sheets_host( 'https://doc-00.googleusercontent.com/docs/securesc/file' )
+			&& ! Oli_SL_CSV_Parser::is_allowed_sheets_host( 'https://doc-00.googleusercontent.com/docs/securesc/file' )
 			&& ! Oli_SL_CSV_Parser::is_allowed_sheets_host( 'http://docs.google.com/spreadsheets/d/abc/edit' )
 			&& ! Oli_SL_CSV_Parser::is_allowed_sheets_host( 'https://docs.google.com.evil.com/spreadsheets/d/abc' );
-		return self::assert_true( $ok, 'Only docs.google.com, sheets.googleapis.com, and *.googleusercontent.com are allowed' );
+		return self::assert_true( $ok, 'Only docs.google.com and sheets.googleapis.com are allowed Sheets hosts' );
 	}
 
 	/**

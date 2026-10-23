@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Oli_SL_CSV_Handler {
 
 	/**
+	 * Last warning from save_row_meta().
+	 *
+	 * @var string
+	 */
+	protected static $last_meta_warning = '';
+
+	/**
 	 * Export stores to CSV.
 	 *
 	 * @return string CSV content.
@@ -191,10 +198,17 @@ class Oli_SL_CSV_Handler {
 		$store_id = $result;
 		self::save_row_meta( $store_id, $data, true );
 
-		if ( '' !== $status['warning'] ) {
+		$warnings = array_filter(
+			array(
+				$status['warning'],
+				self::last_meta_warning(),
+			)
+		);
+
+		if ( ! empty( $warnings ) ) {
 			return array(
 				'action'  => $action,
-				'warning' => $status['warning'],
+				'warning' => implode( ' ', $warnings ),
 			);
 		}
 
@@ -236,10 +250,19 @@ class Oli_SL_CSV_Handler {
 			'status'  => 'draft',
 			'warning' => sprintf(
 				/* translators: %s: rejected status value */
-				__( 'Invalid status “%s” was reset to draft.', 'oli-store-locator' ),
+				__( 'Unknown status “%s” was reset to draft.', 'oli-store-locator' ),
 				$status
 			),
 		);
+	}
+
+	/**
+	 * Last warning produced by save_row_meta().
+	 *
+	 * @return string
+	 */
+	public static function last_meta_warning() {
+		return self::$last_meta_warning;
 	}
 
 	/**
@@ -248,9 +271,11 @@ class Oli_SL_CSV_Handler {
 	 * @param int   $store_id Store ID.
 	 * @param array $data     Mapped row.
 	 * @param bool  $geocode  Geocode if coordinates missing.
+	 * @return string Warning when coordinates were rejected, otherwise empty.
 	 */
 	public static function save_row_meta( $store_id, $data, $geocode = false ) {
-		$meta_fields = array(
+		self::$last_meta_warning = '';
+		$meta_fields             = array(
 			'_oli_sl_address'     => 'Address',
 			'_oli_sl_address_2'   => 'Address_2',
 			'_oli_sl_city'        => 'City',
@@ -278,24 +303,42 @@ class Oli_SL_CSV_Handler {
 			}
 		}
 
-		if ( ! empty( $data['Latitude'] ) && ! empty( $data['Longitude'] ) ) {
-			update_post_meta( $store_id, '_oli_sl_latitude', sanitize_text_field( Oli_SL_CSV_Parser::strip_formula_prefix( $data['Latitude'] ) ) );
-			update_post_meta( $store_id, '_oli_sl_longitude', sanitize_text_field( Oli_SL_CSV_Parser::strip_formula_prefix( $data['Longitude'] ) ) );
-		} elseif ( $geocode ) {
-			$address = oli_sl_join_address(
-				array(
-					isset( $data['Address'] ) ? $data['Address'] : '',
-					isset( $data['City'] ) ? $data['City'] : '',
-					isset( $data['State'] ) ? $data['State'] : '',
-					isset( $data['Zip'] ) ? $data['Zip'] : '',
-					isset( $data['Country'] ) ? $data['Country'] : '',
-				)
-			);
-			if ( '' !== $address ) {
-				$geocoded = Oli_SL_Geocoding::geocode( $address );
-				if ( ! is_wp_error( $geocoded ) ) {
-					update_post_meta( $store_id, '_oli_sl_latitude', $geocoded['lat'] );
-					update_post_meta( $store_id, '_oli_sl_longitude', $geocoded['lng'] );
+		$raw_lat = isset( $data['Latitude'] ) ? $data['Latitude'] : '';
+		$raw_lng = isset( $data['Longitude'] ) ? $data['Longitude'] : '';
+		$had_lat = '' !== trim( (string) Oli_SL_CSV_Parser::strip_formula_prefix( $raw_lat ) );
+		$had_lng = '' !== trim( (string) Oli_SL_CSV_Parser::strip_formula_prefix( $raw_lng ) );
+		$lat     = oli_sl_sanitize_coordinate( $raw_lat, 'lat' );
+		$lng     = oli_sl_sanitize_coordinate( $raw_lng, 'lng' );
+
+		if ( '' !== $lat && '' !== $lng ) {
+			update_post_meta( $store_id, '_oli_sl_latitude', $lat );
+			update_post_meta( $store_id, '_oli_sl_longitude', $lng );
+		} else {
+			if ( $had_lat || $had_lng ) {
+				delete_post_meta( $store_id, '_oli_sl_latitude' );
+				delete_post_meta( $store_id, '_oli_sl_longitude' );
+				self::$last_meta_warning = __( 'Invalid coordinates were cleared; the store is not geolocated.', 'oli-store-locator' );
+			}
+			if ( $geocode ) {
+				$address = oli_sl_join_address(
+					array(
+						isset( $data['Address'] ) ? $data['Address'] : '',
+						isset( $data['City'] ) ? $data['City'] : '',
+						isset( $data['State'] ) ? $data['State'] : '',
+						isset( $data['Zip'] ) ? $data['Zip'] : '',
+						isset( $data['Country'] ) ? $data['Country'] : '',
+					)
+				);
+				if ( '' !== $address ) {
+					$geocoded = Oli_SL_Geocoding::geocode( $address );
+					if ( ! is_wp_error( $geocoded ) ) {
+						$geo_lat = oli_sl_sanitize_coordinate( $geocoded['lat'], 'lat' );
+						$geo_lng = oli_sl_sanitize_coordinate( $geocoded['lng'], 'lng' );
+						if ( '' !== $geo_lat && '' !== $geo_lng ) {
+							update_post_meta( $store_id, '_oli_sl_latitude', $geo_lat );
+							update_post_meta( $store_id, '_oli_sl_longitude', $geo_lng );
+						}
+					}
 				}
 			}
 		}
@@ -313,5 +356,7 @@ class Oli_SL_CSV_Handler {
 		if ( ! empty( $data['ID'] ) ) {
 			update_post_meta( $store_id, '_oli_sl_external_id', sanitize_text_field( $data['ID'] ) );
 		}
+
+		return self::$last_meta_warning;
 	}
 }

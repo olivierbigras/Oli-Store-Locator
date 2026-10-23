@@ -2,6 +2,26 @@
 
 All notable changes to Oli Store Locator are documented in this file.
 
+## 0.2.2 — 2026-10-23
+
+### Security
+
+- Latitude/longitude must be numeric, finite, and in range (lat −90…90, lng −180…180) on CSV import, Sheets sync, the store metabox, settings, AJAX, and REST. Invalid values are cleared and the store is not geolocated.
+- Search skips stored Inf/NaN coordinates so Haversine never returns HTTP 500.
+- Sheets fetch allow-list is only `docs.google.com` and `sheets.googleapis.com` (plain hostnames). `wp_safe_remote_get` follows the published-CSV redirect. Requests send `Oli-Store-Locator/{version}; {site}`.
+- An HTML Google sign-in page is treated as a fetch error, not a successful empty sheet.
+
+### Fixed
+
+- Gutenberg blocks no longer send empty attributes that overwrote shortcode defaults (radius 0, missing map).
+- Google Maps selected without an API key does not load the Maps JS API; admin notice + Leaflet on the public map.
+- Sync Now notices survive the settings redirect. Unknown Status values warn and become draft.
+
+### Documentation
+
+- External services: Nominatim (address, admin/import timing, ToS/privacy), CARTO (`basemaps.cartocdn.com`), OpenTopoMap, custom tile URLs, and `google.com/maps` directions.
+- MarkerClustererPlus source: https://github.com/googlemaps/js-markerclustererplus
+
 ## 0.2.1 — 2026-10-23
 
 ### Packaging

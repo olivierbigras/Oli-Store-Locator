@@ -195,11 +195,29 @@ class Oli_SL_Metaboxes {
 			}
 		}
 
+		$coord_cleared = false;
 		foreach ( array( 'latitude', 'longitude' ) as $key ) {
 			$field = 'oli_sl_' . $key;
 			if ( isset( $_POST[ $field ] ) ) {
-				update_post_meta( $post_id, '_oli_sl_' . $key, oli_sl_sanitize_coordinate( sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) ) );
+				$axis  = ( 'longitude' === $key ) ? 'lng' : 'lat';
+				$raw   = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
+				$value = oli_sl_sanitize_coordinate( $raw, $axis );
+				if ( '' === $value ) {
+					delete_post_meta( $post_id, '_oli_sl_' . $key );
+					if ( '' !== trim( $raw ) ) {
+						$coord_cleared = true;
+					}
+				} else {
+					update_post_meta( $post_id, '_oli_sl_' . $key, $value );
+				}
 			}
+		}
+		if ( $coord_cleared && function_exists( 'get_current_user_id' ) ) {
+			set_transient(
+				'oli_sl_metabox_notice_' . get_current_user_id(),
+				__( 'Invalid coordinates were cleared; the store is not geolocated.', 'oli-store-locator' ),
+				MINUTE_IN_SECONDS
+			);
 		}
 
 		if ( isset( $_POST['oli_sl_email'] ) ) {

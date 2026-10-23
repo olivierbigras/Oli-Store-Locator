@@ -6,7 +6,7 @@ composer install
 vendor/bin/phpcs
 ```
 
-The suite does not need WordPress. It covers CSV parsing, formula-injection neutralization, Status whitelist, geocode capabilities, per-IP limits (including autocomplete and ignored `X-Forwarded-For`), Sheets URL validation, sync lock/log, and the `fr_CA` `.po` / `.l10n.php` pair.
+The suite does not need WordPress. It covers CSV parsing, formula-injection neutralization, Status whitelist, geocode capabilities, per-IP limits (including autocomplete and ignored `X-Forwarded-For`), Sheets URL validation, coordinate sanitization, empty block attributes, sync lock/log, and the `fr_CA` `.po` / `.l10n.php` pair.
 
 Regenerate PHP translations after editing a `.po`:
 

@@ -67,8 +67,6 @@ class Oli_SL_Core {
 	 * Define the locale for internationalization.
 	 */
 	private function set_locale() {
-		$plugin_i18n = new Oli_SL_I18n();
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 		$this->loader->add_action( 'admin_init', 'Oli_SL_Rest_API', 'grant_geocode_capability' );
 	}
 
@@ -87,6 +85,9 @@ class Oli_SL_Core {
 		$this->loader->add_action( 'admin_menu', $settings, 'add_admin_menu' );
 		$this->loader->add_action( 'admin_init', $settings, 'register_settings' );
 		$this->loader->add_action( 'admin_init', $admin, 'handle_admin_actions' );
+		$this->loader->add_action( 'admin_init', $admin, 'restore_settings_errors' );
+		$this->loader->add_action( 'admin_notices', $admin, 'missing_google_key_notice' );
+		$this->loader->add_action( 'admin_notices', $admin, 'metabox_coordinate_notice' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $admin, 'enqueue_scripts' );
 		$this->loader->add_action( 'add_meta_boxes', $metaboxes, 'add_meta_boxes' );

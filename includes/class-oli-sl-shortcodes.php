@@ -48,20 +48,16 @@ class Oli_SL_Shortcodes {
 				'render_callback' => array( $this, 'store_locator_shortcode' ),
 				'attributes'      => array(
 					'radius'      => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 					'max_results' => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 					'category'    => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 					'height'      => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 				),
 			)
@@ -75,8 +71,7 @@ class Oli_SL_Shortcodes {
 				'render_callback' => array( $this, 'store_address_shortcode' ),
 				'attributes'      => array(
 					'id' => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 				),
 			)
@@ -90,8 +85,7 @@ class Oli_SL_Shortcodes {
 				'render_callback' => array( $this, 'store_hours_shortcode' ),
 				'attributes'      => array(
 					'id' => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 				),
 			)
@@ -105,12 +99,10 @@ class Oli_SL_Shortcodes {
 				'render_callback' => array( $this, 'store_map_shortcode' ),
 				'attributes'      => array(
 					'id'     => array(
-						'type'    => 'string',
-						'default' => '',
+						'type' => 'string',
 					),
 					'height' => array(
-						'type'    => 'string',
-						'default' => '400px',
+						'type' => 'string',
 					),
 				),
 			)
@@ -124,9 +116,7 @@ class Oli_SL_Shortcodes {
 	 * @return string HTML output.
 	 */
 	public function store_locator_shortcode( $atts ) {
-		if ( ! is_array( $atts ) ) {
-			$atts = array();
-		}
+		$atts = oli_sl_drop_empty_atts( $atts );
 
 		$atts = shortcode_atts(
 			array(
@@ -170,9 +160,7 @@ class Oli_SL_Shortcodes {
 	public function store_address_shortcode( $atts ) {
 		global $post;
 
-		if ( ! is_array( $atts ) ) {
-			$atts = array();
-		}
+		$atts = oli_sl_drop_empty_atts( $atts );
 
 		$atts = shortcode_atts(
 			array(
@@ -219,9 +207,7 @@ class Oli_SL_Shortcodes {
 	public function store_hours_shortcode( $atts ) {
 		global $post;
 
-		if ( ! is_array( $atts ) ) {
-			$atts = array();
-		}
+		$atts = oli_sl_drop_empty_atts( $atts );
 
 		$atts = shortcode_atts(
 			array(
@@ -255,9 +241,7 @@ class Oli_SL_Shortcodes {
 	public function store_map_shortcode( $atts ) {
 		global $post;
 
-		if ( ! is_array( $atts ) ) {
-			$atts = array();
-		}
+		$atts = oli_sl_drop_empty_atts( $atts );
 
 		$atts = shortcode_atts(
 			array(

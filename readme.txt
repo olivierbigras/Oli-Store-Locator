@@ -5,7 +5,7 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.1
+Stable tag: 0.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,7 +67,7 @@ No Google login is required. An optional Sheets API key is available when the pu
 
 == External services ==
 
-This plugin does not track visitors and does not include upsells. It only contacts the services below, and only when the matching setting or feature is used. Leaflet, Leaflet.markercluster, and MarkerClustererPlus are bundled locally.
+This plugin does not track visitors and does not include upsells. It only contacts the services below, and only when the matching setting or feature is used. Leaflet, Leaflet.markercluster, and MarkerClustererPlus are bundled locally. The minified MarkerClustererPlus script is `assets/vendor/markerclusterer/index.min.js`; its source is [googlemaps/js-markerclustererplus](https://github.com/googlemaps/js-markerclustererplus).
 
 = Google Maps (JavaScript, Geocoding, Places) =
 
@@ -80,20 +80,35 @@ This plugin does not track visitors and does not include upsells. It only contac
 = Google Sheets (published CSV, optional API) =
 
 * What: import / scheduled sync of store rows from a spreadsheet you paste.
-* When: when an administrator saves a sheet URL, clicks Detect columns / Sync, or a WP-Cron sync runs. The server uses `wp_safe_remote_get` on `https://docs.google.com/spreadsheets/d/{ID}/export?format=csv` (or a published CSV URL). If you enter a Sheets API key, the plugin also calls `https://sheets.googleapis.com/v4/spreadsheets/`.
+* When: when an administrator saves a sheet URL, clicks Detect columns / Sync, or a WP-Cron sync runs. The server uses `wp_safe_remote_get` on `https://docs.google.com/spreadsheets/d/{ID}/export?format=csv` (or a published CSV URL). WordPress follows the HTTPS redirect from that URL. If you enter a Sheets API key, the plugin also calls `https://sheets.googleapis.com/v4/spreadsheets/`. Requests send a plugin User-Agent (`Oli-Store-Locator/{version}; {site URL}`).
 * Data sent: the sheet ID / gid from the URL you entered, and the optional API key. No visitor data is sent. The sheet must be shared as “anyone with the link can view” (or reachable with the key).
 * Terms: [Google Terms of Service](https://policies.google.com/terms), [Google APIs Terms](https://developers.google.com/terms).
 * Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
 
-= Map tiles (OpenStreetMap or another Leaflet provider) =
+= Nominatim (OpenStreetMap geocoding) =
 
-* What: raster map tiles for the free Leaflet map (OpenStreetMap by default; optional CARTO, OpenTopoMap, or a custom HTTPS tile URL).
-* When: on locator pages when Map provider is Leaflet and the visitor loads the map (or after GDPR consent, if that option is on).
+* What: free server-side geocoding and reverse lookup when Geocoding is set to Nominatim.
+* When: an administrator looks up coordinates from a store address, CSV import / Sheets sync geocodes a row that has no valid latitude/longitude, or (rarely) an admin tool geocodes missing stores. Public visitor searches use cached results and a per-IP limit; they do not sleep on Nominatim.
+* Data sent: the store address string (street, city, region, postal code, country) and the plugin User-Agent (plugin name/version and site URL) to `https://nominatim.openstreetmap.org/`. No visitor account data is sent.
+* Terms: [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
+* Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
+
+= Map tiles (OpenStreetMap, CARTO, OpenTopoMap, or custom URL) =
+
+* What: raster map tiles for the free Leaflet map.
+* When: on locator pages when Map provider is Leaflet (or Google was selected without an API key) and the visitor loads the map (or after GDPR consent, if that option is on).
 * Data sent: tile x/y/z coordinates and the visitor’s IP to the tile host. No store form data is sent.
-* OpenStreetMap terms: [OSMF Terms of Use](https://wiki.osmfoundation.org/wiki/Terms_of_Use). Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
-* CARTO: [CARTO legal](https://carto.com/legal/). OpenTopoMap: [OpenTopoMap](https://opentopomap.org/).
+* OpenStreetMap (`https://{s}.tile.openstreetmap.org/`): [OSMF Terms of Use](https://wiki.osmfoundation.org/wiki/Terms_of_Use). Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
+* CARTO (`https://{s}.basemaps.cartocdn.com/`): [CARTO terms](https://carto.com/legal/), [CARTO privacy](https://carto.com/privacy/).
+* OpenTopoMap (`https://{s}.tile.opentopomap.org/`): [OpenTopoMap](https://opentopomap.org/), [OpenTopoMap licence / terms](https://opentopomap.org/about), [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
+* Custom tile URL: if you enter a custom HTTPS tile template under Settings → Map, the visitor’s browser requests tiles from that host. Data sent is the tile x/y/z path and the visitor’s IP. Use a host whose terms and privacy policy you accept.
 
-Nominatim geocoding (`https://nominatim.openstreetmap.org/`) is used only when Geocoding is set to Nominatim. Policy: [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
+= Google Maps directions links =
+
+* What: “Get directions” opens `https://www.google.com/maps/dir/` with the store coordinates as the destination. In-map directions (Google Maps provider + key only) use the Google Directions service in the browser.
+* When: the visitor clicks the directions link (or an in-map route) on a locator result.
+* Data sent: destination latitude/longitude (and, for in-map directions, the origin the visitor chose). Google also sees the visitor’s IP.
+* Terms: [Google Maps Platform Terms](https://cloud.google.com/maps-platform/terms). Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
 
 == Installation ==
 
@@ -123,6 +138,13 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.2.2 =
+* Reject non-numeric, non-finite, and out-of-range coordinates on import, Sheets sync, metabox, AJAX, and REST.
+* Empty Gutenberg block attributes no longer overwrite shortcode defaults (radius, map height).
+* Google Maps without an API key falls back to Leaflet and shows an admin notice.
+* Document Nominatim, CARTO, OpenTopoMap, custom tiles, and Google directions in External services.
+* Treat a Google sign-in HTML response as a Sheets error. Show Sync Now and unknown-status notices.
+
 = 0.2.1 =
 * Exclude tests, bin, phpcs, GitHub workflows, and Composer files from the distribution ZIP.
 * Move locator CSS variables and custom CSS to `wp_add_inline_style`.
@@ -146,6 +168,9 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.2 =
+Coordinate validation, block defaults, Google-without-key fallback, and External services documentation. Settings keys are unchanged.
 
 = 0.2.1 =
 Packaging, security, and wordpress.org readme (External services) updates. Settings keys are unchanged.

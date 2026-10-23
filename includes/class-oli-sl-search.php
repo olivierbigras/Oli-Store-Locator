@@ -42,6 +42,9 @@ class Oli_SL_Search {
 		 */
 		$args = apply_filters( 'oli_sl_search_args', $args );
 
+		$args['lat'] = oli_sl_sanitize_coordinate( $args['lat'], 'lat' );
+		$args['lng'] = oli_sl_sanitize_coordinate( $args['lng'], 'lng' );
+
 		$cache_key = '';
 		$cache_ok  = oli_sl_get_option( 'enable_caching', '1' ) && ! oli_sl_is_enabled( oli_sl_get_option( 'show_hour_status', '1' ) );
 		if ( $cache_ok ) {
@@ -109,8 +112,13 @@ class Oli_SL_Search {
 		$country_hint = isset( $args['country'] ) ? strtolower( trim( (string) $args['country'] ) ) : '';
 
 		foreach ( $ids as $store_id ) {
-			$store_lat = (float) get_post_meta( $store_id, '_oli_sl_latitude', true );
-			$store_lng = (float) get_post_meta( $store_id, '_oli_sl_longitude', true );
+			$store_lat = oli_sl_sanitize_coordinate( get_post_meta( $store_id, '_oli_sl_latitude', true ), 'lat' );
+			$store_lng = oli_sl_sanitize_coordinate( get_post_meta( $store_id, '_oli_sl_longitude', true ), 'lng' );
+			if ( '' === $store_lat || '' === $store_lng ) {
+				continue;
+			}
+			$store_lat = (float) $store_lat;
+			$store_lng = (float) $store_lng;
 
 			if ( $enforce && '' !== $country_hint ) {
 				$store_country = strtolower( (string) get_post_meta( $store_id, '_oli_sl_country', true ) );
@@ -198,6 +206,19 @@ class Oli_SL_Search {
 	 * @return float Distance.
 	 */
 	public static function calculate_distance( $lat1, $lng1, $lat2, $lng2, $earth_radius = 6371 ) {
+		if ( ! is_numeric( $lat1 ) || ! is_numeric( $lng1 ) || ! is_numeric( $lat2 ) || ! is_numeric( $lng2 ) ) {
+			return 0.0;
+		}
+
+		$lat1 = (float) $lat1;
+		$lng1 = (float) $lng1;
+		$lat2 = (float) $lat2;
+		$lng2 = (float) $lng2;
+
+		if ( is_nan( $lat1 ) || is_nan( $lng1 ) || is_nan( $lat2 ) || is_nan( $lng2 ) || is_infinite( $lat1 ) || is_infinite( $lng1 ) || is_infinite( $lat2 ) || is_infinite( $lng2 ) ) {
+			return 0.0;
+		}
+
 		$lat1 = deg2rad( $lat1 );
 		$lng1 = deg2rad( $lng1 );
 		$lat2 = deg2rad( $lat2 );
