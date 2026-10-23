@@ -212,13 +212,7 @@ class Oli_SL_Metaboxes {
 				}
 			}
 		}
-		if ( $coord_cleared && function_exists( 'get_current_user_id' ) ) {
-			set_transient(
-				'oli_sl_metabox_notice_' . get_current_user_id(),
-				__( 'Invalid coordinates were cleared; the store is not geolocated.', 'oli-store-locator' ),
-				MINUTE_IN_SECONDS
-			);
-		}
+		$notice_key = function_exists( 'get_current_user_id' ) ? 'oli_sl_metabox_notice_' . get_current_user_id() : '';
 
 		if ( isset( $_POST['oli_sl_email'] ) ) {
 			update_post_meta( $post_id, '_oli_sl_email', sanitize_email( wp_unslash( $_POST['oli_sl_email'] ) ) );
@@ -280,10 +274,25 @@ class Oli_SL_Metaboxes {
 			if ( '' !== $address ) {
 				$geocoded = Oli_SL_Geocoding::geocode( $address );
 				if ( ! is_wp_error( $geocoded ) ) {
-					update_post_meta( $post_id, '_oli_sl_latitude', $geocoded['lat'] );
-					update_post_meta( $post_id, '_oli_sl_longitude', $geocoded['lng'] );
+					$geo_lat = oli_sl_sanitize_latitude( $geocoded['lat'] );
+					$geo_lng = oli_sl_sanitize_longitude( $geocoded['lng'] );
+					if ( '' !== $geo_lat && '' !== $geo_lng ) {
+						update_post_meta( $post_id, '_oli_sl_latitude', $geo_lat );
+						update_post_meta( $post_id, '_oli_sl_longitude', $geo_lng );
+						$coord_cleared = false;
+					}
 				}
 			}
+		}
+
+		if ( $coord_cleared && '' !== $notice_key ) {
+			set_transient(
+				$notice_key,
+				__( 'Invalid coordinates were cleared; the store is not geolocated.', 'oli-store-locator' ),
+				MINUTE_IN_SECONDS
+			);
+		} elseif ( '' !== $notice_key ) {
+			delete_transient( $notice_key );
 		}
 	}
 }

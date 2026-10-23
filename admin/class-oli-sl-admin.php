@@ -83,6 +83,7 @@ class Oli_SL_Admin {
 					'geocoding' => __( 'Looking up coordinates…', 'oli-store-locator' ),
 					'syncing'   => __( 'Syncing…', 'oli-store-locator' ),
 					'detecting' => __( 'Detecting columns…', 'oli-store-locator' ),
+					'detected'  => __( 'Columns detected. The sheet CSV is valid.', 'oli-store-locator' ),
 				),
 			)
 		);
@@ -463,6 +464,7 @@ class Oli_SL_Admin {
 				'map'     => $map,
 				'preview' => array_slice( $parsed['rows'], 0, 3 ),
 				'fields'  => Oli_SL_CSV_Parser::fields(),
+				'message' => __( 'Columns detected. The sheet CSV is valid.', 'oli-store-locator' ),
 			)
 		);
 	}

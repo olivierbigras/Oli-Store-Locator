@@ -20,6 +20,7 @@ class Oli_SL_Test_Coordinates_And_Atts {
 			self::test_empty_atts_do_not_override_defaults(),
 			self::test_distance_ignores_nan_and_inf(),
 			self::test_http_user_agent(),
+			self::test_bundled_textdomain_before_67(),
 		);
 	}
 
@@ -119,5 +120,18 @@ class Oli_SL_Test_Coordinates_And_Atts {
 		$ua = oli_sl_http_user_agent();
 		$ok = 0 === strpos( $ua, 'Oli-Store-Locator/' . OLI_SL_VERSION );
 		return self::assert_true( $ok, 'Sheets User-Agent names the plugin and version' );
+	}
+
+	/**
+	 * Bundled /languages files need load_plugin_textdomain() before WP 6.7.
+	 *
+	 * @return array
+	 */
+	private static function test_bundled_textdomain_before_67() {
+		$ok = Oli_SL_I18n::needs_bundled_textdomain( '6.5' )
+			&& Oli_SL_I18n::needs_bundled_textdomain( '6.6.2' )
+			&& ! Oli_SL_I18n::needs_bundled_textdomain( '6.7' )
+			&& ! Oli_SL_I18n::needs_bundled_textdomain( '6.8' );
+		return self::assert_true( $ok, 'load_plugin_textdomain runs only when WP is older than 6.7' );
 	}
 }

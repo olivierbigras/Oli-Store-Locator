@@ -4,6 +4,7 @@
 	var settings = window.oliSLSettings || {};
 	var googleMapsReady = false;
 	var pendingInits = [];
+	var locators = [];
 
 	window.oliSLGoogleMapsReady = function () {
 		googleMapsReady = true;
@@ -11,6 +12,32 @@
 			fn();
 		});
 		pendingInits = [];
+	};
+
+	window.gm_authFailure = function () {
+		settings.provider = 'leaflet';
+		locators.forEach(function (loc) {
+			if (loc && typeof loc.handleGoogleAuthFailure === 'function') {
+				loc.handleGoogleAuthFailure();
+			}
+		});
+		document.querySelectorAll('.oli-sl-single-map').forEach(function (el) {
+			if (el.getAttribute('data-oli-sl-auth-failed')) {
+				return;
+			}
+			el.setAttribute('data-oli-sl-auth-failed', '1');
+			var lat = parseFloat(el.getAttribute('data-lat'));
+			var lng = parseFloat(el.getAttribute('data-lng'));
+			el.innerHTML = '';
+			if (window.L && lat && lng) {
+				var lmap = window.L.map(el).setView([lat, lng], 15);
+				var tiles = getTileLayer();
+				window.L.tileLayer(tiles.url, { attribution: tiles.attribution }).addTo(lmap);
+				window.L.marker([lat, lng]).addTo(lmap);
+			} else {
+				el.textContent = (settings.labels && settings.labels.mapsAuthFailed) || '';
+			}
+		});
 	};
 
 	function ready(fn) {
@@ -199,6 +226,8 @@
 			settings.directions = false;
 		}
 		this.searchMethod = el.getAttribute('data-search-method') || settings.searchMethod || 'geocode';
+		this.googleAuthFailed = false;
+		locators.push(this);
 		this.consented = !settings.gdprConsent;
 		if (this.consented) {
 			this.initMap();
@@ -447,6 +476,31 @@
 			}
 		} else if (window.L) {
 			this.initLeaflet();
+		}
+	};
+
+	Locator.prototype.handleGoogleAuthFailure = function () {
+		if (this.googleAuthFailed) {
+			return;
+		}
+		this.googleAuthFailed = true;
+		settings.provider = 'leaflet';
+		this.map = null;
+		this.cluster = null;
+		this.info = null;
+		var msg = (settings.labels && settings.labels.mapsAuthFailed) || '';
+		if (this.mapEl && window.L) {
+			this.mapEl.innerHTML = '';
+			this.initLeaflet();
+		} else if (this.mapEl) {
+			this.mapEl.innerHTML = '<div class="oli-sl-status">' + escapeHtml(msg) + '</div>';
+		}
+		var statusEl = this.el.querySelector('.oli-sl-map-auth-msg');
+		if (!statusEl && this.mapEl && this.mapEl.parentNode && msg) {
+			statusEl = document.createElement('p');
+			statusEl.className = 'oli-sl-map-auth-msg';
+			statusEl.textContent = msg;
+			this.mapEl.parentNode.insertBefore(statusEl, this.mapEl);
 		}
 	};
 

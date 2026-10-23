@@ -5,7 +5,7 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,7 +80,7 @@ This plugin does not track visitors and does not include upsells. It only contac
 = Google Sheets (published CSV, optional API) =
 
 * What: import / scheduled sync of store rows from a spreadsheet you paste.
-* When: when an administrator saves a sheet URL, clicks Detect columns / Sync, or a WP-Cron sync runs. The server uses `wp_safe_remote_get` on `https://docs.google.com/spreadsheets/d/{ID}/export?format=csv` (or a published CSV URL). WordPress follows the HTTPS redirect from that URL. If you enter a Sheets API key, the plugin also calls `https://sheets.googleapis.com/v4/spreadsheets/`. Requests send a plugin User-Agent (`Oli-Store-Locator/{version}; {site URL}`).
+* When: when an administrator saves a sheet URL, clicks Detect columns / Sync, or a WP-Cron sync runs. The server uses `wp_safe_remote_get` on `https://docs.google.com/spreadsheets/d/{ID}/export?format=csv` (or a published CSV URL). WordPress follows the HTTPS redirect from that URL to `*.googleusercontent.com` (Google’s download host). If you enter a Sheets API key, the plugin also calls `https://sheets.googleapis.com/v4/spreadsheets/`. Requests send a plugin User-Agent (`Oli-Store-Locator/{version}; {site URL}`).
 * Data sent: the sheet ID / gid from the URL you entered, and the optional API key. No visitor data is sent. The sheet must be shared as “anyone with the link can view” (or reachable with the key).
 * Terms: [Google Terms of Service](https://policies.google.com/terms), [Google APIs Terms](https://developers.google.com/terms).
 * Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
@@ -88,8 +88,8 @@ This plugin does not track visitors and does not include upsells. It only contac
 = Nominatim (OpenStreetMap geocoding) =
 
 * What: free server-side geocoding and reverse lookup when Geocoding is set to Nominatim.
-* When: an administrator looks up coordinates from a store address, CSV import / Sheets sync geocodes a row that has no valid latitude/longitude, or (rarely) an admin tool geocodes missing stores. Public visitor searches use cached results and a per-IP limit; they do not sleep on Nominatim.
-* Data sent: the store address string (street, city, region, postal code, country) and the plugin User-Agent (plugin name/version and site URL) to `https://nominatim.openstreetmap.org/`. No visitor account data is sent.
+* When: an administrator looks up coordinates from a store address; CSV import / Sheets sync geocodes a row that has no valid latitude/longitude; an admin tool geocodes missing stores; and, when Geocoding is Nominatim and Search method is Geocode API, a visitor search by address or ZIP (the typed query is geocoded so nearby stores can be ranked). Public visitor searches use cached results and a per-IP limit; they do not sleep on Nominatim.
+* Data sent: the address string — a store address on admin/import, or the address/ZIP the visitor typed on a public search — plus the plugin User-Agent (plugin name/version and site URL) to `https://nominatim.openstreetmap.org/`. No visitor account data is sent.
 * Terms: [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
 * Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
 
@@ -138,6 +138,12 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.2.3 =
+* Load bundled translations with `load_plugin_textdomain()` on WordPress 6.5–6.6 (automatic from 6.7).
+* Show a message and Leaflet fallback when Google Maps reports `gm_authFailure`.
+* Detect columns reports success for a valid sheet CSV. Clear the “not geolocated” warning after a successful geocode.
+* Document `googleusercontent.com` Sheets redirects and visitor addresses sent to Nominatim on search.
+
 = 0.2.2 =
 * Reject non-numeric, non-finite, and out-of-range coordinates on import, Sheets sync, metabox, AJAX, and REST.
 * Empty Gutenberg block attributes no longer overwrite shortcode defaults (radius, map height).
@@ -168,6 +174,9 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.3 =
+Translations on WordPress 6.5–6.6, Google key failure fallback, and External services clarifications. Settings keys are unchanged.
 
 = 0.2.2 =
 Coordinate validation, block defaults, Google-without-key fallback, and External services documentation. Settings keys are unchanged.

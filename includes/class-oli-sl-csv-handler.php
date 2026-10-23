@@ -337,6 +337,7 @@ class Oli_SL_CSV_Handler {
 						if ( '' !== $geo_lat && '' !== $geo_lng ) {
 							update_post_meta( $store_id, '_oli_sl_latitude', $geo_lat );
 							update_post_meta( $store_id, '_oli_sl_longitude', $geo_lng );
+							self::$last_meta_warning = '';
 						}
 					}
 				}

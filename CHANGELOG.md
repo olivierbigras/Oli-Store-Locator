@@ -2,6 +2,20 @@
 
 All notable changes to Oli Store Locator are documented in this file.
 
+## 0.2.3 — 2026-10-23
+
+### Fixed
+
+- On WordPress 6.5–6.6, `load_plugin_textdomain()` runs on `init` so bundled `/languages` files (e.g. fr_CA “Toutes les catégories”) load. WordPress 6.7+ still uses automatic loading only.
+- Invalid Google Maps API keys trigger `gm_authFailure`: a public message plus Leaflet/OpenStreetMap fallback instead of a blank map.
+- Detect columns shows a success status when the sheet CSV is valid.
+- A successful address geocode after invalid CSV/metabox coordinates no longer leaves the “not geolocated” warning.
+
+### Documentation
+
+- External services names `googleusercontent.com` as the Sheets published-CSV redirect host.
+- Nominatim receives the visitor-typed address/ZIP on public Geocode API searches.
+
 ## 0.2.2 — 2026-10-23
 
 ### Security

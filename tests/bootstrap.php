@@ -10,11 +10,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'OLI_SL_VERSION' ) ) {
-	define( 'OLI_SL_VERSION', '0.2.2' );
+	define( 'OLI_SL_VERSION', '0.2.3' );
 }
 
 require_once __DIR__ . '/wp-stubs.php';
 require_once dirname( __DIR__ ) . '/includes/oli-sl-functions.php';
+require_once dirname( __DIR__ ) . '/includes/class-oli-sl-i18n.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-search.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-csv-parser.php';
 require_once dirname( __DIR__ ) . '/includes/class-oli-sl-sync-diff.php';

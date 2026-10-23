@@ -111,13 +111,15 @@ class Oli_SL_Public {
 			wp_enqueue_style( 'oli-sl-public-rtl' );
 		}
 
-		if ( 'leaflet' === $provider ) {
+		if ( 'leaflet' === $provider || 'google' === $provider ) {
 			wp_enqueue_style( 'oli-sl-leaflet' );
 			wp_enqueue_style( 'oli-sl-leaflet-markercluster' );
 			wp_enqueue_style( 'oli-sl-leaflet-markercluster-default' );
 			wp_enqueue_script( 'oli-sl-leaflet' );
 			wp_enqueue_script( 'oli-sl-leaflet-markercluster' );
-		} else {
+		}
+
+		if ( 'google' === $provider ) {
 			if ( oli_sl_is_enabled( oli_sl_get_option( 'compatibility_mode', '0' ) ) && wp_script_is( 'google-maps', 'registered' ) ) {
 				wp_enqueue_script( 'google-maps' );
 			}

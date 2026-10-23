@@ -3,7 +3,7 @@
  * Plugin Name: Oli Store Locator
  * Plugin URI: https://github.com/olivierbigras/Oli-Store-Locator
  * Description: A powerful and fully customizable store locator with Google Maps/Leaflet, Google Sheets sync, and extensive design options.
- * Version: 0.2.2
+ * Version: 0.2.3
  * Author: Olivier Bigras
  * Author URI: https://olivierbigras.com/
  * License: GPL-2.0+
@@ -22,7 +22,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'OLI_SL_VERSION', '0.2.2' );
+define( 'OLI_SL_VERSION', '0.2.3' );
 define( 'OLI_SL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'OLI_SL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'OLI_SL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

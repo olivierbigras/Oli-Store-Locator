@@ -89,7 +89,7 @@
 					status.text(res.data && res.data.message ? res.data.message : 'Error');
 					return;
 				}
-				status.text('');
+				status.text((res.data && res.data.message) || window.oliSLAdmin.i18n.detected);
 				var html = '<table class="widefat striped"><thead><tr><th>Store field</th><th>Sheet column</th></tr></thead><tbody>';
 				(res.data.fields || []).forEach(function (field) {
 					var selected = res.data.map && res.data.map[field] !== undefined ? res.data.map[field] : '';
