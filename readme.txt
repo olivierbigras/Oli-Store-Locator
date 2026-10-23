@@ -5,7 +5,7 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.3
+Stable tag: 0.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,7 +72,7 @@ This plugin does not track visitors and does not include upsells. It only contac
 = Google Maps (JavaScript, Geocoding, Places) =
 
 * What: optional Google Maps JavaScript API (map, Places autocomplete, Directions) and server-side Geocoding / Places Autocomplete.
-* When: only if Map provider or Geocoding is set to Google. The browser loads `https://maps.googleapis.com/maps/api/js` on locator pages. The server calls `https://maps.googleapis.com/maps/api/geocode/json` and `https://maps.googleapis.com/maps/api/place/autocomplete/json` when an address is geocoded or autocompleted.
+* When: only if Map provider or Geocoding is set to Google. The browser loads `https://maps.googleapis.com/maps/api/js` on locator pages. The server calls `https://maps.googleapis.com/maps/api/geocode/json` and `https://maps.googleapis.com/maps/api/place/autocomplete/json` when an address is geocoded or autocompleted. If the key is invalid (`gm_authFailure`), the script fails, or Google does not load within about 8 seconds, the public map falls back to the bundled Leaflet/OpenStreetMap tiles (Leaflet is loaded only then) and shows a message. Existing search results are redrawn on the Leaflet map.
 * Data sent: the API key you configure; search addresses or coordinates; the visitor’s IP as seen by Google when the JS API loads. No store owner account data is sent.
 * Terms: [Google Maps Platform Terms](https://cloud.google.com/maps-platform/terms), [Geocoding policies](https://developers.google.com/maps/documentation/geocoding/policies).
 * Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
@@ -96,7 +96,7 @@ This plugin does not track visitors and does not include upsells. It only contac
 = Map tiles (OpenStreetMap, CARTO, OpenTopoMap, or custom URL) =
 
 * What: raster map tiles for the free Leaflet map.
-* When: on locator pages when Map provider is Leaflet (or Google was selected without an API key) and the visitor loads the map (or after GDPR consent, if that option is on).
+* When: on locator pages when Map provider is Leaflet, when Google was selected without an API key, or after the public Leaflet fallback when Google Maps fails to load, and the visitor loads the map (or after GDPR consent, if that option is on).
 * Data sent: tile x/y/z coordinates and the visitor’s IP to the tile host. No store form data is sent.
 * OpenStreetMap (`https://{s}.tile.openstreetmap.org/`): [OSMF Terms of Use](https://wiki.osmfoundation.org/wiki/Terms_of_Use). Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
 * CARTO (`https://{s}.basemaps.cartocdn.com/`): [CARTO terms](https://carto.com/legal/), [CARTO privacy](https://carto.com/privacy/).
@@ -138,6 +138,12 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.2.4 =
+* After a Google → Leaflet fallback, redraw the last search markers and fit bounds.
+* Load Leaflet only when falling back from Google (or when Leaflet is the provider).
+* Same fallback if the Maps script errors or does not load within about 8 seconds.
+* fr_CA strings for the fallback message and Detect columns success.
+
 = 0.2.3 =
 * Load bundled translations with `load_plugin_textdomain()` on WordPress 6.5–6.6 (automatic from 6.7).
 * Show a message and Leaflet fallback when Google Maps reports `gm_authFailure`.
@@ -174,6 +180,9 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.4 =
+Google map fallback now keeps markers and loads Leaflet only when needed. Settings keys are unchanged.
 
 = 0.2.3 =
 Translations on WordPress 6.5–6.6, Google key failure fallback, and External services clarifications. Settings keys are unchanged.

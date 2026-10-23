@@ -403,6 +403,8 @@ function oli_sl_frontend_config() {
 		'mapStyleJson'        => oli_sl_get_option( 'map_style_json', '' ),
 		'leafletTiles'        => oli_sl_get_option( 'leaflet_tiles', 'osm' ),
 		'leafletCustomUrl'    => oli_sl_get_option( 'leaflet_custom_url', '' ),
+		'googleLoadTimeout'   => 8000,
+		'leafletAssets'       => oli_sl_leaflet_fallback_assets(),
 		'defaultMarker'       => oli_sl_get_option( 'default_marker', '' ),
 		'clusterColor'        => oli_sl_get_option( 'cluster_color', '#0073aa' ),
 		'clusterTextColor'    => oli_sl_get_option( 'cluster_text_color', '#ffffff' ),
@@ -733,6 +735,33 @@ function oli_sl_sanitize_latitude( $value ) {
  */
 function oli_sl_sanitize_longitude( $value ) {
 	return oli_sl_sanitize_coordinate( $value, 'lng' );
+}
+
+/**
+ * Bundled Leaflet URLs for the Google → Leaflet fallback (loaded on demand).
+ *
+ * @return array{css: array<int, string>, js: array<int, string>}
+ */
+function oli_sl_leaflet_fallback_assets() {
+	$base = defined( 'OLI_SL_PLUGIN_URL' ) ? OLI_SL_PLUGIN_URL : '';
+	$urls = array(
+		'css' => array(
+			$base . 'assets/vendor/leaflet/leaflet.css',
+			$base . 'assets/vendor/leaflet-markercluster/MarkerCluster.css',
+			$base . 'assets/vendor/leaflet-markercluster/MarkerCluster.Default.css',
+		),
+		'js'  => array(
+			$base . 'assets/vendor/leaflet/leaflet.js',
+			$base . 'assets/vendor/leaflet-markercluster/leaflet.markercluster.js',
+		),
+	);
+
+	if ( function_exists( 'esc_url_raw' ) ) {
+		$urls['css'] = array_map( 'esc_url_raw', $urls['css'] );
+		$urls['js']  = array_map( 'esc_url_raw', $urls['js'] );
+	}
+
+	return $urls;
 }
 
 /**

@@ -21,6 +21,7 @@ class Oli_SL_Test_Coordinates_And_Atts {
 			self::test_distance_ignores_nan_and_inf(),
 			self::test_http_user_agent(),
 			self::test_bundled_textdomain_before_67(),
+			self::test_leaflet_fallback_assets(),
 		);
 	}
 
@@ -133,5 +134,18 @@ class Oli_SL_Test_Coordinates_And_Atts {
 			&& ! Oli_SL_I18n::needs_bundled_textdomain( '6.7' )
 			&& ! Oli_SL_I18n::needs_bundled_textdomain( '6.8' );
 		return self::assert_true( $ok, 'load_plugin_textdomain runs only when WP is older than 6.7' );
+	}
+
+	/**
+	 * Google fallback can load bundled Leaflet without a prior enqueue.
+	 *
+	 * @return array
+	 */
+	private static function test_leaflet_fallback_assets() {
+		$assets = oli_sl_leaflet_fallback_assets();
+		$ok     = isset( $assets['css'][0], $assets['js'][0] )
+			&& false !== strpos( $assets['js'][0], 'leaflet.js' )
+			&& false !== strpos( $assets['js'][1], 'leaflet.markercluster.js' );
+		return self::assert_true( $ok, 'Leaflet fallback assets list bundled CSS and JS' );
 	}
 }

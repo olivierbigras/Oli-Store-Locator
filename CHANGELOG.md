@@ -2,6 +2,19 @@
 
 All notable changes to Oli Store Locator are documented in this file.
 
+## 0.2.4 — 2026-10-23
+
+### Fixed
+
+- Google → Leaflet fallback keeps the last search results, origin, and radius, then calls `setMarkers` / `fitBounds` so the map matches the list.
+- Leaflet CSS/JS load only on that fallback (or when Leaflet is the chosen provider), not on every Google page.
+- The same fallback runs if `maps.googleapis.com` fires `error` or does not become ready within about 8 seconds.
+
+### Documentation / i18n
+
+- External services describe the Leaflet fallback. New strings are in the `.pot` and `fr_CA`.
+- `load_plugin_textdomain()` documents why it still runs on WordPress &lt; 6.7.
+
 ## 0.2.3 — 2026-10-23
 
 ### Fixed

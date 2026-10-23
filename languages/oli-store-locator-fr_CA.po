@@ -3,7 +3,7 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Oli Store Locator 0.2.3\n"
+"Project-Id-Version: Oli Store Locator 0.2.4\n"
 "Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
 "POT-Creation-Date: 2026-10-20 00:00+0000\n"
 "PO-Revision-Date: 2026-10-20 19:00+0000\n"
@@ -216,6 +216,9 @@ msgstr "Correspondance des colonnes"
 
 msgid "Columns are auto-detected (Name, Address, City, Province/State, Postal code, Country, Phone, Email, Website, Hours, Category, Lat, Lng, Description, Image, ID). Existing stores are matched by ID when present."
 msgstr "Les colonnes sont détectées automatiquement (nom, adresse, ville, province/État, code postal, pays, téléphone, courriel, site, heures, catégorie, lat, lng, description, image, ID). Les magasins existants sont appariés par ID s’il est présent."
+
+msgid "Columns detected. The sheet CSV is valid."
+msgstr "Colonnes détectées. Le CSV de la feuille est valide."
 
 msgid "Comma-separated country names used when country filtering is set to restrict."
 msgstr "Noms de pays séparés par des virgules, utilisés lorsque le filtrage est en mode restriction."
@@ -447,6 +450,9 @@ msgstr "API de géocodage Google"
 
 msgid "Google Maps"
 msgstr "Google Maps"
+
+msgid "Google Maps could not load. Check the API key. The map is using OpenStreetMap instead."
+msgstr "Google Maps n’a pas pu se charger. Vérifiez la clé API. La carte utilise OpenStreetMap à la place."
 
 msgid "Google Sheets"
 msgstr "Google Sheets"

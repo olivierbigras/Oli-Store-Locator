@@ -37,6 +37,9 @@ class Oli_SL_I18n {
 			return;
 		}
 
+		// WordPress 6.7+ JIT-loads /languages from the plugin folder. 6.5–6.6 only
+		// look in WP_LANG_DIR/plugins/, so bundled fr_CA (e.g. “All categories”)
+		// stays English without this call. Requires at least is 6.5, not 6.7.
 		load_plugin_textdomain(
 			'oli-store-locator',
 			false,

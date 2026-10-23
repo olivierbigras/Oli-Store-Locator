@@ -111,7 +111,7 @@ class Oli_SL_Public {
 			wp_enqueue_style( 'oli-sl-public-rtl' );
 		}
 
-		if ( 'leaflet' === $provider || 'google' === $provider ) {
+		if ( 'leaflet' === $provider ) {
 			wp_enqueue_style( 'oli-sl-leaflet' );
 			wp_enqueue_style( 'oli-sl-leaflet-markercluster' );
 			wp_enqueue_style( 'oli-sl-leaflet-markercluster-default' );

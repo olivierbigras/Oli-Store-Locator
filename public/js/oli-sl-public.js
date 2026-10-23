@@ -5,9 +5,16 @@
 	var googleMapsReady = false;
 	var pendingInits = [];
 	var locators = [];
+	var googleFallbackStarted = false;
+	var googleWatchTimer = null;
+	var leafletLoading = null;
 
 	window.oliSLGoogleMapsReady = function () {
 		googleMapsReady = true;
+		if (googleWatchTimer) {
+			clearTimeout(googleWatchTimer);
+			googleWatchTimer = null;
+		}
 		pendingInits.forEach(function (fn) {
 			fn();
 		});
@@ -15,12 +22,31 @@
 	};
 
 	window.gm_authFailure = function () {
+		fallbackToLeaflet();
+	};
+
+	function fallbackToLeaflet() {
+		if (googleFallbackStarted) {
+			return;
+		}
+		googleFallbackStarted = true;
 		settings.provider = 'leaflet';
-		locators.forEach(function (loc) {
-			if (loc && typeof loc.handleGoogleAuthFailure === 'function') {
-				loc.handleGoogleAuthFailure();
-			}
+		pendingInits = [];
+		if (googleWatchTimer) {
+			clearTimeout(googleWatchTimer);
+			googleWatchTimer = null;
+		}
+		loadLeaflet(function () {
+			locators.forEach(function (loc) {
+				if (loc && typeof loc.handleGoogleAuthFailure === 'function') {
+					loc.handleGoogleAuthFailure();
+				}
+			});
+			fallbackSingleMaps();
 		});
+	}
+
+	function fallbackSingleMaps() {
 		document.querySelectorAll('.oli-sl-single-map').forEach(function (el) {
 			if (el.getAttribute('data-oli-sl-auth-failed')) {
 				return;
@@ -38,7 +64,97 @@
 				el.textContent = (settings.labels && settings.labels.mapsAuthFailed) || '';
 			}
 		});
-	};
+	}
+
+	function loadStylesheet(href) {
+		return new Promise(function (resolve) {
+			if (!href || document.querySelector('link[href="' + href + '"]')) {
+				resolve();
+				return;
+			}
+			var link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = href;
+			link.onload = function () {
+				resolve();
+			};
+			link.onerror = function () {
+				resolve();
+			};
+			document.head.appendChild(link);
+		});
+	}
+
+	function loadScript(src) {
+		return new Promise(function (resolve, reject) {
+			if (!src) {
+				resolve();
+				return;
+			}
+			if (document.querySelector('script[src="' + src + '"]')) {
+				resolve();
+				return;
+			}
+			var script = document.createElement('script');
+			script.src = src;
+			script.async = false;
+			script.onload = function () {
+				resolve();
+			};
+			script.onerror = function () {
+				reject();
+			};
+			(document.body || document.head).appendChild(script);
+		});
+	}
+
+	function loadLeaflet(done) {
+		if (window.L) {
+			done();
+			return;
+		}
+		if (!leafletLoading) {
+			var assets = settings.leafletAssets || {};
+			var css = assets.css || [];
+			var js = assets.js || [];
+			leafletLoading = Promise.all(css.map(loadStylesheet)).then(function () {
+				return js.reduce(function (chain, src) {
+					return chain.then(function () {
+						return loadScript(src);
+					});
+				}, Promise.resolve());
+			});
+		}
+		leafletLoading.then(
+			function () {
+				done();
+			},
+			function () {
+				done();
+			}
+		);
+	}
+
+	function watchGoogleLoad() {
+		if (settings.provider !== 'google') {
+			return;
+		}
+		var wait = parseInt(settings.googleLoadTimeout, 10);
+		if (!wait) {
+			wait = 8000;
+		}
+		googleWatchTimer = setTimeout(function () {
+			googleWatchTimer = null;
+			if (!googleMapsReady && !(window.google && window.google.maps)) {
+				fallbackToLeaflet();
+			}
+		}, wait);
+		document.querySelectorAll('script[src*="maps.googleapis.com/maps/api/js"]').forEach(function (script) {
+			script.addEventListener('error', function () {
+				fallbackToLeaflet();
+			});
+		});
+	}
 
 	function ready(fn) {
 		if (document.readyState === 'loading') {
@@ -227,6 +343,8 @@
 		}
 		this.searchMethod = el.getAttribute('data-search-method') || settings.searchMethod || 'geocode';
 		this.googleAuthFailed = false;
+		this.lastStores = [];
+		this.lastRadius = settings.searchRadius || '';
 		locators.push(this);
 		this.consented = !settings.gdprConsent;
 		if (this.consented) {
@@ -386,6 +504,8 @@
 	Locator.prototype.renderResults = function (stores, radius) {
 		var self = this;
 		var labels = settings.labels || {};
+		this.lastStores = stores || [];
+		this.lastRadius = radius;
 		if (!stores.length) {
 			var empty = labels.noResults;
 			if (labels.adjustSearch) {
@@ -464,7 +584,7 @@
 		if (!this.mapEl) {
 			return;
 		}
-		if (settings.provider === 'google') {
+		if (settings.provider === 'google' && !googleFallbackStarted) {
 			var self = this;
 			var start = function () {
 				self.initGoogle();
@@ -492,6 +612,10 @@
 		if (this.mapEl && window.L) {
 			this.mapEl.innerHTML = '';
 			this.initLeaflet();
+			if (this.map && typeof this.map.invalidateSize === 'function') {
+				this.map.invalidateSize();
+			}
+			this.setMarkers(this.lastStores || [], this.lastRadius);
 		} else if (this.mapEl) {
 			this.mapEl.innerHTML = '<div class="oli-sl-status">' + escapeHtml(msg) + '</div>';
 		}
@@ -506,10 +630,12 @@
 
 	Locator.prototype.initLeaflet = function () {
 		var tiles = getTileLayer();
+		var startLat = this.origin && this.origin.lat != null ? this.origin.lat : settings.startLat;
+		var startLng = this.origin && this.origin.lng != null ? this.origin.lng : settings.startLng;
 		this.map = window.L.map(this.mapEl, {
 			scrollWheelZoom: !!settings.scrollWheel,
 			zoomControl: !!settings.mapControls
-		}).setView([settings.startLat, settings.startLng], settings.startZoom);
+		}).setView([startLat, startLng], settings.startZoom);
 		window.L.tileLayer(tiles.url, { attribution: tiles.attribution }).addTo(this.map);
 		if (settings.clustering && window.L.markerClusterGroup) {
 			this.cluster = window.L.markerClusterGroup({
@@ -768,5 +894,6 @@
 			var dummy = { initSingleMaps: Locator.prototype.initSingleMaps, mapEl: null };
 			Locator.prototype.initSingleMaps.call(dummy);
 		}
+		watchGoogleLoad();
 	});
 })();

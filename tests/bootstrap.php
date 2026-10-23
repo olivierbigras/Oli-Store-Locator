@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'OLI_SL_VERSION' ) ) {
-	define( 'OLI_SL_VERSION', '0.2.3' );
+	define( 'OLI_SL_VERSION', '0.2.4' );
 }
 
 require_once __DIR__ . '/wp-stubs.php';

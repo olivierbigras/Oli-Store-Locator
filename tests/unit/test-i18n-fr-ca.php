@@ -162,6 +162,8 @@ class Oli_SL_Test_I18n_Fr_CA {
 			'Google Sheets'            => 'Google Sheets',
 			'Use my location'          => 'Utiliser ma position',
 			'Sync Now'                 => 'Synchroniser maintenant',
+			'Columns detected. The sheet CSV is valid.' => 'Colonnes détectées. Le CSV de la feuille est valide.',
+			'Google Maps could not load. Check the API key. The map is using OpenStreetMap instead.' => 'Google Maps n’a pas pu se charger. Vérifiez la clé API. La carte utilise OpenStreetMap à la place.',
 		);
 
 		$ok = true;
