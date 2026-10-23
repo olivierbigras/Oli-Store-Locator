@@ -47,7 +47,7 @@ jobs:
         with:
           slug: oli-store-locator
           exclude-directories: tests,vendor,.github,bin
-          exclude-files: phpcs.xml.dist,.gitignore,FEATURE-MAP.md,CHANGELOG.md,composer.json,composer.lock
+          exclude-files: phpcs.xml.dist,.gitignore,FEATURE-MAP.md,CHANGELOG.md,composer.json,composer.lock,.gitattributes
           ignore-codes: |
             latest_wordpress_version_tested
 
