@@ -28,11 +28,11 @@ class Oli_SL_Rest_API {
 				'args'                => array(
 					'lat'         => array(
 						'required'          => false,
-						'sanitize_callback' => 'sanitize_text_field',
+						'sanitize_callback' => 'oli_sl_sanitize_coordinate',
 					),
 					'lng'         => array(
 						'required'          => false,
-						'sanitize_callback' => 'sanitize_text_field',
+						'sanitize_callback' => 'oli_sl_sanitize_coordinate',
 					),
 					'address'     => array(
 						'required'          => false,

@@ -5,7 +5,7 @@ Tags: store locator, maps, google maps, leaflet, google sheets
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 0.2.0
+Stable tag: 0.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,19 +65,35 @@ No Google login is required. An optional Sheets API key is available when the pu
 * Geocode only when the address changed; batched to avoid timeouts
 * Optional draft or trash for stores removed from the sheet
 
-= External services =
+== External services ==
 
-This plugin does not track visitors and does not include upsells. It only contacts the services below, and only when the corresponding feature is used.
+This plugin does not track visitors and does not include upsells. It only contacts the services below, and only when the matching setting or feature is used. Leaflet, Leaflet.markercluster, and MarkerClustererPlus are bundled locally.
 
-1. **Google Maps JavaScript API** (`https://maps.googleapis.com/`) — front-end map, Places autocomplete, and Directions when the Google provider is selected. Requires an API key you configure. [Google Maps Platform Terms](https://cloud.google.com/maps-platform/terms).
-2. **Google Geocoding API** (`https://maps.googleapis.com/maps/api/geocode/json`) — converts addresses to coordinates on the server when Google geocoding is selected. [Geocoding API policies](https://developers.google.com/maps/documentation/geocoding/policies).
-3. **Google Places Autocomplete API** (`https://maps.googleapis.com/maps/api/place/autocomplete/json`) — address suggestions when Google geocoding is selected.
-4. **OpenStreetMap Nominatim** (`https://nominatim.openstreetmap.org/`) — geocoding and autocomplete when the free provider is selected. [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
-5. **OpenStreetMap / CARTO / OpenTopoMap tile servers** — map imagery when Leaflet is selected.
-6. **Google Sheets CSV export** (`https://docs.google.com/spreadsheets/d/{ID}/export?format=csv`) — syncs store rows from the sheet URL you paste.
-7. **Google Sheets API v4** (`https://sheets.googleapis.com/v4/spreadsheets/`) — optional, only if you enter a Sheets API key.
+= Google Maps (JavaScript, Geocoding, Places) =
 
-Leaflet, Leaflet.markercluster, and MarkerClustererPlus are bundled locally.
+* What: optional Google Maps JavaScript API (map, Places autocomplete, Directions) and server-side Geocoding / Places Autocomplete.
+* When: only if Map provider or Geocoding is set to Google. The browser loads `https://maps.googleapis.com/maps/api/js` on locator pages. The server calls `https://maps.googleapis.com/maps/api/geocode/json` and `https://maps.googleapis.com/maps/api/place/autocomplete/json` when an address is geocoded or autocompleted.
+* Data sent: the API key you configure; search addresses or coordinates; the visitor’s IP as seen by Google when the JS API loads. No store owner account data is sent.
+* Terms: [Google Maps Platform Terms](https://cloud.google.com/maps-platform/terms), [Geocoding policies](https://developers.google.com/maps/documentation/geocoding/policies).
+* Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
+
+= Google Sheets (published CSV, optional API) =
+
+* What: import / scheduled sync of store rows from a spreadsheet you paste.
+* When: when an administrator saves a sheet URL, clicks Detect columns / Sync, or a WP-Cron sync runs. The server uses `wp_safe_remote_get` on `https://docs.google.com/spreadsheets/d/{ID}/export?format=csv` (or a published CSV URL). If you enter a Sheets API key, the plugin also calls `https://sheets.googleapis.com/v4/spreadsheets/`.
+* Data sent: the sheet ID / gid from the URL you entered, and the optional API key. No visitor data is sent. The sheet must be shared as “anyone with the link can view” (or reachable with the key).
+* Terms: [Google Terms of Service](https://policies.google.com/terms), [Google APIs Terms](https://developers.google.com/terms).
+* Privacy: [Google Privacy Policy](https://policies.google.com/privacy).
+
+= Map tiles (OpenStreetMap or another Leaflet provider) =
+
+* What: raster map tiles for the free Leaflet map (OpenStreetMap by default; optional CARTO, OpenTopoMap, or a custom HTTPS tile URL).
+* When: on locator pages when Map provider is Leaflet and the visitor loads the map (or after GDPR consent, if that option is on).
+* Data sent: tile x/y/z coordinates and the visitor’s IP to the tile host. No store form data is sent.
+* OpenStreetMap terms: [OSMF Terms of Use](https://wiki.osmfoundation.org/wiki/Terms_of_Use). Privacy: [OSMF Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy).
+* CARTO: [CARTO legal](https://carto.com/legal/). OpenTopoMap: [OpenTopoMap](https://opentopomap.org/).
+
+Nominatim geocoding (`https://nominatim.openstreetmap.org/`) is used only when Geocoding is set to Nominatim. Policy: [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/).
 
 == Installation ==
 
@@ -107,6 +123,12 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 
 == Changelog ==
 
+= 0.2.1 =
+* Exclude tests, bin, phpcs, GitHub workflows, and Composer files from the distribution ZIP.
+* Move locator CSS variables and custom CSS to `wp_add_inline_style`.
+* Document Google Maps, Google Sheets, and map tile services (what, when, data, terms, privacy).
+* Tighten sanitization of uploads and coordinates. Plugin Check Offloading false positives on Sheets host checks removed.
+
 = 0.2.0 =
 * Settings screens match the free wordpress.org locator sections (API, Search, Map, User Experience, Markers, Store Editor, Local Pages, Labels, Tools).
 * Featured stores, category colors, name search, GDPR consent, and more shortcode attributes.
@@ -124,6 +146,9 @@ Copy files from `templates/` to `yourtheme/oli-store-locator/`.
 * Initial release.
 
 == Upgrade Notice ==
+
+= 0.2.1 =
+Packaging, security, and wordpress.org readme (External services) updates. Settings keys are unchanged.
 
 = 0.2.0 =
 Settings screens, search options, map design, and Google Sheets history from 0.1.1. Existing option keys are unchanged.

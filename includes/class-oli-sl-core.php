@@ -118,7 +118,6 @@ class Oli_SL_Core {
 		$this->loader->add_filter( 'cron_schedules', $this, 'cron_schedules' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_assets' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'maybe_enqueue' );
-		$this->loader->add_action( 'wp_head', $plugin_public, 'output_custom_css' );
 		$this->loader->add_action( 'wp_ajax_oli_sl_search_stores', $ajax, 'search_stores' );
 		$this->loader->add_action( 'wp_ajax_nopriv_oli_sl_search_stores', $ajax, 'search_stores' );
 		$this->loader->add_action( 'wp_ajax_oli_sl_autocomplete', $ajax, 'autocomplete' );

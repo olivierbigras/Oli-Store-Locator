@@ -187,11 +187,18 @@ class Oli_SL_Metaboxes {
 			return;
 		}
 
-		$text_keys = array( 'address', 'address_2', 'city', 'state', 'zip', 'country', 'phone', 'fax', 'latitude', 'longitude' );
+		$text_keys = array( 'address', 'address_2', 'city', 'state', 'zip', 'country', 'phone', 'fax' );
 		foreach ( $text_keys as $key ) {
 			$field = 'oli_sl_' . $key;
 			if ( isset( $_POST[ $field ] ) ) {
 				update_post_meta( $post_id, '_oli_sl_' . $key, sanitize_text_field( wp_unslash( $_POST[ $field ] ) ) );
+			}
+		}
+
+		foreach ( array( 'latitude', 'longitude' ) as $key ) {
+			$field = 'oli_sl_' . $key;
+			if ( isset( $_POST[ $field ] ) ) {
+				update_post_meta( $post_id, '_oli_sl_' . $key, oli_sl_sanitize_coordinate( wp_unslash( $_POST[ $field ] ) ) );
 			}
 		}
 

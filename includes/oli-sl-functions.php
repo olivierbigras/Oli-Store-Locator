@@ -663,3 +663,40 @@ function oli_sl_checkbox_field( $key, $label ) {
 		esc_html( $label )
 	);
 }
+
+/**
+ * Sanitize a latitude or longitude string.
+ *
+ * @param mixed $value Raw value.
+ * @return string Empty string or a numeric coordinate.
+ */
+function oli_sl_sanitize_coordinate( $value ) {
+	$value = sanitize_text_field( (string) $value );
+	if ( '' === $value || ! is_numeric( $value ) ) {
+		return '';
+	}
+
+	return (string) (float) $value;
+}
+
+/**
+ * Copy an uploaded-file array into sanitized fields.
+ *
+ * @param mixed $file Value from $_FILES.
+ * @return array
+ */
+function oli_sl_sanitize_uploaded_file( $file ) {
+	if ( ! is_array( $file ) ) {
+		return array();
+	}
+
+	$tmp = isset( $file['tmp_name'] ) ? $file['tmp_name'] : '';
+
+	return array(
+		'name'     => isset( $file['name'] ) ? sanitize_file_name( wp_unslash( $file['name'] ) ) : '',
+		'type'     => isset( $file['type'] ) ? sanitize_text_field( wp_unslash( $file['type'] ) ) : '',
+		'tmp_name' => is_string( $tmp ) ? $tmp : '',
+		'error'    => isset( $file['error'] ) ? absint( $file['error'] ) : UPLOAD_ERR_NO_FILE,
+		'size'     => isset( $file['size'] ) ? absint( $file['size'] ) : 0,
+	);
+}

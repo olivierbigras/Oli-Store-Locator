@@ -20,8 +20,8 @@ class Oli_SL_Ajax {
 	public function search_stores() {
 		check_ajax_referer( 'oli_sl_nonce', 'nonce' );
 
-		$lat         = isset( $_POST['lat'] ) ? sanitize_text_field( wp_unslash( $_POST['lat'] ) ) : '';
-		$lng         = isset( $_POST['lng'] ) ? sanitize_text_field( wp_unslash( $_POST['lng'] ) ) : '';
+		$lat         = isset( $_POST['lat'] ) ? oli_sl_sanitize_coordinate( wp_unslash( $_POST['lat'] ) ) : '';
+		$lng         = isset( $_POST['lng'] ) ? oli_sl_sanitize_coordinate( wp_unslash( $_POST['lng'] ) ) : '';
 		$address     = isset( $_POST['address'] ) ? sanitize_text_field( wp_unslash( $_POST['address'] ) ) : '';
 		$name        = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
 		$radius      = isset( $_POST['radius'] ) ? absint( $_POST['radius'] ) : (int) oli_sl_get_option( 'search_radius', '50' );

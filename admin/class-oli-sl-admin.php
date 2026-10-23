@@ -114,7 +114,7 @@ class Oli_SL_Admin {
 		}
 
 		if ( 'import_csv' === $action ) {
-			$file  = isset( $_FILES['oli_sl_csv_file'] ) ? $_FILES['oli_sl_csv_file'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated by Oli_SL_CSV_Parser::validate_upload().
+			$file  = isset( $_FILES['oli_sl_csv_file'] ) ? oli_sl_sanitize_uploaded_file( $_FILES['oli_sl_csv_file'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- oli_sl_sanitize_uploaded_file().
 			$valid = Oli_SL_CSV_Parser::validate_upload( $file );
 			if ( is_wp_error( $valid ) ) {
 				add_settings_error( 'oli_sl_options', $valid->get_error_code(), $valid->get_error_message(), 'error' );
@@ -202,8 +202,9 @@ class Oli_SL_Admin {
 		}
 
 		if ( 'import_settings' === $action ) {
-			$file = isset( $_FILES['oli_sl_settings_file'] ) ? $_FILES['oli_sl_settings_file'] : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- validated below.
-			if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) ) {
+			$file = isset( $_FILES['oli_sl_settings_file'] ) ? oli_sl_sanitize_uploaded_file( $_FILES['oli_sl_settings_file'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- oli_sl_sanitize_uploaded_file().
+			$ext = strtolower( (string) pathinfo( $file['name'], PATHINFO_EXTENSION ) );
+			if ( empty( $file['tmp_name'] ) || ! is_uploaded_file( $file['tmp_name'] ) || 'json' !== $ext ) {
 				add_settings_error( 'oli_sl_options', 'settings_import', __( 'Please choose a JSON settings file.', 'oli-store-locator' ), 'error' );
 				return;
 			}

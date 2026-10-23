@@ -181,10 +181,17 @@ class Oli_SL_Settings {
 			}
 		}
 
-		foreach ( array( 'start_lat', 'start_lng', 'map_height', 'map_width' ) as $key ) {
+		foreach ( array( 'start_lat', 'start_lng' ) as $key ) {
 			if ( isset( $input[ $key ] ) ) {
-				$out[ $key ] = sanitize_text_field( $input[ $key ] );
+				$out[ $key ] = oli_sl_sanitize_coordinate( $input[ $key ] );
 			}
+		}
+
+		if ( isset( $input['map_height'] ) ) {
+			$out['map_height'] = (string) absint( $input['map_height'] );
+		}
+		if ( isset( $input['map_width'] ) ) {
+			$out['map_width'] = sanitize_text_field( $input['map_width'] );
 		}
 
 		foreach ( oli_sl_color_option_keys() as $color ) {

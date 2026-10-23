@@ -129,6 +129,7 @@ class Oli_SL_Public {
 					'callback'  => 'oliSLGoogleMapsReady',
 					'loading'   => 'async',
 				),
+				// Declared in readme.txt == External services ==. Optional Maps JavaScript API, not a CDN copy of plugin files.
 				'https://maps.googleapis.com/maps/api/js'
 			);
 			wp_enqueue_script( 'oli-sl-google-maps', $src, array(), OLI_SL_VERSION, true );
@@ -138,34 +139,65 @@ class Oli_SL_Public {
 
 		wp_enqueue_script( 'oli-sl-public' );
 		wp_localize_script( 'oli-sl-public', 'oliSLSettings', oli_sl_frontend_config() );
+
+		self::add_locator_inline_css();
 	}
 
 	/**
-	 * Output custom CSS variables.
+	 * Theme variables and optional custom CSS, attached to the public stylesheet.
 	 */
-	public function output_custom_css() {
-		$custom = oli_sl_get_option( 'custom_css', '' );
-		$shadow = oli_sl_is_enabled( oli_sl_get_option( 'infowindow_shadow', '1' ) ) ? '0 4px 16px rgba(0,0,0,.15)' : 'none';
-		$vars   = sprintf(
+	public static function add_locator_inline_css() {
+		wp_add_inline_style( 'oli-sl-public', self::locator_inline_css() );
+	}
+
+	/**
+	 * Sanitized CSS for locator colors, layout, and the Custom CSS setting.
+	 *
+	 * @return string
+	 */
+	public static function locator_inline_css() {
+		$defaults = function_exists( 'oli_sl_default_options' ) ? oli_sl_default_options() : array();
+		$shadow   = oli_sl_is_enabled( oli_sl_get_option( 'infowindow_shadow', '1' ) ) ? '0 4px 16px rgba(0,0,0,.15)' : 'none';
+
+		$css = sprintf(
 			':root{--oli-sl-primary:%1$s;--oli-sl-button:%2$s;--oli-sl-button-text:%3$s;--oli-sl-text:%4$s;--oli-sl-hover:%5$s;--oli-sl-cluster:%6$s;--oli-sl-cluster-text:%7$s;--oli-sl-map-height:%8$spx;--oli-sl-featured:%9$s;--oli-sl-infowindow-bg:%10$s;--oli-sl-infowindow-text:%11$s;--oli-sl-infowindow-radius:%12$spx;--oli-sl-infowindow-shadow:%13$s;}',
-			sanitize_hex_color( oli_sl_get_option( 'primary_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'button_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'button_text_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'text_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'hover_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'cluster_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'cluster_text_color' ) ),
+			self::hex_color( 'primary_color', $defaults ),
+			self::hex_color( 'button_color', $defaults ),
+			self::hex_color( 'button_text_color', $defaults ),
+			self::hex_color( 'text_color', $defaults ),
+			self::hex_color( 'hover_color', $defaults ),
+			self::hex_color( 'cluster_color', $defaults ),
+			self::hex_color( 'cluster_text_color', $defaults ),
 			absint( oli_sl_get_option( 'map_height', '500' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'featured_color' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'infowindow_bg' ) ),
-			sanitize_hex_color( oli_sl_get_option( 'infowindow_text_color' ) ),
+			self::hex_color( 'featured_color', $defaults ),
+			self::hex_color( 'infowindow_bg', $defaults ),
+			self::hex_color( 'infowindow_text_color', $defaults ),
 			absint( oli_sl_get_option( 'infowindow_radius', '8' ) ),
 			$shadow
 		);
-		echo '<style id="oli-sl-theme-vars">' . $vars . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- values sanitized above.
+
+		$custom = oli_sl_get_option( 'custom_css', '' );
 		if ( is_string( $custom ) && '' !== trim( $custom ) ) {
-			echo '<style id="oli-sl-custom-css">' . wp_strip_all_tags( $custom ) . '</style>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSS stripped of tags.
+			$css .= wp_strip_all_tags( $custom );
 		}
+
+		return $css;
+	}
+
+	/**
+	 * Sanitized hex color option with a safe fallback.
+	 *
+	 * @param string $key      Option key.
+	 * @param array  $defaults Default options.
+	 * @return string
+	 */
+	private static function hex_color( $key, $defaults ) {
+		$color = sanitize_hex_color( oli_sl_get_option( $key ) );
+		if ( $color ) {
+			return $color;
+		}
+		$fallback = isset( $defaults[ $key ] ) ? sanitize_hex_color( $defaults[ $key ] ) : '';
+		return $fallback ? $fallback : '#000000';
 	}
 
 	/**

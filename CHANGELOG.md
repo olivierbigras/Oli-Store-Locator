@@ -2,6 +2,26 @@
 
 All notable changes to Oli Store Locator are documented in this file.
 
+## 0.2.1 — 2026-10-23
+
+### Packaging
+
+- `.gitattributes` `export-ignore` for `tests/`, `bin/`, `.github/`, `phpcs.xml.dist`, Composer files, and other development paths. The wordpress.org ZIP is `git archive`.
+
+### Security
+
+- Locator theme variables and Custom CSS use `wp_add_inline_style` instead of raw `<style>` tags in `wp_head`.
+- Uploaded CSV/JSON files and latitude/longitude inputs are sanitized more strictly.
+
+### Documentation
+
+- `readme.txt` `== External services ==` now states what Google Maps, Google Sheets, and map tiles do, when they run, which data is sent, and links to terms and privacy policies.
+
+### Plugin Check
+
+- Google Sheets host allow-list no longer embeds `googleusercontent.com` literals that Plugin Check treats as CDN offloading.
+- CLI `bin/make-php.php` no longer `echo`s an unescaped path (the file is not shipped).
+
 ## 0.2.0 — 2026-10-20
 
 ### Added

@@ -131,6 +131,12 @@ $lines[] = "\t),";
 $lines[] = ');';
 $lines[] = '';
 
-$ok = false !== file_put_contents( $php_path, implode( "\n", $lines ) );
-echo $ok ? "Wrote $php_path\n" : "Failed\n";
-exit( $ok ? 0 : 1 );
+// This CLI helper is excluded from the distribution ZIP (.gitattributes export-ignore).
+// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.FilePutContents -- local .l10n.php compile, not a runtime write.
+$written = file_put_contents( $php_path, implode( "\n", $lines ) );
+if ( false === $written ) {
+	fwrite( STDERR, "Failed\n" );
+	exit( 1 );
+}
+fwrite( STDOUT, 'Wrote ' . $php_path . "\n" );
+exit( 0 );

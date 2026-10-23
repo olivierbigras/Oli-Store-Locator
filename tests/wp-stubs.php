@@ -214,6 +214,34 @@ if ( ! function_exists( 'delete_transient' ) ) {
 	}
 }
 
+if ( ! function_exists( 'add_query_arg' ) ) {
+	/**
+	 * Minimal add_query_arg for Sheets export URL tests.
+	 *
+	 * @param array|string $key   Query args or key.
+	 * @param mixed        $value Value or URL.
+	 * @param string|null  $url   URL.
+	 * @return string
+	 */
+	function add_query_arg( $key, $value = null, $url = null ) {
+		if ( is_array( $key ) ) {
+			$args = $key;
+			$url  = $value;
+		} else {
+			$args = array( $key => $value );
+		}
+
+		$url   = (string) $url;
+		$query = array();
+		foreach ( $args as $name => $item ) {
+			$query[] = rawurlencode( (string) $name ) . '=' . rawurlencode( (string) $item );
+		}
+
+		$separator = ( false === strpos( $url, '?' ) ) ? '?' : '&';
+		return $url . $separator . implode( '&', $query );
+	}
+}
+
 if ( ! function_exists( 'apply_filters' ) ) {
 	/**
 	 * Apply registered test filters.

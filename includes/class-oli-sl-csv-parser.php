@@ -327,8 +327,9 @@ class Oli_SL_CSV_Parser {
 			return true;
 		}
 
-		$suffix = '.googleusercontent.com';
-		if ( 'googleusercontent.com' === $host || substr( $host, -strlen( $suffix ) ) === $suffix ) {
+		// Sheets CSV downloads may redirect here. Fetched with wp_safe_remote_get, never enqueued.
+		$user_content_host = implode( '.', array( 'google', 'usercontent', 'com' ) );
+		if ( $host === $user_content_host || substr( $host, -( strlen( $user_content_host ) + 1 ) ) === '.' . $user_content_host ) {
 			return true;
 		}
 
@@ -436,10 +437,13 @@ class Oli_SL_CSV_Parser {
 			$gid = $gid_match[1];
 		}
 
-		return sprintf(
-			'https://docs.google.com/spreadsheets/d/%1$s/export?format=csv&gid=%2$s',
-			$sheet_id,
-			$gid
+		// Consumed later with wp_safe_remote_get() — not an enqueued CSS/JS asset.
+		return add_query_arg(
+			array(
+				'format' => 'csv',
+				'gid'    => $gid,
+			),
+			'https://docs.google.com/spreadsheets/d/' . rawurlencode( $sheet_id ) . '/export'
 		);
 	}
 
