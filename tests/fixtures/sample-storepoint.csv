@@ -1,0 +1,7 @@
+Name,Address,City,Province/State,Postal Code,Country,Phone,Email,Website,Hours,Category,Lat,Lng,Description,Image,ID
+Montreal Flagship,123 Rue Saint-Denis,Montreal,QC,H2X 3K9,Canada,514-555-0100,mtl@example.com,https://example.com/mtl,"Mon-Fri 9:00-17:00",Retail,45.5151,-73.5631,Downtown flagship,https://example.com/mtl.jpg,store-mtl
+Quebec Boutique,88 Grande Allée,Quebec City,QC,G1R 2J1,Canada,418-555-0142,qc@example.com,https://example.com/qc,"Tue-Sat 10:00-18:00",Boutique,46.8123,-71.2200,Old Quebec boutique,,store-qc
+Toronto Store,250 Queen Street West,Toronto,ON,M5V 1Z7,Canada,416-555-0199,to@example.com,https://example.com/to,"Mon-Sat 10:00-20:00",Retail,43.6500,-79.3900,Queen West location,,store-to
+"Ottawa, Rideau",50 Rideau Street,Ottawa,ON,K1N 9J7,Canada,613-555-0111,ott@example.com,https://example.com/ott,"Mon-Fri 9:00-18:00",Outlet,45.4240,-75.6900,"Quoted city name, commas in field",,store-ott
+Incomplete Row,,,,,,,,,,,,,,,
+,No Name Street,Halifax,NS,B3J 1A1,Canada,,,,,,,,,,

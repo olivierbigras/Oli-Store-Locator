@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.3']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer
+
+      - name: PHP syntax check
+        run: |
+          find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: PHPCS (WordPress)
+        run: vendor/bin/phpcs
+
+      - name: Unit tests
+        run: php tests/run-tests.php
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          slug: oli-store-locator
+          exclude-directories: tests,vendor,.github,bin
+          exclude-files: phpcs.xml.dist,.gitignore,FEATURE-MAP.md,CHANGELOG.md,composer.json,composer.lock
+          ignore-codes: |
+            latest_wordpress_version_tested
+
+  zip:
+    name: Plugin ZIP
+    runs-on: ubuntu-latest
+    needs: [tests, plugin-check]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ZIP and checksum
+        run: |
+          mkdir -p dist
+          git archive --format=zip --prefix=oli-store-locator/ -o dist/oli-store-locator.zip HEAD
+          cd dist
+          md5sum oli-store-locator.zip | tee oli-store-locator.zip.md5
+          cat oli-store-locator.zip.md5
+
+      - name: Upload ZIP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: oli-store-locator-zip
+          path: |
+            dist/oli-store-locator.zip
+            dist/oli-store-locator.zip.md5

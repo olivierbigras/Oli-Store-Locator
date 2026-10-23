@@ -1,0 +1,57 @@
+<wpml-config>
+	<custom-types>
+		<custom-type translate="1">oli_store</custom-type>
+	</custom-types>
+	<taxonomies>
+		<taxonomy translate="1">oli_store_category</taxonomy>
+		<taxonomy translate="1">oli_store_tag</taxonomy>
+	</taxonomies>
+	<custom-fields>
+		<custom-field action="translate">_oli_sl_address</custom-field>
+		<custom-field action="translate">_oli_sl_city</custom-field>
+		<custom-field action="translate">_oli_sl_state</custom-field>
+		<custom-field action="translate">_oli_sl_hours</custom-field>
+		<custom-field action="translate">_oli_sl_description</custom-field>
+		<custom-field action="copy">_oli_sl_latitude</custom-field>
+		<custom-field action="copy">_oli_sl_longitude</custom-field>
+		<custom-field action="copy">_oli_sl_phone</custom-field>
+		<custom-field action="copy">_oli_sl_email</custom-field>
+		<custom-field action="copy">_oli_sl_url</custom-field>
+	</custom-fields>
+	<admin-texts>
+		<key name="oli_sl_options">
+			<key name="label_search" />
+			<key name="label_address" />
+			<key name="label_radius" />
+			<key name="label_results" />
+			<key name="label_category" />
+			<key name="label_locate" />
+			<key name="label_reset" />
+			<key name="label_directions" />
+			<key name="label_no_results" />
+			<key name="label_phone" />
+			<key name="label_hours" />
+			<key name="label_website" />
+			<key name="label_your_location" />
+			<key name="label_store_name" />
+			<key name="label_category_first" />
+			<key name="label_adjust_search" />
+			<key name="label_preloader" />
+			<key name="label_more_info" />
+			<key name="label_fax" />
+			<key name="label_email" />
+			<key name="label_url" />
+			<key name="label_more_details" />
+			<key name="label_start_location" />
+			<key name="label_get_directions" />
+			<key name="label_street_view" />
+			<key name="label_zoom_here" />
+			<key name="label_number_results" />
+			<key name="label_number_results_one" />
+			<key name="label_open" />
+			<key name="label_closed" />
+			<key name="label_consent" />
+			<key name="gdpr_text" />
+		</key>
+	</admin-texts>
+</wpml-config>

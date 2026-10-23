@@ -1,0 +1,57 @@
+.oli-sl-metabox .widefat {
+	margin-top: 0.35rem;
+}
+
+.oli-sl-admin-preview {
+	max-width: 28rem;
+	border: 1px solid #c3c4c7;
+	padding: 1rem;
+	background: #fff;
+	font-family: inherit;
+}
+
+.oli-sl-preview-map {
+	height: 8rem;
+	background: #d7e3ea;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 0.75rem;
+}
+
+.oli-sl-preview-btn {
+	background: var(--oli-sl-button, #0073aa);
+	color: var(--oli-sl-button-text, #fff);
+	border: 0;
+	padding: 0.4rem 0.8rem;
+	border-radius: 4px;
+}
+
+.oli-sl-preview-list {
+	list-style: none;
+	margin: 0.75rem 0 0;
+	padding: 0;
+}
+
+.oli-sl-preview-list li {
+	padding: 0.4rem 0.2rem;
+	border-bottom: 1px solid #eee;
+	color: var(--oli-sl-text, #333);
+}
+
+.oli-sl-preview-list li:hover {
+	background: var(--oli-sl-hover, #f0f0f0);
+}
+
+.oli-sl-sync-status {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	padding: 1rem 1.25rem;
+	margin: 1.5rem 0;
+}
+
+.oli-sl-settings .form-table input[type="text"],
+.oli-sl-settings .form-table input[type="url"],
+.oli-sl-settings .form-table input[type="number"] {
+	max-width: 28rem;
+}

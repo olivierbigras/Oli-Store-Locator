@@ -1,0 +1,242 @@
+# French (France) translation for Oli Store Locator
+# Copyright (C) 2026 Olivier Bigras
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Oli Store Locator 0.2.3\n"
+"Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
+"POT-Creation-Date: 2026-10-20 00:00+0000\n"
+"PO-Revision-Date: 2026-10-20 00:00+0000\n"
+"Last-Translator: Olivier Bigras\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: oli-store-locator\n"
+
+msgid "Stores"
+msgstr "Magasins"
+
+msgid "Store"
+msgstr "Magasin"
+
+msgid "Add New Store"
+msgstr "Ajouter un magasin"
+
+msgid "All Stores"
+msgstr "Tous les magasins"
+
+msgid "Search Stores"
+msgstr "Rechercher des magasins"
+
+msgid "Store Categories"
+msgstr "Catégories de magasin"
+
+msgid "Store Tags"
+msgstr "Étiquettes de magasin"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Address or ZIP"
+msgstr "Adresse ou code postal"
+
+msgid "Radius"
+msgstr "Rayon"
+
+msgid "Results"
+msgstr "Résultats"
+
+msgid "Category"
+msgstr "Catégorie"
+
+msgid "Use my location"
+msgstr "Utiliser ma position"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Directions"
+msgstr "Itinéraire"
+
+msgid "No stores found."
+msgstr "Aucun magasin trouvé."
+
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Hours"
+msgstr "Heures d’ouverture"
+
+msgid "Website"
+msgstr "Site web"
+
+msgid "More details"
+msgstr "Plus de détails"
+
+msgid "Looking up coordinates…"
+msgstr "Recherche des coordonnées…"
+
+msgid "Store Locator Settings"
+msgstr "Réglages du localisateur"
+
+msgid "Settings"
+msgstr "Réglages"
+
+msgid "Map provider"
+msgstr "Fournisseur de carte"
+
+msgid "OpenStreetMap / Leaflet (free)"
+msgstr "OpenStreetMap / Leaflet (gratuit)"
+
+msgid "Google Maps"
+msgstr "Google Maps"
+
+msgid "Geocoding provider"
+msgstr "Fournisseur de géocodage"
+
+msgid "Kilometers"
+msgstr "Kilomètres"
+
+msgid "Miles"
+msgstr "Milles"
+
+msgid "Google Sheets link"
+msgstr "Lien Google Sheets"
+
+msgid "Sync Now"
+msgstr "Synchroniser maintenant"
+
+msgid "Save & Start Sync"
+msgstr "Enregistrer et lancer la synchro"
+
+msgid "Remove Sync"
+msgstr "Supprimer la synchro"
+
+msgid "Active"
+msgstr "Actif"
+
+msgid "Paused"
+msgstr "En pause"
+
+msgid "Inactive"
+msgstr "Inactif"
+
+msgid "All up to date"
+msgstr "Tout est à jour"
+
+msgid "Every 5 minutes"
+msgstr "Toutes les 5 minutes"
+
+msgid "Every 15 minutes"
+msgstr "Toutes les 15 minutes"
+
+msgid "Hourly"
+msgstr "Toutes les heures"
+
+msgid "Daily"
+msgstr "Quotidien"
+
+msgid "Export stores"
+msgstr "Exporter les magasins"
+
+msgid "Import stores"
+msgstr "Importer des magasins"
+
+msgid "Download CSV"
+msgstr "Télécharger le CSV"
+
+msgid "Import CSV"
+msgstr "Importer le CSV"
+
+msgid "Sorry, you are not allowed to geocode addresses."
+msgstr "Désolé, vous n’êtes pas autorisé à géocoder des adresses."
+
+msgid "Too many geocoding requests. Please try again in a minute."
+msgstr "Trop de requêtes de géocodage. Réessayez dans une minute."
+
+msgid "The geocoding service is busy. Please try again shortly."
+msgstr "Le service de géocodage est occupé. Réessayez sous peu."
+
+msgid "The CSV file could not be uploaded."
+msgstr "Le fichier CSV n’a pas pu être téléversé."
+
+msgid "The uploaded file is not valid."
+msgstr "Le fichier téléversé n’est pas valide."
+
+msgid "The CSV file is too large."
+msgstr "Le fichier CSV est trop volumineux."
+
+msgid "Only CSV or TXT files are allowed."
+msgstr "Seuls les fichiers CSV ou TXT sont autorisés."
+
+msgid "The URL is not an allowed Google Sheets host."
+msgstr "L’URL n’appartient pas à un hôte Google Sheets autorisé."
+
+msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
+msgstr "Limiter Nominatim à 1 requête par seconde (exigé par la politique d’utilisation d’OpenStreetMap)"
+
+msgid "OpenStreetMap"
+msgstr "OpenStreetMap"
+
+msgid "API"
+msgstr "API"
+
+msgid "User Experience"
+msgstr "Expérience utilisateur"
+
+msgid "Markers"
+msgstr "Marqueurs"
+
+msgid "Store Editor"
+msgstr "Éditeur de magasin"
+
+msgid "Local Pages"
+msgstr "Pages locales"
+
+msgid "Tools"
+msgstr "Outils"
+
+msgid "Design"
+msgstr "Apparence"
+
+msgid "Map service"
+msgstr "Service de carte"
+
+msgid "Search method"
+msgstr "Méthode de recherche"
+
+msgid "Show first in results?"
+msgstr "Afficher en premier dans les résultats ?"
+
+msgid "Sync history"
+msgstr "Journal des synchros"
+
+msgid "Load the map"
+msgstr "Charger la carte"
+
+msgid "Get directions"
+msgstr "Obtenir l’itinéraire"
+
+msgid "No results found"
+msgstr "Aucun résultat"
+
+msgid "Please adjust your search"
+msgstr "Veuillez ajuster votre recherche"
+
+msgid "Added"
+msgstr "Ajoutées"
+
+msgid "Modified"
+msgstr "Modifiées"
+
+msgid "Deleted"
+msgstr "Supprimées"
+
+msgid "Errors"
+msgstr "Erreurs"
+
+msgid "Color"
+msgstr "Couleur"

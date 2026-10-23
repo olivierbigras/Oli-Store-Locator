@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+.phpunit.result.cache
+composer.lock
+.DS_Store
+*.mo
+!languages/*.mo

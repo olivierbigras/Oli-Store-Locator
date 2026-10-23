@@ -1,0 +1,240 @@
+.oli-sl-wrap {
+	font-family: inherit;
+	color: var(--oli-sl-text, #333);
+}
+
+.oli-sl-search {
+	margin-bottom: 1rem;
+}
+
+.oli-sl-search-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: flex-end;
+}
+
+.oli-sl-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 10rem;
+	flex: 1 1 10rem;
+}
+
+.oli-sl-field-address {
+	flex: 2 1 16rem;
+	position: relative;
+}
+
+.oli-sl-wrap input,
+.oli-sl-wrap select,
+.oli-sl-wrap button {
+	font-family: inherit;
+}
+
+.oli-sl-wrap input[type="text"],
+.oli-sl-wrap select {
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.oli-sl-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.oli-sl-search-btn,
+.oli-sl-locate-btn,
+.oli-sl-reset-btn,
+.oli-sl-directions {
+	background: var(--oli-sl-button, #0073aa);
+	color: var(--oli-sl-button-text, #fff);
+	border: 0;
+	border-radius: 4px;
+	padding: 0.55rem 1rem;
+	cursor: pointer;
+	text-decoration: none;
+	display: inline-block;
+}
+
+.oli-sl-reset-btn,
+.oli-sl-locate-btn {
+	background: transparent;
+	color: var(--oli-sl-primary, #0073aa);
+	border: 1px solid var(--oli-sl-primary, #0073aa);
+}
+
+.oli-sl-body {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+.oli-sl-map {
+	flex: 1 1 60%;
+	min-height: var(--oli-sl-map-height, 500px);
+	background: #e9eef2;
+}
+
+.oli-sl-results {
+	flex: 1 1 100%;
+}
+
+.oli-sl-layout-left .oli-sl-body,
+.oli-sl-layout-right .oli-sl-body {
+	flex-wrap: nowrap;
+}
+
+.oli-sl-layout-left .oli-sl-results,
+.oli-sl-layout-right .oli-sl-results {
+	flex: 0 0 32%;
+	max-height: var(--oli-sl-map-height, 500px);
+	overflow: auto;
+}
+
+.oli-sl-layout-left .oli-sl-body {
+	flex-direction: row-reverse;
+}
+
+.oli-sl-result {
+	border-bottom: 1px solid #eee;
+	padding: 0.75rem;
+	cursor: pointer;
+}
+
+.oli-sl-result:hover,
+.oli-sl-result.is-active {
+	background: var(--oli-sl-hover, #f0f0f0);
+}
+
+.oli-sl-result h3 {
+	margin: 0 0 0.25rem;
+	color: var(--oli-sl-primary, #0073aa);
+}
+
+.oli-sl-result-distance {
+	font-size: 0.9em;
+	opacity: 0.8;
+}
+
+.oli-sl-autocomplete {
+	position: absolute;
+	z-index: 20;
+	left: 0;
+	right: 0;
+	top: 100%;
+	background: #fff;
+	border: 1px solid #ccc;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	max-height: 12rem;
+	overflow: auto;
+}
+
+.oli-sl-autocomplete li {
+	padding: 0.4rem 0.6rem;
+	cursor: pointer;
+}
+
+.oli-sl-autocomplete li:hover {
+	background: var(--oli-sl-hover, #f0f0f0);
+}
+
+.oli-sl-status {
+	padding: 0.75rem;
+}
+
+.oli-sl-single-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.5rem;
+}
+
+.oli-sl-infowindow {
+	background: var(--oli-sl-infowindow-bg, #fff);
+	color: var(--oli-sl-infowindow-text, #333);
+	border-radius: var(--oli-sl-infowindow-radius, 8px);
+	box-shadow: var(--oli-sl-infowindow-shadow, 0 4px 16px rgba(0, 0, 0, 0.15));
+	padding: 0.5rem 0.15rem;
+	max-width: 16rem;
+}
+
+.oli-sl-infowindow h3 {
+	margin: 0 0 0.35rem;
+}
+
+.oli-sl-infowindow img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin-bottom: 0.4rem;
+}
+
+.oli-sl-hide-list .oli-sl-results {
+	display: none;
+}
+
+.oli-sl-hide-map:not(.oli-sl-has-searched) .oli-sl-map {
+	display: none;
+}
+
+.oli-sl-consent {
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	padding: 1rem;
+	margin-bottom: 1rem;
+}
+
+.oli-sl-result.is-featured {
+	border-left: 4px solid var(--oli-sl-featured, #c45c26);
+}
+
+.oli-sl-status-open {
+	color: #1a7f37;
+	font-weight: 600;
+}
+
+.oli-sl-status-closed {
+	color: #b32d2e;
+	font-weight: 600;
+}
+
+.oli-sl-cat-dot {
+	display: inline-block;
+	width: 0.65rem;
+	height: 0.65rem;
+	border-radius: 50%;
+	margin-right: 0.25rem;
+	vertical-align: middle;
+}
+
+.oli-sl-count {
+	margin: 0 0 0.5rem;
+	font-size: 0.95em;
+}
+
+@media (max-width: 782px) {
+	.oli-sl-layout-left .oli-sl-body,
+	.oli-sl-layout-right .oli-sl-body {
+		flex-wrap: wrap;
+		flex-direction: column;
+	}
+
+	.oli-sl-mobile-list_first .oli-sl-body {
+		flex-direction: column-reverse;
+	}
+
+	.oli-sl-layout-left .oli-sl-results,
+	.oli-sl-layout-right .oli-sl-results {
+		flex: 1 1 100%;
+		max-height: none;
+	}
+
+	.oli-sl-single-grid {
+		grid-template-columns: 1fr;
+	}
+}

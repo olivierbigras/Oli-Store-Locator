@@ -1,0 +1,143 @@
+# Copyright (C) 2026 Olivier Bigras
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Oli Store Locator 0.2.4\n"
+"Report-Msgid-Bugs-To: https://github.com/olivierbigras/Oli-Store-Locator\n"
+"POT-Creation-Date: 2026-10-20 00:00+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: oli-store-locator\n"
+
+msgid "Stores"
+msgstr ""
+
+msgid "Store"
+msgstr ""
+
+msgid "Add New Store"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Address or ZIP"
+msgstr ""
+
+msgid "Radius"
+msgstr ""
+
+msgid "Use my location"
+msgstr ""
+
+msgid "Directions"
+msgstr ""
+
+msgid "No stores found."
+msgstr ""
+
+msgid "Google Sheets link"
+msgstr ""
+
+msgid "Sync Now"
+msgstr ""
+
+msgid "Save & Start Sync"
+msgstr ""
+
+msgid "Remove Sync"
+msgstr ""
+
+msgid "All up to date"
+msgstr ""
+
+msgid "Sorry, you are not allowed to geocode addresses."
+msgstr ""
+
+msgid "Too many geocoding requests. Please try again in a minute."
+msgstr ""
+
+msgid "The geocoding service is busy. Please try again shortly."
+msgstr ""
+
+msgid "The CSV file could not be uploaded."
+msgstr ""
+
+msgid "The uploaded file is not valid."
+msgstr ""
+
+msgid "The CSV file is too large."
+msgstr ""
+
+msgid "Only CSV or TXT files are allowed."
+msgstr ""
+
+msgid "The URL is not an allowed Google Sheets host."
+msgstr ""
+
+msgid "Limit Nominatim to 1 request per second (required by OpenStreetMap usage policy)"
+msgstr ""
+
+msgid "OpenStreetMap"
+msgstr ""
+
+msgid "API"
+msgstr ""
+
+msgid "User Experience"
+msgstr ""
+
+msgid "Markers"
+msgstr ""
+
+msgid "Store Editor"
+msgstr ""
+
+msgid "Local Pages"
+msgstr ""
+
+msgid "Tools"
+msgstr ""
+
+msgid "Design"
+msgstr ""
+
+msgid "Map service"
+msgstr ""
+
+msgid "Search method"
+msgstr ""
+
+msgid "Geocode API (default)"
+msgstr ""
+
+msgid "Name search (post / location name)"
+msgstr ""
+
+msgid "Show first in results?"
+msgstr ""
+
+msgid "Sync history"
+msgstr ""
+
+msgid "A sync is already running. Try again in a few minutes."
+msgstr ""
+
+msgid "Load the map"
+msgstr ""
+
+msgid "Get directions"
+msgstr ""
+
+msgid "No results found"
+msgstr ""
+
+msgid "Please adjust your search"
+msgstr ""
+
+msgid "Columns detected. The sheet CSV is valid."
+msgstr ""
+
+msgid "Google Maps could not load. Check the API key. The map is using OpenStreetMap instead."
+msgstr ""
